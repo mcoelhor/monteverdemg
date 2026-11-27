@@ -20,7 +20,7 @@ export function Cardapio({ b, onFechar, totem = false, itens = [] }) {
       </div>
       {proprio ? (
         <div className="min-h-0 flex-1 overflow-y-auto bg-[var(--nevoa)] px-5 py-5"><CardapioLista itens={itens} />{b.cardapio_url && !totem && <a href={b.cardapio_url} target="_blank" rel="noopener noreferrer" className="botao botao-sec mt-6 flex w-full items-center justify-center gap-2">Pedir online <ExternalLink size={16} /></a>}</div>
-      ) : <iframe title={`Cardápio de ${b.name}`} src={b.cardapio_url} className="min-h-0 w-full flex-1 bg-white" />}
+      ) : <iframe title={`Cardápio de ${b.name}`} src={b.cardapio_url} sandbox="allow-scripts allow-popups allow-forms allow-same-origin" referrerPolicy="no-referrer" className="min-h-0 w-full flex-1 bg-white" />}
     </div>,
     document.body,
   )

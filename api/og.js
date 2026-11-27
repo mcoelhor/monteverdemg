@@ -44,6 +44,9 @@ const FIXAS = {
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
 const corta = (s, n) => { s = String(s || '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1) + '…' : s }
+// JSON-LD vai dentro de <script>: escapar < (e os separadores de linha U+2028/2029) para que
+// nenhum conteúdo do dono (ex.: "</script><script>…") consiga fechar o bloco e injetar HTML.
+const ldJson = x => JSON.stringify(x).replace(/</g, '\\u003c').replace(/ /g, '\\u2028').replace(/ /g, '\\u2029')
 
 async function supa(path) {
   try {
@@ -59,7 +62,7 @@ function pagina({ titulo, descricao, url, imagem, corpo, ld, tipo = 'website', p
 <meta property="og:title" content="${esc(titulo)}"><meta property="og:description" content="${esc(descricao)}"><meta property="og:url" content="${esc(url)}">
 <meta property="og:image" content="${esc(imagem)}"><meta property="og:image:width" content="700"><meta property="og:image:height" content="525">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(titulo)}"><meta name="twitter:description" content="${esc(descricao)}"><meta name="twitter:image" content="${esc(imagem)}">
-${(Array.isArray(ld) ? ld : ld ? [ld] : []).map(x => `<script type="application/ld+json">${JSON.stringify(x)}</script>`).join('')}
+${(Array.isArray(ld) ? ld : ld ? [ld] : []).map(x => `<script type="application/ld+json">${ldJson(x)}</script>`).join('')}
 <style>body{font-family:system-ui,sans-serif;max-width:640px;margin:0 auto;padding:24px;color:#17231e;background:#f5f3ed}a{color:#355b47}img{max-width:100%;border-radius:16px}</style></head>
 <body>${corpo}<p><a href="${esc(url)}">Abrir no guia Monte Verde MG</a></p></body></html>`
 }
