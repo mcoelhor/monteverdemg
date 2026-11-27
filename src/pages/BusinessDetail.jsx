@@ -102,8 +102,6 @@ export function BusinessDetail() {
           <button onClick={() => toggleBusiness(b.id)} aria-pressed={fav} className="pressiona flex h-11 w-11 items-center justify-center rounded-full bg-white text-[var(--araucaria)]" aria-label="Favoritar"><Heart size={18} className={`coracao ${fav ? 'ativo' : ''}`} /></button>
         </div>
       </div>
-
-      </div>
       {outros.length > 0 && <OutrosMini lista={outros} />}
       </div>
       <div className="relative z-10 -mt-4 flex-1 rounded-t-[28px] bg-[var(--nevoa)] px-5 pt-6 lg:mt-0 lg:rounded-none lg:px-0 lg:pt-0">
