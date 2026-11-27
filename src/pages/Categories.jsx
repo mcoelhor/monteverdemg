@@ -4,7 +4,7 @@ import { ChevronDown, ArrowRight } from 'lucide-react'
 import { Layout } from '../components/Layout/Layout'
 import { Icon } from '../components/UI/Icon'
 import { CATEGORIES } from '../data/categories'
-import { FOTO_CATEGORIA } from '../data/fotos'
+import { FOTO_CATEGORIA, FOTOS } from '../data/fotos'
 import { useBusinesses } from '../hooks/useBusinesses'
 
 const ORDEM = ['alimentacao', 'hospedagem', 'turismo', 'compras', 'saude', 'transporte', 'servicos', 'construcao', 'imobiliarias']
@@ -17,6 +17,13 @@ export function Categories() {
 
   return (
     <Layout largura="largo" title="Explorar" subtitle="Tudo o que tem na vila" showSearch>
+      <div className="px-5 pt-2">
+        <Link to="/trilhas" className="pressiona mb-3 flex items-center gap-4 rounded-[18px] border border-[var(--borda)] bg-[var(--papel)] p-2.5 pr-4">
+          <img src={FOTOS.serra.p} alt="" className="h-16 w-20 shrink-0 rounded-[12px] object-cover" />
+          <span className="min-w-0 flex-1"><span className="serifa block text-[18px] font-semibold">Trilhas</span><span className="block text-[13px] text-[var(--leve)]">Pedra Redonda, Chapéu do Bispo, Pico do Selado e mais</span></span>
+          <span aria-hidden="true" className="text-[var(--musgo)]">→</span>
+        </Link>
+      </div>
       <div className="grade-cards tres space-y-3 px-5 pt-2">
         {cats.map((c, i) => {
           const on = aberta === c.id

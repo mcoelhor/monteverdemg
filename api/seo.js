@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   const subs = [...new Set(lista.map(b => `${b.category}/${b.subcategory}`))]
   const u = (loc, prio, mod) => `<url><loc>${origem}${loc}</loc>${mod ? `<lastmod>${mod.slice(0, 10)}</lastmod>` : ''}<priority>${prio}</priority></url>`
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`
-    + [u('/', '1.0'), u('/roteiro', '0.9'), u('/concierge', '0.9'), u('/uteis', '0.8'), u('/ofertas', '0.7'), u('/categorias', '0.6'), u('/eventos', '0.5'), u('/anuncie', '0.4')].join('\n') + '\n'
+    + [u('/', '1.0'), u('/roteiro', '0.9'), u('/concierge', '0.9'), u('/trilhas', '0.8'), ['pedra-redonda','chapeu-do-bispo','plato','pedra-partida','pico-do-selado','pinheiro-velho'].map(s => u('/trilhas/' + s, '0.7')).join('\n'), u('/uteis', '0.8'), u('/ofertas', '0.7'), u('/categorias', '0.6'), u('/eventos', '0.5'), u('/anuncie', '0.4')].join('\n') + '\n'
     + CATS.map(c => u(`/categoria/${c}`, '0.8')).join('\n') + '\n'
     + subs.map(s => u(`/categoria/${s}`, '0.7')).join('\n') + '\n'
     + lista.map(b => u(`/estabelecimento/${b.slug}`, '0.6', b.updated_at)).join('\n')

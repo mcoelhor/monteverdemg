@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { Heart, Calendar, Store, Settings, ArrowRight, Download, Route, Siren, Image, Car, Leaf, Ticket, Shield } from 'lucide-react'
+import { Heart, Calendar, Store, Settings, ArrowRight, Download, Route, Siren, Image, Car, Leaf, Ticket, Shield, Mountain } from 'lucide-react'
 import { Layout } from '../components/Layout/Layout'
 import { LeadForm } from '../components/LeadForm'
 import { useInstalar } from '../hooks/useInstalar'
@@ -34,6 +34,7 @@ export function More() {
         <Linha icon={Route} label="Meu roteiro" onClick={() => navigate('/roteiro')} />
         <Linha icon={Car} label="Como chegar a Monte Verde" onClick={() => navigate('/como-chegar')} />
         <Linha icon={Leaf} label="O que está na época" onClick={() => navigate('/epoca')} />
+        <Linha icon={Mountain} label="Trilhas" onClick={() => navigate('/trilhas')} />
         <Linha icon={Ticket} label="Ofertas" onClick={() => navigate('/ofertas')} />
         <Linha icon={Heart} label="Lugares salvos" onClick={() => navigate('/favoritos')} />
         <Linha icon={Calendar} label="Eventos" onClick={() => navigate('/eventos')} />
