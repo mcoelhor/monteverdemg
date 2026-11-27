@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Phone, MessageCircle, Navigation, Share2, Heart, MapPin, Globe, Clock, ChevronLeft, ChevronDown, Mail, Flag, Store } from 'lucide-react'
 import { useBusinessBySlug, useBusinesses } from '../hooks/useBusinesses'
 import { useFavorites } from '../hooks/useFavorites'
-import { Capa, BusinessCard, planoAtivo } from '../components/UI/BusinessCard'
+import { Capa, Selo, BusinessCard, planoAtivo } from '../components/UI/BusinessCard'
 import { StatusPill, ParceiroBadge, VerificadoBadge } from '../components/UI/Badge'
 import { InstagramIcon } from '../components/UI/Icon'
 import { BottomNav } from '../components/Layout/BottomNav'
@@ -23,9 +23,9 @@ import { registrar, linkTel, linkWhatsApp, linkRota, linkInstagram } from '../li
 
 function Fotos({ b }) {
   const [i, setI] = useState(0)
-  if (!b.images?.length) return <Capa b={b} alto="h-44 lg:h-[460px]" grande />
+  if (!b.images?.length) return <Capa b={b} alto="h-44 lg:h-[clamp(260px,42vh,380px)]" grande />
   return (
-    <div className="relative h-64 overflow-hidden bg-[var(--nevoa-2)] lg:h-[460px] lg:rounded-[var(--raio)]">
+    <div className="relative h-64 overflow-hidden bg-[var(--nevoa-2)] lg:h-[clamp(260px,42vh,380px)] lg:rounded-[var(--raio)]">
       <div className="flex h-full snap-x snap-mandatory overflow-x-auto scrollbar-hide" onScroll={e => setI(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}>
         {b.images.map((src, k) => <img key={src} src={src} alt={k === 0 ? b.name : ''} className="h-full w-full shrink-0 snap-center object-cover" />)}
       </div>
@@ -92,8 +92,9 @@ export function BusinessDetail() {
     <main className="flex min-h-dvh flex-col pb-safe lg:pb-0">
       <TopNav />
       {/* Computador: fotos à esquerda (fixas ao rolar) e informações à direita */}
-      <div className="lg:mx-auto lg:grid lg:w-full lg:max-w-[1180px] lg:grid-cols-[1.15fr_1fr] lg:items-start lg:gap-12 lg:px-8 lg:pt-8">
-      <div className="relative lg:sticky lg:top-24 lg:overflow-hidden lg:rounded-[var(--raio)]">
+      <div className="lg:mx-auto lg:grid lg:w-full lg:max-w-[1180px] lg:grid-cols-[1.15fr_1fr] lg:items-start lg:gap-10 lg:px-8 lg:pt-6">
+      <div className="lg:sticky lg:top-[92px]">
+      <div className="relative lg:overflow-hidden lg:rounded-[var(--raio)]">
         <Fotos b={b} />
         <button onClick={() => (history.length > 1 ? navigate(-1) : navigate('/'))} className="pressiona absolute left-4 flex h-11 w-11 items-center justify-center rounded-full bg-white text-[var(--araucaria)]" style={{ top: 'calc(env(safe-area-inset-top) + 14px)' }} aria-label="Voltar"><ChevronLeft size={22} /></button>
         <div className="absolute right-4 flex gap-2" style={{ top: 'calc(env(safe-area-inset-top) + 14px)' }}>
@@ -102,16 +103,19 @@ export function BusinessDetail() {
         </div>
       </div>
 
+      </div>
+      {outros.length > 0 && <OutrosMini lista={outros} />}
+      </div>
       <div className="relative z-10 -mt-4 flex-1 rounded-t-[28px] bg-[var(--nevoa)] px-5 pt-6 lg:mt-0 lg:rounded-none lg:px-0 lg:pt-0">
         <div className="sobe" style={{ '--i': 0 }}>
-          <h1 className="titulo">{b.name}</h1>
+          <h1 className="titulo lg:text-[38px]">{b.name}</h1>
           <p className="mt-2 text-[15px] text-[var(--leve)]">{nomeSub(b)}{b.city && b.city !== 'Monte Verde' ? ` · ${b.city}` : ''}</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <StatusPill st={b.st} longo />
             {planoAtivo(b) !== 'free' && <ParceiroBadge plano={planoAtivo(b)} />}
             {b.verified_at && <VerificadoBadge />}
           </div>
-          {b.description && <p className="mt-3 text-[17px] leading-relaxed">{b.description}</p>}
+          {b.description && <p className="mt-3 text-[17px] leading-relaxed lg:mt-2 lg:text-[16px]">{b.description}</p>}
           {comod.length > 0 && (
             <ul className="mt-3 flex flex-wrap gap-1.5" aria-label="Comodidades">
               {comod.map(([id, nome, ic]) => <li key={id} className="inline-flex items-center gap-1.5 rounded-full bg-[var(--papel)] px-3 py-1.5 text-[13px] font-semibold"><Icon name={ic} size={14} className="text-[var(--musgo)]" />{nome}</li>)}
@@ -126,7 +130,7 @@ export function BusinessDetail() {
         )}
 
         {/* Ações principais: quatro botões quadrados, só os que têm dado real por trás */}
-        <div className="sobe mt-5 grid grid-cols-4 gap-2" style={{ '--i': 1 }}>
+        <div className="sobe mt-5 grid grid-cols-4 gap-2 lg:mt-4 [&>*]:lg:min-h-[64px]" style={{ '--i': 1 }}>
           {b.phone && <a href={linkTel(b.phone)} onClick={acao('tel')} className="acao-quadrada"><Phone size={21} strokeWidth={1.7} />Ligar</a>}
           {b.whatsapp && <a href={linkWhatsApp(b.whatsapp)} target="_blank" rel="noopener noreferrer" onClick={acao('whatsapp')} className="acao-quadrada"><MessageCircle size={21} strokeWidth={1.7} />WhatsApp</a>}
           {(b.address || b.latitude) && <a href={linkRota(b)} target="_blank" rel="noopener noreferrer" onClick={acao('rota')} className="acao-quadrada"><Navigation size={21} strokeWidth={1.7} />Rota</a>}
@@ -134,7 +138,7 @@ export function BusinessDetail() {
         </div>
         <AvisarAbertura b={b} />
 
-        <div className="sobe mt-4 divide-y divide-[var(--borda)] rounded-[18px] border border-[var(--borda)] bg-[var(--papel)]" style={{ '--i': 2 }}>
+        <div className="sobe mt-4 divide-y lg:mt-3 [&>*]:lg:py-1.5 divide-[var(--borda)] rounded-[18px] border border-[var(--borda)] bg-[var(--papel)]" style={{ '--i': 2 }}>
           {b.address && (
             <div className="flex gap-3 p-4"><MapPin size={18} className="mt-0.5 shrink-0 text-[var(--salvia)]" /><p className="text-[15px]"><span className="sr-only">Endereço: </span>{local}</p></div>
           )}
@@ -174,15 +178,15 @@ export function BusinessDetail() {
           )}
         </div>
 
-        <Link to="/mais#corrigir" className="mt-2 flex min-h-11 items-center gap-2 px-1 text-[14px] text-[var(--leve)]"><Flag size={14} />Informação desatualizada? Avise a gente.</Link>
-        <Link to="/meu-negocio" className="flex min-h-11 items-center gap-2 px-1 text-[14px] text-[var(--leve)]"><Store size={14} />É o dono? Ponha fotos e atualize sua página.</Link>
+        <div className="lg:flex lg:gap-5"><Link to="/mais#corrigir" className="mt-2 flex min-h-11 items-center gap-2 px-1 text-[14px] text-[var(--leve)]"><Flag size={14} />Informação desatualizada? Avise a gente.</Link>
+        <Link to="/meu-negocio" className="flex min-h-11 items-center gap-2 px-1 text-[14px] text-[var(--leve)]"><Store size={14} />É o dono? Ponha fotos e atualize sua página.</Link></div>
       </div>
       </div>
 
       {(b.category === 'construcao' || b.category === 'imobiliarias') && <Parceiros contexto={b.category} />}
 
       {outros.length > 0 && (
-        <section className="px-5 pt-6 lg:mx-auto lg:w-full lg:max-w-[1180px] lg:px-8 lg:pt-14">
+        <section className="px-5 pt-6 lg:hidden">
           <h2 className="titulo mb-4">Outros parecidos</h2>
           <div className="grade-cards space-y-3">{outros.map((x, i) => <BusinessCard key={x.id} business={x} index={i} compacto />)}</div>
         </section>
@@ -190,5 +194,25 @@ export function BusinessDetail() {
       <Rodape />
       <BottomNav />
     </main>
+  )
+}
+
+/** No computador: os parecidos ficam embaixo da foto, compactos, para caber tudo na tela sem rolar. */
+function OutrosMini({ lista }) {
+  return (
+    <section className="mt-4 hidden lg:block">
+      <h2 className="serifa text-[20px] font-semibold">Outros parecidos</h2>
+      <div className="mt-2 grid grid-cols-2 gap-2">
+        {lista.map(x => (
+          <Link key={x.id} to={`/estabelecimento/${x.slug}`} className="flex min-w-0 items-center gap-3 rounded-[14px] border border-[var(--borda)] bg-[var(--papel)] p-2.5 transition-colors hover:bg-[var(--nevoa)]">
+            {x.images?.[0] ? <img src={x.images[0]} alt="" className="h-11 w-11 shrink-0 rounded-[10px] object-cover" loading="lazy" /> : <Selo b={x} tam={44} />}
+            <span className="min-w-0">
+              <span className="serifa block truncate text-[15px] font-semibold">{x.name}</span>
+              <span className="mt-0.5 block truncate text-[12px] text-[var(--leve)]">{nomeSub(x)}{x.st?.estado === 'aberto' ? ' · aberto agora' : ''}</span>
+            </span>
+          </Link>
+        ))}
+      </div>
+    </section>
   )
 }
