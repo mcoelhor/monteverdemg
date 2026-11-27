@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: [lancamento]
-    paths: ['src/**', 'public/**', 'android/**', 'capacitor.config.json', 'package.json', '.github/workflows/android-apk.yml']
+    paths: ['src/**', 'public/**', 'android/**', 'android-totem/**', 'capacitor.config.json', 'capacitor.totem.json', 'package.json', '.github/workflows/android-apk.yml']
 permissions:
   contents: write
 jobs:
@@ -27,8 +27,13 @@ jobs:
           path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
       - run: cp android/app/build/outputs/apk/debug/app-debug.apk monte-verde-mg-teste.apk
+      # APK do totem: mesmo código, abre direto no /totem (VITE_TOTEM=1), projeto android-totem
+      - run: VITE_TOTEM=1 npx vite build --outDir dist-totem
+      - run: cp capacitor.totem.json capacitor.config.json && npx cap sync android
+      - run: chmod +x android-totem/gradlew && cd android-totem && ./gradlew assembleDebug --no-daemon
+      - run: cp android-totem/app/build/outputs/apk/debug/app-debug.apk monte-verde-totem.apk
       - name: Publica no link fixo de teste
         env: { GH_TOKEN: '${{ github.token }}' }
         run: |
           gh release view apk-teste >/dev/null 2>&1 || gh release create apk-teste --prerelease --title "App Android - versão de teste" --notes "APK de teste (debug). No Android: baixe, abra e permita instalar de fonte desconhecida."
-          gh release upload apk-teste monte-verde-mg-teste.apk --clobber
+          gh release upload apk-teste monte-verde-mg-teste.apk monte-verde-totem.apk --clobber

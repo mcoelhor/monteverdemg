@@ -1,6 +1,7 @@
 import { Logo } from '../components/UI/Logo'
-import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useEffect, useMemo, useState, useRef } from 'react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
+import { APP_TOTEM, localSalvo } from '../lib/totemApp'
 import QRCode from 'qrcode'
 import { useBusinesses } from '../hooks/useBusinesses'
 import { FOTOS, FOTO_CATEGORIA } from '../data/fotos'
@@ -28,7 +29,15 @@ const link = (caminho, local, peca) => `${SITE}${caminho}${caminho.includes('?')
 
 export function Totem() {
   const [params] = useSearchParams()
-  const local = params.get('local') || ''
+  const local = params.get('local') || (APP_TOTEM ? localSalvo() : '')
+  const navigate = useNavigate()
+  // App do totem: 5 toques rápidos no canto de cima à esquerda abrem a troca de estabelecimento
+  const toques = useRef([])
+  const cantoSecreto = () => {
+    const agora = Date.now()
+    toques.current = [...toques.current.filter(t => agora - t < 3000), agora]
+    if (toques.current.length >= 5) { toques.current = []; navigate('/totem/configurar') }
+  }
   const { businesses } = useBusinesses({})
   const [i, setI] = useState(0)
 
@@ -70,6 +79,7 @@ export function Totem() {
         {tela.tipo === 'anuncie' && <TelaAnuncie local={local} />}
       </div>
       <Barra total={telas.length} atual={i % telas.length} />
+      {APP_TOTEM && <button aria-hidden="true" tabIndex={-1} onClick={e => { e.stopPropagation(); cantoSecreto() }} className="absolute left-0 top-0 z-[110] h-20 w-20 opacity-0" />}
     </div>
   )
 }

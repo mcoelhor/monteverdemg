@@ -1,0 +1,7 @@
+{
+  "appId": "br.com.monteverdemg.totem",
+  "appName": "MV Totem",
+  "webDir": "dist-totem",
+  "android": { "path": "android-totem", "allowMixedContent": false },
+  "server": { "androidScheme": "https" }
+}

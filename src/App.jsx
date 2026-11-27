@@ -1,4 +1,4 @@
-import { BrowserRouter, HashRouter, MemoryRouter, Routes, Route, useLocation, useNavigationType } from 'react-router-dom'
+import { BrowserRouter, HashRouter, MemoryRouter, Routes, Route, useLocation, useNavigationType, useNavigate } from 'react-router-dom'
 import { useEffect, useLayoutEffect, lazy, Suspense } from 'react'
 import { Home } from './pages/Home'
 import { Sos } from './pages/Sos'
@@ -17,6 +17,8 @@ import { ComoChegar } from './pages/ComoChegar'
 import { Epoca } from './pages/Epoca'
 import { Trilhas, TrilhaDetalhe } from './pages/Trilhas'
 import { BaixarApp } from './pages/BaixarApp'
+import { TotemConfigurar } from './pages/TotemConfigurar'
+import { APP_TOTEM, localSalvo } from './lib/totemApp'
 import { Sobre } from './pages/Sobre'
 import { TermosUso, TermosAnunciante } from './pages/Termos'
 import { Privacidade } from './pages/Privacidade'
@@ -81,16 +83,29 @@ function Rolagem() {
 /** Conta as páginas vistas (anônimo), para o painel saber o que o público mais usa. */
 function PaginaVista() {
   const { pathname } = useLocation()
-  useEffect(() => { registrarPagina(pathname) }, [pathname])
+  useEffect(() => { if (!APP_TOTEM) registrarPagina(pathname) }, [pathname])
+  return null
+}
+
+/** App do totem: qualquer endereço que não seja do totem leva ao totem (ou à escolha do lugar, na 1ª vez). */
+function TotemBoot() {
+  const { pathname } = useLocation()
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (!APP_TOTEM || pathname.startsWith('/totem')) return
+    const local = localSalvo()
+    navigate(local !== '' || localStorage.getItem('mv-totem-local') === '' ? `/totem?local=${encodeURIComponent(local)}` : '/totem/configurar', { replace: true })
+  }, [pathname, navigate])
   return null
 }
 
 export default function App() {
-  useEffect(() => { registrarVisita() }, [])
+  useEffect(() => { if (!APP_TOTEM) registrarVisita() }, [])
   return (
     <Roteador>
       <Rolagem />
       <PaginaVista />
+      <TotemBoot />
       <Suspense fallback={<div className="p-6"><div className="esqueleto h-40 rounded-2xl" /></div>}>
       <Routes>
         <Route path="/" element={<Home />} />
@@ -117,6 +132,7 @@ export default function App() {
         <Route path="/epoca" element={<Epoca />} />
         <Route path="/trilhas" element={<Trilhas />} />
         <Route path="/app" element={<BaixarApp />} />
+        <Route path="/totem/configurar" element={<TotemConfigurar />} />
         <Route path="/sobre" element={<Sobre />} />
         <Route path="/termos" element={<TermosUso />} />
         <Route path="/termos-anunciante" element={<TermosAnunciante />} />
