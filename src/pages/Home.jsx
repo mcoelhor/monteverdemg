@@ -220,6 +220,7 @@ function BoasVindas() {
       <p className="mt-1 text-[14px] leading-snug">Este guia mostra quem está aberto agora, monta seu roteiro e tem os contatos de emergência da vila.</p>
       {!instalado && podeInstalar && <button onClick={instalar} className="botao botao-escuro mt-3 h-11 min-h-0 w-full text-[15px]">Instalar o app no celular</button>}
       {!instalado && !podeInstalar && ios && <p className="mt-2 text-[13px]">No iPhone: Compartilhar → Adicionar à Tela de Início.</p>}
+      {!instalado && !podeInstalar && !ios && <Link to="/app" className="botao botao-escuro mt-3 flex h-11 min-h-0 w-full items-center justify-center text-[15px]">Baixar o app</Link>}
     </div>
   )
 }

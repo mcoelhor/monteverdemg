@@ -22,15 +22,13 @@ export function More() {
   const lugar = params.get('lugar'), campoErrado = params.get('campo')
   const CAMPOS = { telefone: 'o telefone', horario: 'o horário', endereco: 'o endereço', fechou: 'fechou de vez' }
   const inicial = lugar ? `Lugar: ${lugar}${campoErrado ? ` · corrigir ${CAMPOS[campoErrado] || campoErrado}` : ''}. Informação certa: ` : ''
-  const { podeInstalar, instalar, ios } = useInstalar()
+  const { nativo } = useInstalar()
   useEffect(() => { if (hash) setTimeout(() => document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' }), 120) }, [hash])
 
   return (
     <Layout title="Mais">
       <div className="space-y-2 px-5 pt-2">
-        {(podeInstalar || ios) && (
-          <Linha icon={Download} destaque label="Instalar o app no celular" onClick={() => (podeInstalar ? instalar() : alert('No iPhone: toque em Compartilhar e depois em "Adicionar à Tela de Início".'))} />
-        )}
+        {!nativo && <Linha icon={Download} destaque label="Baixar o app (Android e iPhone)" onClick={() => navigate('/app')} />}
         <Linha icon={Route} label="Meu roteiro" onClick={() => navigate('/roteiro')} />
         <Linha icon={Car} label="Como chegar a Monte Verde" onClick={() => navigate('/como-chegar')} />
         <Linha icon={Leaf} label="O que está na época" onClick={() => navigate('/epoca')} />

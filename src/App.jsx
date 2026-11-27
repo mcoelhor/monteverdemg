@@ -16,6 +16,7 @@ import { Ofertas } from './pages/Ofertas'
 import { ComoChegar } from './pages/ComoChegar'
 import { Epoca } from './pages/Epoca'
 import { Trilhas, TrilhaDetalhe } from './pages/Trilhas'
+import { BaixarApp } from './pages/BaixarApp'
 import { Privacidade } from './pages/Privacidade'
 import { Cookies } from './components/Cookies'
 import { pagina } from './lib/marketing'
@@ -105,6 +106,7 @@ export default function App() {
         <Route path="/como-chegar" element={<ComoChegar />} />
         <Route path="/epoca" element={<Epoca />} />
         <Route path="/trilhas" element={<Trilhas />} />
+        <Route path="/app" element={<BaixarApp />} />
         <Route path="/trilhas/:slug" element={<TrilhaDetalhe />} />
         <Route path="/privacidade" element={<Privacidade />} />
         <Route path="/bastidores-mv" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
