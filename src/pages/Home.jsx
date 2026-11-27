@@ -160,7 +160,7 @@ function Hero() {
       </div>
       <ClimaPilula />
 
-      <div className="relative flex min-h-[clamp(420px,62svh,640px)] flex-col justify-end px-5 pb-6 text-white lg:mx-auto lg:min-h-0 lg:w-full lg:max-w-[1180px] lg:px-3 lg:pb-6 lg:pt-28">
+      <div className="relative flex min-h-[clamp(420px,62svh,640px)] flex-col justify-end px-5 pb-12 text-white lg:mx-auto lg:min-h-0 lg:w-full lg:max-w-[1180px] lg:px-3 lg:pb-6 lg:pt-28">
         <h1 id="h-hero" className="sobe serifa font-semibold leading-[1.02]" style={{ '--i': 0 }}>
           <span className="block text-[30px] font-medium italic lg:text-[44px]">Descubra</span>
           <span className="block text-[48px] lg:text-[88px]">Monte Verde</span>
@@ -245,7 +245,13 @@ function Painel() {
     ['Serviços úteis', '/uteis', 'MapPin'],
   ]
   return (
-    <div className="bg-[var(--nevoa)] px-5 pt-5 lg:rounded-[24px] lg:border lg:border-white/40 lg:bg-[var(--papel)]/85 lg:p-6 lg:shadow-[0_12px_40px_rgb(20_22_20/0.18)] lg:backdrop-blur-xl">
+    <div className="relative -mt-7 rounded-t-[26px] bg-[var(--nevoa)] px-5 pt-5 lg:mt-0 lg:rounded-[24px] lg:border lg:border-white/40 lg:bg-[var(--papel)]/85 lg:p-6 lg:shadow-[0_12px_40px_rgb(20_22_20/0.18)] lg:backdrop-blur-xl">
+      {abertos.length > 0 && (
+        <Link to="/categoria/alimentacao?aberto=1" className="sobe serifa mb-3 inline-flex items-center gap-2 text-[22px] font-semibold leading-tight text-[var(--araucaria)] lg:text-[24px]" style={{ '--i': 2 }}>
+          <span className="relative flex h-2.5 w-2.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--salvia)] opacity-60 motion-reduce:animate-none" /><span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[var(--salvia)]" /></span>
+          <span><span className="num">{abertos.length}</span> lugares abertos agora</span> <ArrowRight size={18} className="text-[var(--musgo)]" />
+        </Link>
+      )}
       <nav className="sobe grid grid-cols-4 gap-2.5 lg:gap-4" style={{ '--i': 2 }} aria-label="Atalhos principais">
         {ACOES.map(([t, to, ic]) => (
           <Link key={to} to={to} className="pressiona superficie flex min-h-[88px] flex-col items-center justify-center gap-2 px-1 text-center shadow-[var(--sombra)] lg:min-h-[76px] lg:flex-row lg:gap-3">
@@ -263,11 +269,6 @@ function Painel() {
           <p className="text-[15px] text-[var(--leve)]">
             {saudacao(a.min)}. {DIAS_NOME[DIAS[a.dia]]}, <span className="num">{hhmm(a.min)}</span>{clima ? `, ${clima.temp} °C` : ''}.
           </p>
-          {abertos.length > 0 && (
-            <Link to="/categoria/alimentacao?aberto=1" className="serifa mt-1 block text-[24px] font-semibold leading-tight text-[var(--araucaria)]">
-              <span className="num">{abertos.length}</span> lugares abertos agora <ArrowRight size={18} className="inline text-[var(--musgo)]" />
-            </Link>
-          )}
           <p className="mt-4 text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--leve)]">Para agora</p>
           <div className="-mx-5 mt-2 flex gap-2 overflow-x-auto px-5 pb-1 scrollbar-hide lg:mx-0 lg:flex-wrap lg:px-0">
             {chipsDaHora(a.min, clima?.chuvaHoje).map(([t, termo]) => (
