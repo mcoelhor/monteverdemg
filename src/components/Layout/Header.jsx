@@ -11,7 +11,7 @@ export function Header({ title, showBack, showSearch, onSearchClick, subtitle, t
   const botao = escuro ? 'bg-white/12 text-white' : 'bg-[var(--papel)] text-[var(--araucaria)]'
 
   return (
-    <header className="sticky top-0 z-40 px-5 lg:top-16 lg:pt-8" style={{ background: fundo, color: tinta, paddingTop: 'calc(env(safe-area-inset-top) + 14px)', paddingBottom: 14 }}>
+    <header className="sticky top-0 z-40 px-5 lg:top-[76px] lg:pt-8" style={{ background: fundo, color: tinta, paddingTop: 'calc(env(safe-area-inset-top) + 14px)', paddingBottom: 14 }}>
       <div className={`flex min-h-11 items-center gap-3 ${largura}`}>
         {showBack && (
           <button onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))} className={`pressiona -ml-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${botao}`} aria-label="Voltar">

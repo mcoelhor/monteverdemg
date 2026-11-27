@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ArrowRight, Shuffle, Trash2, Navigation, Share2, Plus, RefreshCcw, X, Check, ChevronUp, ChevronDown, Pencil } from 'lucide-react'
+import { ArrowRight, Shuffle, Trash2, Navigation, Share2, Plus, RefreshCcw, X, Check, ChevronUp, ChevronDown, Pencil, Sparkles } from 'lucide-react'
 import { Layout } from '../components/Layout/Layout'
 import { Selo } from '../components/UI/BusinessCard'
 import { Icon } from '../components/UI/Icon'
@@ -28,20 +28,34 @@ const nomeDia = (dia, k, inicio) => {
   return DIAS_NOME[DIAS[dia]]
 }
 
-function Opcoes({ titulo, itens, valor, multi, onChange }) {
+function Opcoes({ itens, valor, multi, onChange }) {
   const ligado = id => (multi ? valor.includes(id) : valor === id)
   const troca = id => onChange(multi ? (ligado(id) ? valor.filter(x => x !== id) : [...valor, id]) : id)
   return (
-    <fieldset className="revela mt-8 min-w-0">
-      <legend className="serifa text-[21px] font-semibold">{titulo}</legend>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {itens.map(([id, rot]) => (
-          <button key={id} type="button" onClick={() => troca(id)} aria-pressed={ligado(id)} className="chip h-12 px-5 text-[16px]">
-            {ligado(id) && <Check size={16} />}{rot}
-          </button>
-        ))}
-      </div>
-    </fieldset>
+    <div className="flex flex-wrap gap-2">
+      {itens.map(([id, rot]) => (
+        <button key={id} type="button" onClick={() => troca(id)} aria-pressed={ligado(id)} className="chip h-11 px-4 text-[15px]">
+          {ligado(id) && <Check size={16} />}{rot}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+/** Uma pergunta do roteiro em linha: ícone, pergunta, resposta atual e seta; abre as opções ao tocar. */
+function Pergunta({ icone, titulo, valor, aberta, onToggle, children }) {
+  return (
+    <div className="superficie overflow-hidden">
+      <button type="button" onClick={onToggle} aria-expanded={aberta} className="flex min-h-[64px] w-full items-center gap-3.5 px-4 py-3 text-left">
+        <Icon name={icone} size={22} strokeWidth={1.6} className="shrink-0 text-[var(--araucaria)]" />
+        <span className="min-w-0 flex-1">
+          <span className="block text-[15px] font-semibold">{titulo}</span>
+          <span className="block truncate text-[14px] text-[var(--leve)]">{valor}</span>
+        </span>
+        <ChevronDown size={19} className="shrink-0 text-[var(--leve)] transition-transform duration-200" style={{ transform: aberta ? 'rotate(180deg)' : 'rotate(-90deg)' }} />
+      </button>
+      <div className={`abre ${aberta ? 'aberto' : ''}`}><div><div className="px-4 pb-4">{children}</div></div></div>
+    </div>
   )
 }
 
@@ -49,6 +63,10 @@ function Perguntas({ perfil, setPerfil, onMontar }) {
   const hoje = agoraMV().dia
   const inicios = [0, 1, 2, 3, 4, 5, 6].map(k => (hoje + k) % 7).slice(0, 7)
   const set = k => v => setPerfil(p => ({ ...p, [k]: v }))
+  const [aberta, setAberta] = useState(null)
+  const abre = k => setAberta(a => (a === k ? null : k))
+  const rotuloInicio = d => { const k = (d - hoje + 7) % 7; return k === 0 ? 'Hoje' : k === 1 ? 'Amanhã' : DIAS_NOME[DIAS[d]] }
+  const nome = (lista, id) => lista.find(([x]) => x === id)?.[1] || ''
   return (
     <>
       <section className="px-5" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 14px)' }}>
@@ -60,31 +78,33 @@ function Perguntas({ perfil, setPerfil, onMontar }) {
         <h1 className="titulo">Roteiro personalizado</h1>
         <p className="mt-2 text-[17px] leading-relaxed text-[var(--leve)]">Monte Verde sob medida para o seu tempo, estilo e companhia. É uma sugestão com lugares do guia, não uma reserva.</p>
 
-        <fieldset className="mt-8 min-w-0">
-          <legend className="serifa text-[21px] font-semibold">Quantos dias?</legend>
-          <div className="mt-3 grid grid-cols-4 gap-2">
-            {[1, 2, 3, 4].map(n => (
-              <button key={n} type="button" onClick={() => set('dias')(n)} aria-pressed={perfil.dias === n} className="chip h-14 justify-center text-[20px] font-extrabold">{n}</button>
-            ))}
-          </div>
-        </fieldset>
+        <div className="mt-6 space-y-2.5">
+          <Pergunta icone="Calendar" titulo="Quantos dias?" valor={`${perfil.dias} ${perfil.dias > 1 ? 'dias' : 'dia'}`} aberta={aberta === 'dias'} onToggle={() => abre('dias')}>
+            <div className="grid grid-cols-4 gap-2">
+              {[1, 2, 3, 4].map(n => (
+                <button key={n} type="button" onClick={() => { set('dias')(n); abre(null) }} aria-pressed={perfil.dias === n} className="chip h-12 justify-center text-[18px] font-semibold">{n}</button>
+              ))}
+            </div>
+          </Pergunta>
+          <Pergunta icone="Clock" titulo="Começa quando?" valor={rotuloInicio(perfil.inicio)} aberta={aberta === 'inicio'} onToggle={() => abre('inicio')}>
+            <div className="flex flex-wrap gap-2">
+              {inicios.map(d => (
+                <button key={d} type="button" onClick={() => { set('inicio')(d); abre(null) }} aria-pressed={perfil.inicio === d} className="chip h-11 px-4 text-[15px]">{rotuloInicio(d)}</button>
+              ))}
+            </div>
+          </Pergunta>
+          <Pergunta icone="Users" titulo="Com quem?" valor={nome(COM_QUEM, perfil.comQuem)} aberta={aberta === 'comQuem'} onToggle={() => abre('comQuem')}>
+            <Opcoes itens={COM_QUEM} valor={perfil.comQuem} onChange={v => { set('comQuem')(v); abre(null) }} />
+          </Pergunta>
+          <Pergunta icone="Leaf" titulo="O que você gosta?" valor={perfil.gostos.length ? perfil.gostos.map(g => nome(GOSTOS, g)).join(', ') : 'Opcional'} aberta={aberta === 'gostos'} onToggle={() => abre('gostos')}>
+            <Opcoes itens={GOSTOS} valor={perfil.gostos} multi onChange={set('gostos')} />
+          </Pergunta>
+          <Pergunta icone="Gauge" titulo="Qual o ritmo?" valor={nome(RITMOS, perfil.ritmo)} aberta={aberta === 'ritmo'} onToggle={() => abre('ritmo')}>
+            <Opcoes itens={RITMOS} valor={perfil.ritmo} onChange={v => { set('ritmo')(v); abre(null) }} />
+          </Pergunta>
+        </div>
 
-        <fieldset className="mt-8 min-w-0">
-          <legend className="serifa text-[21px] font-semibold">Começa quando?</legend>
-          <div className="-mx-5 mt-3 flex gap-2 overflow-x-auto px-5 scrollbar-hide">
-            {inicios.map((d, k) => (
-              <button key={d} type="button" onClick={() => set('inicio')(d)} aria-pressed={perfil.inicio === d} className="chip h-12 px-5 text-[16px]">
-                {k === 0 ? 'Hoje' : k === 1 ? 'Amanhã' : DIAS_NOME[DIAS[d]]}
-              </button>
-            ))}
-          </div>
-        </fieldset>
-
-        <Opcoes titulo="Com quem você vem?" itens={COM_QUEM} valor={perfil.comQuem} onChange={set('comQuem')} />
-        <Opcoes titulo="Do que você gosta?" itens={GOSTOS} valor={perfil.gostos} multi onChange={set('gostos')} />
-        <Opcoes titulo="Qual o ritmo?" itens={RITMOS} valor={perfil.ritmo} onChange={set('ritmo')} />
-
-        <button onClick={onMontar} className="botao botao-pri mt-10 h-14 w-full text-[17px]">Montar meu roteiro <ArrowRight size={19} /></button>
+        <button onClick={onMontar} className="botao botao-pri mt-6 h-14 w-full text-[17px]"><Sparkles size={19} />Gerar meu roteiro</button>
       </div>
     </>
   )

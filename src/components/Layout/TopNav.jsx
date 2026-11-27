@@ -4,7 +4,7 @@ import { Search } from 'lucide-react'
 const LINKS = [
   ['Início', '/'],
   ['Explorar', '/categorias'],
-  ['Roteiro', '/roteiro'],
+  ['Roteiros', '/roteiro'],
   ['Ofertas', '/ofertas'],
   ['Eventos', '/eventos'],
   ['Úteis', '/uteis'],
@@ -12,22 +12,31 @@ const LINKS = [
   ['Salvos', '/favoritos'],
 ]
 
-/** Menu do computador: barra fixa no topo. No celular quem navega é a barra de baixo. */
+/** Menu do computador, no espírito da referência aprovada: marca em versal com "Portal de turismo"
+    e links em letras maiúsculas espaçadas. No celular quem navega é a barra de baixo. */
 export function TopNav() {
   const { pathname } = useLocation()
   const ativo = p => (p === '/' ? pathname === '/' : pathname.startsWith(p) || (p === '/categorias' && pathname.startsWith('/categoria/')))
   return (
-    <nav className="sticky top-0 z-50 hidden h-16 border-b border-[var(--borda)] bg-[var(--papel)] text-[var(--araucaria)] lg:block" aria-label="Menu">
-      <div className="mx-auto flex h-full max-w-[1180px] items-center gap-5 px-8">
-        <Link to="/" className="serifa flex shrink-0 items-center gap-2 text-[22px] font-semibold"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width="28" height="28" />Monte Verde<span className="text-[var(--madeira)]"> MG</span></Link>
-        <div className="flex min-w-0 flex-1 items-center gap-0.5">
+    <nav className="sticky top-0 z-50 hidden h-[76px] border-b border-[var(--borda)] bg-[var(--papel)]/95 text-[var(--araucaria)] backdrop-blur lg:block" aria-label="Menu">
+      <div className="mx-auto flex h-full max-w-[1180px] items-center gap-6 px-8">
+        <Link to="/" className="flex shrink-0 items-center gap-3" aria-label="Monte Verde MG, início">
+          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width="40" height="40" />
+          <span className="leading-none">
+            <span className="serifa block text-[22px] font-semibold uppercase tracking-[0.04em]">Monte Verde MG</span>
+            <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.32em] text-[var(--leve)]">Portal de turismo</span>
+          </span>
+        </Link>
+        <div className="flex min-w-0 flex-1 items-center justify-center gap-1">
           {LINKS.map(([t, to]) => (
             <Link key={to} to={to} aria-current={ativo(to) ? 'page' : undefined}
-              className={`rounded-full px-3 py-2 text-[15px] font-semibold transition-colors duration-150 ${ativo(to) ? 'bg-[var(--broto)] text-[var(--musgo-2)]' : 'text-[var(--leve)] hover:text-[var(--araucaria)]'}`}>{t}</Link>
+              className={`relative px-2.5 py-2 text-[12.5px] font-semibold uppercase tracking-[0.14em] transition-colors duration-150 ${ativo(to) ? 'text-[var(--musgo)]' : 'text-[var(--leve)] hover:text-[var(--araucaria)]'}`}>
+              {t}
+              {ativo(to) && <span className="absolute inset-x-2.5 -bottom-0.5 h-[2px] rounded-full bg-[var(--madeira)]" />}
+            </Link>
           ))}
         </div>
-        <Link to="/busca" aria-label="Buscar" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--nevoa)] transition-colors duration-150 hover:bg-[var(--nevoa-2)]"><Search size={18} /></Link>
-        <Link to="/meu-negocio" className="shrink-0 text-[14px] font-semibold text-[var(--leve)] transition-colors duration-150 hover:text-[var(--araucaria)]">Meu negócio</Link>
+        <Link to="/busca" aria-label="Buscar" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors duration-150 hover:bg-[var(--nevoa)]"><Search size={19} /></Link>
         <Link to="/anuncie" className="botao botao-pri h-10 min-h-0 shrink-0 px-4 text-[14px]">Anuncie</Link>
       </div>
     </nav>

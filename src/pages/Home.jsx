@@ -39,59 +39,74 @@ function saudacao(min) {
   return 'Boa noite'
 }
 
-/** Topo do celular: marca à esquerda, busca à direita (no computador quem faz isso é o menu do topo). */
+/** Topo do celular: menu à esquerda, marca no centro, busca à direita (como na referência aprovada). */
 function Topo() {
   return (
-    <header className="flex items-center justify-between px-5 pb-3 lg:hidden" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 12px)' }}>
-      <Link to="/" className="serifa flex items-center gap-2 text-[21px] font-semibold" aria-label="Monte Verde MG, início">
-        <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width="30" height="30" />Monte Verde<span className="text-[var(--madeira)]"> MG</span>
+    <header className="grid grid-cols-[44px_1fr_44px] items-center bg-[var(--papel)] px-3 pb-2 lg:hidden" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 8px)' }}>
+      <Link to="/mais" aria-label="Menu" className="pressiona flex h-11 w-11 items-center justify-center rounded-full"><Menu size={22} /></Link>
+      <Link to="/" className="flex flex-col items-center leading-none" aria-label="Monte Verde MG, início">
+        <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width="26" height="26" className="mb-0.5" />
+        <span className="serifa text-[18px] font-semibold">Monte Verde MG</span>
       </Link>
-      <Link to="/mais" aria-label="Mais opções" className="pressiona flex h-11 w-11 items-center justify-center rounded-full text-[var(--araucaria)]">
-        <Menu size={22} />
-      </Link>
+      <Link to="/busca" aria-label="Buscar" className="pressiona flex h-11 w-11 items-center justify-center rounded-full"><Search size={21} /></Link>
     </header>
   )
 }
 
-/** Hero: foto real da serra (troca devagar), chamada e busca visível. */
+/* Banner cinematográfico (referência Visit Norway): quando houver vídeo real e autorizado de Monte Verde,
+   basta preencher HERO_VIDEO. Até lá, as fotos reais da vila se sucedem devagar, com movimento suave.
+   Quem pede movimento reduzido vê só a foto parada. */
+const HERO_VIDEO = { mp4: '', webm: '', creditos: '' }
+
 function Hero() {
   const navigate = useNavigate()
   const [q, setQ] = useState('')
   const [i, setI] = useState(0)
   const [prontas, setProntas] = useState(() => new Set([0]))
+  const reduzido = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  const conexaoLeve = typeof navigator !== 'undefined' && (navigator.connection?.saveData || /2g/.test(navigator.connection?.effectiveType || ''))
+  const comVideo = !!(HERO_VIDEO.mp4 || HERO_VIDEO.webm) && !reduzido && !conexaoLeve
   useEffect(() => {
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
-    const pre = setTimeout(() => setProntas(p => new Set(p).add((i + 1) % POSTER.length)), 5000)
-    const t = setTimeout(() => setI((i + 1) % POSTER.length), 7000)
+    if (reduzido || comVideo) return
+    const pre = setTimeout(() => setProntas(p => new Set(p).add((i + 1) % POSTER.length)), 5500)
+    const t = setTimeout(() => setI((i + 1) % POSTER.length), 7500)
     return () => { clearTimeout(pre); clearTimeout(t) }
-  }, [i])
+  }, [i, reduzido, comVideo])
   return (
-    <section className="px-5 lg:px-0" aria-labelledby="h-hero">
-      <div className="relative h-[54svh] min-h-[380px] max-h-[560px] overflow-hidden rounded-[22px] bg-[var(--nevoa-2)] lg:h-[calc(100svh-120px)] lg:max-h-[720px]">
-        {POSTER.map((f, k) => prontas.has(k) && (
-          <div key={f.id} className={`slide ${k === i ? 'on' : ''}`} aria-hidden={k !== i}>
-            <img src={f.g} srcSet={`${f.p} 700w, ${f.g} 1600w`} sizes="(min-width: 1024px) 60vw, 480px" alt={f.legenda}
-              className="deriva h-full w-full object-cover" fetchPriority={k === 0 ? 'high' : 'auto'} />
+    <section className="relative" aria-labelledby="h-hero">
+      <div className="relative h-[62svh] min-h-[420px] max-h-[640px] overflow-hidden bg-[var(--nevoa-2)] lg:h-[86svh] lg:max-h-[860px]">
+        {comVideo ? (
+          <video className="absolute inset-0 h-full w-full object-cover" autoPlay muted loop playsInline preload="metadata" poster={POSTER[0].g} aria-hidden="true">
+            {HERO_VIDEO.webm && <source src={HERO_VIDEO.webm} type="video/webm" />}
+            {HERO_VIDEO.mp4 && <source src={HERO_VIDEO.mp4} type="video/mp4" />}
+          </video>
+        ) : POSTER.map((f, k) => prontas.has(k) && (
+          <div key={f.id} className={`slide lenta ${k === i ? 'on' : ''}`} aria-hidden={k !== i}>
+            <img src={f.g} srcSet={`${f.p} 700w, ${f.g} 1600w`} sizes="100vw" alt={k === i ? f.legenda : ''}
+              className={`h-full w-full object-cover ${reduzido ? '' : 'deriva'}`} fetchPriority={k === 0 ? 'high' : 'auto'} />
           </div>
         ))}
-        <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(180deg, rgb(20 22 20 / .05) 0%, rgb(20 22 20 / .15) 40%, rgb(20 22 20 / .62) 100%)' }} />
-        <div className="absolute inset-x-0 bottom-0 p-5 text-white lg:p-10">
-          <h1 id="h-hero" className="sobe serifa text-[44px] font-semibold leading-[1.02] lg:text-[72px]" style={{ '--i': 0 }}>
-            <span className="block text-[30px] italic font-medium lg:text-[44px]">Descubra</span>Monte Verde
-          </h1>
-          <p className="sobe mt-2 max-w-[34ch] text-[16px] leading-snug text-white/90 lg:text-[18px]" style={{ '--i': 1 }}>
-            Gastronomia, chalés, trilhas e o charme da serra, num guia local feito com curadoria.
-          </p>
-          <form onSubmit={e => { e.preventDefault(); if (q.trim()) navigate(`/busca?q=${encodeURIComponent(q.trim())}`) }} role="search"
-            className="sobe mt-4 flex h-[52px] items-center gap-2 rounded-full bg-[var(--papel)] pl-4 pr-1.5 text-[var(--araucaria)] lg:max-w-[520px]" style={{ '--i': 2 }}>
-            <Search size={19} className="shrink-0 text-[var(--leve)]" />
-            <input type="search" enterKeyHint="search" value={q} onChange={e => setQ(e.target.value)} aria-label="O que você procura hoje?"
-              placeholder="O que você procura hoje?" className="min-w-0 flex-1 bg-transparent text-[16px] placeholder:text-[var(--leve)]" />
-            {q && <button type="button" onClick={() => setQ('')} aria-label="Limpar busca" className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--leve)]"><X size={17} /></button>}
-            <BotaoVoz onTexto={t => navigate(`/busca?q=${encodeURIComponent(t)}`)} />
-          </form>
+        <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(180deg, rgb(20 22 20 / .18) 0%, rgb(20 22 20 / 0) 30%, rgb(20 22 20 / .1) 55%, rgb(20 22 20 / .6) 100%)' }} />
+        <div className="absolute inset-x-0 bottom-0 px-5 pb-6 text-white lg:pb-28">
+          <div className="lg:mx-auto lg:max-w-[1180px] lg:px-3">
+            <h1 id="h-hero" className="sobe serifa font-semibold leading-[1.02]" style={{ '--i': 0 }}>
+              <span className="block text-[30px] font-medium italic lg:text-[46px]">Descubra</span>
+              <span className="block text-[48px] lg:text-[96px]">Monte Verde</span>
+            </h1>
+            <p className="sobe mt-2 max-w-[38ch] text-[16px] leading-snug text-white/90 lg:text-[19px]" style={{ '--i': 1 }}>
+              Experiências autênticas, boa gastronomia e o charme da serra em um só lugar.
+            </p>
+            <form onSubmit={e => { e.preventDefault(); if (q.trim()) navigate(`/busca?q=${encodeURIComponent(q.trim())}`) }} role="search"
+              className="sobe mt-4 flex h-[52px] items-center gap-2 rounded-full bg-[var(--papel)] pl-4 pr-1.5 text-[var(--araucaria)] lg:h-[58px] lg:max-w-[560px]" style={{ '--i': 2 }}>
+              <Search size={19} className="shrink-0 text-[var(--leve)]" />
+              <input type="search" enterKeyHint="search" value={q} onChange={e => setQ(e.target.value)} aria-label="O que você procura hoje?"
+                placeholder="O que você procura hoje?" className="min-w-0 flex-1 bg-transparent text-[16px] placeholder:text-[var(--leve)]" />
+              {q && <button type="button" onClick={() => setQ('')} aria-label="Limpar busca" className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--leve)]"><X size={17} /></button>}
+              <BotaoVoz onTexto={t => navigate(`/busca?q=${encodeURIComponent(t)}`)} />
+            </form>
+          </div>
         </div>
-        <p className="absolute right-3 top-3 rounded-full bg-black/30 px-2.5 py-1 text-[11px] text-white/90">{POSTER[i].legenda}</p>
+        {!comVideo && <p className="absolute right-4 top-4 hidden rounded-full bg-black/30 px-2.5 py-1 text-[11px] text-white/90 lg:block">{POSTER[i].legenda} · foto {POSTER[i].autor}</p>}
       </div>
     </section>
   )
@@ -160,17 +175,18 @@ function Agora() {
   ]
 
   return (
-    <section className="px-5 pt-5 lg:flex lg:flex-col lg:justify-center lg:px-0 lg:pt-0" aria-label="Atalhos">
-      <nav className="sobe grid grid-cols-4 gap-2.5" style={{ '--i': 2 }} aria-label="Atalhos principais">
+    <section className="relative px-5 pt-5 lg:mx-auto lg:max-w-[1180px] lg:px-3 lg:pt-0" aria-label="Atalhos">
+      <nav className="sobe grid grid-cols-4 gap-2.5 lg:-mt-16 lg:gap-4" style={{ '--i': 2 }} aria-label="Atalhos principais">
         {ACOES.map(([t, to, ic]) => (
-          <Link key={to} to={to} className="pressiona superficie flex min-h-[88px] flex-col items-center justify-center gap-2 px-1 text-center shadow-[var(--sombra)] lg:min-h-[110px]">
+          <Link key={to} to={to} className="pressiona superficie flex min-h-[88px] flex-col items-center justify-center gap-2 px-1 text-center shadow-[var(--sombra)] lg:min-h-[120px] lg:flex-row lg:gap-3">
             <Icon name={ic} size={26} strokeWidth={1.6} className="text-[var(--araucaria)]" />
-            <span className="text-[13px] font-semibold leading-tight lg:text-[15px]">{t}</span>
+            <span className="text-[13px] font-semibold leading-tight lg:text-[17px]">{t}</span>
           </Link>
         ))}
       </nav>
 
-      <p className="sobe mt-5 flex flex-wrap items-center gap-x-1.5 text-[15px] text-[var(--leve)]" style={{ '--i': 3 }}>
+      <div className="lg:mt-8 lg:grid lg:grid-cols-2 lg:gap-x-8"><div>
+      <p className="sobe mt-5 flex flex-wrap items-center gap-x-1.5 text-[15px] text-[var(--leve)] lg:mt-0" style={{ '--i': 3 }}>
         <span>{saudacao(a.min)}. {DIAS_NOME[DIAS[a.dia]]}, <span className="num">{hhmm(a.min)}</span>.</span>
         {clima && <span className="inline-flex items-center gap-1 text-[var(--araucaria)]"><Icon name={clima.icone} size={16} className="text-[var(--salvia)]" /><span><span className="num">{clima.temp} °C</span>, {clima.texto}</span></span>}
         {abertos.length > 0 && <Link to="/categoria/alimentacao?aberto=1" className="font-semibold text-[var(--musgo)]"><span className="num">{abertos.length}</span> lugares abertos agora</Link>}
@@ -197,7 +213,8 @@ function Agora() {
         ))}
       </div>
 
-      <Link to="/concierge" className="sobe pressiona superficie mt-4 flex items-center gap-3 p-4" style={{ '--i': 5 }}>
+      </div><div>
+      <Link to="/concierge" className="sobe pressiona superficie mt-4 flex items-center gap-3 p-4 lg:mt-0" style={{ '--i': 5 }}>
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--broto)]"><Icon name="Sparkles" size={20} className="text-[var(--musgo)]" /></span>
         <span className="min-w-0 flex-1">
           <span className="serifa block text-[18px] font-semibold leading-tight">Concierge: seu roteiro em 1 minuto</span>
@@ -208,6 +225,7 @@ function Agora() {
       <button type="button" onClick={() => navigate('/roteiro')} className="sobe botao botao-pri mt-3 h-[52px] w-full" style={{ '--i': 5 }}>
         <Route size={19} />Montar meu roteiro
       </button>
+      </div></div>
     </section>
   )
 }
@@ -425,11 +443,8 @@ export function Home() {
     <Layout hideHeader titulo="" largura="cheio">
       <Avisos />
       <Topo />
-      {/* Computador: foto e atalhos lado a lado, ocupando a primeira tela */}
-      <div className="lg:mx-auto lg:grid lg:max-w-[1180px] lg:grid-cols-[1.5fr_1fr] lg:gap-10 lg:px-3 lg:pt-8">
-        <Hero />
-        <Agora />
-      </div>
+      <Hero />
+      <Agora />
       <div className="lg:mx-auto lg:max-w-[1180px] lg:px-3">
         <Destaques />
         <Explorar />

@@ -105,7 +105,7 @@ export function BusinessDetail() {
       <div className="relative z-10 -mt-4 flex-1 rounded-t-[28px] bg-[var(--nevoa)] px-5 pt-6 lg:mt-0 lg:rounded-none lg:px-0 lg:pt-0">
         <div className="sobe" style={{ '--i': 0 }}>
           <h1 className="titulo">{b.name}</h1>
-          <p className="mt-2 text-[16px] font-semibold text-[var(--musgo)]">{nomeSub(b)}</p>
+          <p className="mt-2 text-[15px] text-[var(--leve)]">{nomeSub(b)}{b.city && b.city !== 'Monte Verde' ? ` · ${b.city}` : ''}</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <StatusPill st={b.st} longo />
             {planoAtivo(b) !== 'free' && <ParceiroBadge plano={planoAtivo(b)} />}
@@ -125,20 +125,21 @@ export function BusinessDetail() {
           </div>
         )}
 
-        {/* Ações principais: grandes e no topo, porque quem abre aqui geralmente tem pressa */}
-        <div className="sobe mt-4 grid grid-cols-2 gap-2" style={{ '--i': 1 }}>
-          {b.phone && <a href={linkTel(b.phone)} onClick={acao('tel')} className="botao botao-pri" style={{ minHeight: 52 }}><Phone size={18} />Ligar</a>}
-          {b.whatsapp && <a href={linkWhatsApp(b.whatsapp)} target="_blank" rel="noopener noreferrer" onClick={acao('whatsapp')} className="botao botao-wa" style={{ minHeight: 52 }}><MessageCircle size={18} />WhatsApp</a>}
-          {(b.address || b.latitude) && <a href={linkRota(b)} target="_blank" rel="noopener noreferrer" onClick={acao('rota')} className={`botao botao-claro ${b.phone && b.whatsapp ? 'col-span-2' : ''}`} style={{ minHeight: 52 }}><Navigation size={18} />Como chegar</a>}
+        {/* Ações principais: quatro botões quadrados, só os que têm dado real por trás */}
+        <div className="sobe mt-5 grid grid-cols-4 gap-2" style={{ '--i': 1 }}>
+          {b.phone && <a href={linkTel(b.phone)} onClick={acao('tel')} className="acao-quadrada"><Phone size={21} strokeWidth={1.7} />Ligar</a>}
+          {b.whatsapp && <a href={linkWhatsApp(b.whatsapp)} target="_blank" rel="noopener noreferrer" onClick={acao('whatsapp')} className="acao-quadrada"><MessageCircle size={21} strokeWidth={1.7} />WhatsApp</a>}
+          {(b.address || b.latitude) && <a href={linkRota(b)} target="_blank" rel="noopener noreferrer" onClick={acao('rota')} className="acao-quadrada"><Navigation size={21} strokeWidth={1.7} />Rota</a>}
+          <button onClick={() => toggleBusiness(b.id)} aria-pressed={fav} className="acao-quadrada"><Heart size={21} strokeWidth={1.7} className={`coracao ${fav ? 'ativo' : ''}`} />{fav ? 'Salvo' : 'Salvar'}</button>
         </div>
         <AvisarAbertura b={b} />
 
-        <div className="sobe mt-4 divide-y divide-[var(--nevoa)] rounded-[var(--raio)] bg-[var(--papel)]" style={{ '--i': 2 }}>
+        <div className="sobe mt-4 divide-y divide-[var(--borda)] rounded-[18px] border border-[var(--borda)] bg-[var(--papel)]" style={{ '--i': 2 }}>
           {b.address && (
-            <div className="flex gap-3 p-4"><MapPin size={18} className="mt-0.5 shrink-0 text-[var(--verde)]" /><p className="text-[15px]"><span className="sr-only">Endereço: </span>{local}</p></div>
+            <div className="flex gap-3 p-4"><MapPin size={18} className="mt-0.5 shrink-0 text-[var(--salvia)]" /><p className="text-[15px]"><span className="sr-only">Endereço: </span>{local}</p></div>
           )}
           {(b.phone || b.phone2) && (
-            <div className="flex gap-3 p-4"><Phone size={18} className="mt-0.5 shrink-0 text-[var(--verde)]" /><p className="num flex flex-wrap items-center gap-x-1 text-[15px]">
+            <div className="flex gap-3 p-4"><Phone size={18} className="mt-0.5 shrink-0 text-[var(--salvia)]" /><p className="num flex flex-wrap items-center gap-x-1 text-[15px]">
               {b.phone && <a href={linkTel(b.phone)} onClick={acao('tel')} className="inline-flex min-h-11 items-center underline decoration-black/20 underline-offset-4">{b.phone}</a>}
               {b.phone2 && <> · <a href={linkTel(b.phone2)} onClick={acao('tel')} className="inline-flex min-h-11 items-center underline decoration-black/20 underline-offset-4">{b.phone2}</a></>}
               <Link to={corrigir('telefone')} className="ml-auto inline-flex min-h-11 items-center text-[13px] text-[var(--leve)]">corrigir</Link>
@@ -146,14 +147,14 @@ export function BusinessDetail() {
           )}
           <div className="p-4">
             <button onClick={() => setHorarios(v => !v)} aria-expanded={horarios} disabled={!semana.length} className="flex min-h-11 w-full items-center gap-3 text-left">
-              <Clock size={18} className="shrink-0 text-[var(--verde)]" />
+              <Clock size={18} className="shrink-0 text-[var(--salvia)]" />
               <span className="flex-1 text-[15px]">{semana.length ? 'Horários da semana' : <>Horário a confirmar. <Link to="/mais#corrigir" className="font-semibold text-[var(--musgo)] underline underline-offset-4">Sabe o horário?</Link></>}</span>
               {semana.length > 0 && <ChevronDown size={18} className="text-[var(--leve)] transition-transform duration-200" style={{ transform: horarios ? 'rotate(180deg)' : 'none' }} />}
             </button>
             <div className={`abre ${horarios ? 'aberto' : ''}`}><div>
               <ul className="ml-[30px] mt-2 space-y-1">
                 {semana.map(l => (
-                  <li key={l.dias} className={`flex justify-between text-sm ${l.hoje ? 'font-semibold text-[var(--verde)]' : 'text-[var(--araucaria)]'}`}>
+                  <li key={l.dias} className={`flex justify-between text-sm ${l.hoje ? 'font-semibold text-[var(--salvia)]' : 'text-[var(--araucaria)]'}`}>
                     <span>{l.dias}{l.hoje ? ' (hoje)' : ''}</span><span className="num">{l.texto}</span>
                   </li>
                 ))}
@@ -163,13 +164,13 @@ export function BusinessDetail() {
             {semana.length > 0 && <Link to={corrigir('horario')} className="ml-[30px] mt-1 inline-flex min-h-11 items-center text-[13px] text-[var(--leve)]">Horário mudou? Corrigir</Link>}
           </div>
           {b.instagram && (
-            <a href={linkInstagram(b.instagram)} target="_blank" rel="noopener noreferrer" onClick={acao('instagram')} className="flex items-center gap-3 p-4"><InstagramIcon size={18} className="text-[var(--verde)]" /><span className="text-[15px]">@{b.instagram.replace(/^@|.*instagram\.com\//g, '').replace(/\/$/, '')}</span></a>
+            <a href={linkInstagram(b.instagram)} target="_blank" rel="noopener noreferrer" onClick={acao('instagram')} className="flex items-center gap-3 p-4"><InstagramIcon size={18} className="text-[var(--salvia)]" /><span className="text-[15px]">@{b.instagram.replace(/^@|.*instagram\.com\//g, '').replace(/\/$/, '')}</span></a>
           )}
           {b.website && (
-            <a href={b.website} target="_blank" rel="noopener noreferrer" onClick={acao('site')} className="flex items-center gap-3 p-4"><Globe size={18} className="text-[var(--verde)]" /><span className="truncate text-[15px]">{b.website.replace(/^https?:\/\/(www\.)?/, '')}</span></a>
+            <a href={b.website} target="_blank" rel="noopener noreferrer" onClick={acao('site')} className="flex items-center gap-3 p-4"><Globe size={18} className="text-[var(--salvia)]" /><span className="truncate text-[15px]">{b.website.replace(/^https?:\/\/(www\.)?/, '')}</span></a>
           )}
           {b.email && (
-            <a href={`mailto:${b.email}`} className="flex items-center gap-3 p-4"><Mail size={18} className="text-[var(--verde)]" /><span className="truncate text-[15px]">{b.email}</span></a>
+            <a href={`mailto:${b.email}`} className="flex items-center gap-3 p-4"><Mail size={18} className="text-[var(--salvia)]" /><span className="truncate text-[15px]">{b.email}</span></a>
           )}
         </div>
 

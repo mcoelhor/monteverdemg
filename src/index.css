@@ -230,3 +230,14 @@ h1, h2, h3 { font-weight: 600 !important; }
 .card-foto::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(20 22 20 / 0) 35%, rgb(20 22 20 / .68) 100%); pointer-events: none; }
 .card-foto .rotulo { position: absolute; inset: auto 16px 14px 16px; z-index: 1; color: #fff; }
 .superficie { background: var(--papel); border: 1px solid var(--borda); border-radius: 16px; }
+
+/* Banner: troca lenta e cinematográfica */
+.slide.lenta { transition-duration: 1800ms; }
+
+/* Ação quadrada da página do lugar (Ligar, WhatsApp, Rota, Salvar) */
+.acao-quadrada { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 76px;
+  border-radius: 14px; background: var(--papel); border: 1px solid var(--borda); color: var(--araucaria); font-size: 13px; font-weight: 600;
+  transition: transform var(--t-press) var(--ease-out), background-color var(--t-hover) ease; }
+.acao-quadrada:active { transform: scale(0.96); }
+.acao-quadrada svg { color: var(--musgo); }
+@media (hover: hover) { .acao-quadrada:hover { background: var(--nevoa); } }
