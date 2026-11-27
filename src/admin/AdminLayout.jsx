@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Building2, Calendar, Inbox, Search, ArrowLeft, LogOut, Wallet, BadgeCheck, Megaphone } from 'lucide-react'
+import { LayoutDashboard, Building2, Calendar, Inbox, Search, ArrowLeft, LogOut, Wallet, BadgeCheck, Megaphone, Settings } from 'lucide-react'
 import { sair } from './useAdmin'
 
 const NAV = [
@@ -11,6 +11,7 @@ const NAV = [
   { path: '/admin/buscas', icon: Search, label: 'Buscas' },
   { path: '/admin/empresas', icon: Building2, label: 'Lugares' },
   { path: '/admin/eventos', icon: Calendar, label: 'Eventos' },
+  { path: '/admin/config', icon: Settings, label: 'Configurações' },
 ]
 
 export function AdminLayout({ children }) {

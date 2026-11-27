@@ -54,10 +54,10 @@ export function Concierge() {
         body: JSON.stringify({ visitante: visitante(), mensagens: nova.map(m => ({ role: m.role, text: m.text })) }),
       })
       const d = await r.json().catch(() => ({}))
-      if (!r.ok) throw new Error(d.erro || 'O concierge não respondeu agora.')
+      if (!r.ok) { const e = new Error(d.erro || 'O concierge não respondeu agora.'); e.teto = r.status === 429; throw e }
       setMsgs([...nova, { role: 'assistant', text: d.texto || '', lugares: d.lugares || [], dias: d.dias || [], sugestoes: d.sugestoes || [], indisponivel: !!d.indisponivel }])
     } catch (e) {
-      setErro(e.message || 'Sem conexão. Tente de novo.')
+      setErro({ texto: e.message || 'Sem conexão. Tente de novo.', teto: !!e.teto })
       setMsgs(nova)
     } finally { setEnviando(false) }
   }
@@ -90,7 +90,12 @@ export function Concierge() {
           : <Resposta key={i} m={m} porSlug={porSlug} />
         )}
         {enviando && <p className="flex items-center gap-2 text-[15px] text-[var(--leve)]"><Loader2 size={16} className="animate-spin" />Montando a sugestão…</p>}
-        {erro && <p role="alert" className="rounded-2xl bg-[var(--sos-fundo)] px-4 py-3 text-[15px] text-[var(--sos)]">{erro}</p>}
+        {erro && (
+          <div role="alert" className={`rounded-2xl px-4 py-3 text-[15px] ${erro.teto ? 'bg-[var(--nevoa-2,#EFEAE2)] text-[var(--texto,#2B2F2A)]' : 'bg-[var(--sos-fundo)] text-[var(--sos)]'}`}>
+            <p>{erro.texto}</p>
+            {erro.teto && <Link to="/roteiro" className="botao botao-pri mt-3 inline-flex h-10 min-h-0 items-center gap-2 px-4 text-[14px]"><RouteIcon size={16} />Montar meu roteiro</Link>}
+          </div>
+        )}
         <div ref={fim} />
       </div>
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { MessageCircle, Check, X, BadgeCheck } from 'lucide-react'
+import { MessageCircle, Check, X, BadgeCheck, UserCog, History } from 'lucide-react'
 import { AdminLayout } from './AdminLayout'
 import { supabase } from '../lib/supabase'
 
@@ -101,6 +101,107 @@ export function AdminReivindicacoes() {
       ) : (
         <ul className="mt-3 space-y-2">{lista.map(p => <Pedido key={p.id} p={p} onMudou={carregar} />)}</ul>
       )}
+      <Donos />
     </AdminLayout>
+  )
+}
+
+/** Donos atuais: um por lugar. Trocar ou remover fica registrado no histórico, com motivo. */
+function Donos() {
+  const [donos, setDonos] = useState(null)
+  const [hist, setHist] = useState([])
+  const [busca, setBusca] = useState('')
+  const [lugares, setLugares] = useState([])
+  const [edita, setEdita] = useState(null) // { id, name }
+  const [email, setEmail] = useState('')
+  const [motivo, setMotivo] = useState('')
+  const [msg, setMsg] = useState('')
+  const carregar = () => {
+    supabase.from('business_owners').select('business_id, email, verificado_em, businesses(name)').order('verificado_em', { ascending: false }).then(({ data }) => setDonos(data || []))
+    supabase.from('donos_historico').select('*, businesses(name)').order('em', { ascending: false }).limit(30).then(({ data }) => setHist(data || []))
+  }
+  useEffect(() => { carregar() }, [])
+  useEffect(() => {
+    const t = busca.trim()
+    if (t.length < 2) { setLugares([]); return }
+    const id = setTimeout(() => supabase.from('businesses').select('id, name').ilike('name', `%${t}%`).limit(8).then(({ data }) => setLugares(data || [])), 250)
+    return () => clearTimeout(id)
+  }, [busca])
+  async function trocar(e) {
+    e.preventDefault(); setMsg('')
+    if (!motivo.trim()) { setMsg('Escreva o motivo (fica no histórico).'); return }
+    const { error } = await supabase.rpc('admin_trocar_dono', { p_business: edita.id, p_email: email, p_motivo: motivo })
+    if (error) { setMsg(error.message); return }
+    setEdita(null); setEmail(''); setMotivo(''); setBusca(''); carregar()
+  }
+  async function remover(d) {
+    const m = window.prompt(`Remover o dono de ${d.businesses?.name}? Escreva o motivo:`)
+    if (!m) return
+    const { error } = await supabase.rpc('admin_remover_dono', { p_business: d.business_id, p_motivo: m })
+    if (error) alert(error.message); else carregar()
+  }
+  const data = iso => new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })
+
+  return (
+    <>
+      <h2 className="mt-6 flex items-center gap-2 text-[18px] font-extrabold"><UserCog size={18} className="text-[var(--verde)]" />Donos dos lugares</h2>
+      <p className="mt-1 text-[13px] text-[#626a63]">Cada lugar tem um dono por vez. Se outra pessoa pedir um lugar que já tem dono, o pedido não é aprovado direto: confira os dois lados e, se for o caso, troque aqui.</p>
+
+      <section className="mt-3 rounded-2xl bg-white p-4">
+        {edita ? (
+          <form onSubmit={trocar} className="space-y-2">
+            <p className="text-[14px]">Novo dono de <b>{edita.name}</b></p>
+            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="E-mail da conta do novo dono" className="w-full rounded-xl bg-[var(--creme)] px-3 py-2.5 text-sm" />
+            <input value={motivo} onChange={e => setMotivo(e.target.value)} maxLength={300} placeholder="Motivo (ex.: venda do negócio, disputa resolvida com documento)" className="w-full rounded-xl bg-[var(--creme)] px-3 py-2.5 text-sm" />
+            {msg && <p className="text-[13px] font-medium text-[#8a3b2e]">{msg}</p>}
+            <div className="flex gap-2">
+              <button className="botao botao-pri h-10 min-h-0 flex-1 text-[14px]">Confirmar troca</button>
+              <button type="button" onClick={() => { setEdita(null); setMsg('') }} className="botao botao-sec h-10 min-h-0 px-4 text-[14px]">Cancelar</button>
+            </div>
+            <p className="text-[12px] text-[#626a63]">A pessoa precisa já ter criado a conta em Meu negócio. O dono anterior perde o acesso na hora.</p>
+          </form>
+        ) : (
+          <>
+            <label className="block text-[13px] font-bold">Definir ou trocar o dono de um lugar</label>
+            <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar lugar pelo nome" className="mt-1 w-full rounded-xl bg-[var(--creme)] px-3 py-2.5 text-sm" />
+            {lugares.length > 0 && (
+              <ul className="mt-2 divide-y divide-[#eee]">
+                {lugares.map(l => <li key={l.id}><button onClick={() => setEdita(l)} className="w-full py-2 text-left text-[14px]">{l.name}</button></li>)}
+              </ul>
+            )}
+          </>
+        )}
+      </section>
+
+      {donos === null ? <div className="esqueleto mt-3 h-16 rounded-2xl" /> : donos.length === 0 ? (
+        <p className="mt-3 rounded-2xl bg-white p-4 text-sm text-[#626a63]">Nenhum lugar com dono ainda.</p>
+      ) : (
+        <ul className="mt-3 space-y-2">
+          {donos.map(d => (
+            <li key={d.business_id} className="flex items-center gap-3 rounded-2xl bg-white p-3">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[14px] font-bold">{d.businesses?.name}</p>
+                <p className="truncate text-[12px] text-[#626a63]">{d.email} · desde {data(d.verificado_em)}</p>
+              </div>
+              <button onClick={() => setEdita({ id: d.business_id, name: d.businesses?.name })} className="botao botao-sec h-9 min-h-0 px-3 text-[13px]">Trocar</button>
+              <button onClick={() => remover(d)} className="h-9 px-2 text-[13px] font-semibold text-[#8a3b2e]">Remover</button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {hist.length > 0 && (
+        <section className="mt-4 rounded-2xl bg-white p-4">
+          <h3 className="flex items-center gap-2 text-[14px] font-bold"><History size={16} />Histórico</h3>
+          <ul className="mt-2 space-y-1.5 text-[12px]">
+            {hist.map(h => (
+              <li key={h.id}>
+                <span className="num text-[#626a63]">{data(h.em)}</span> · <b>{h.businesses?.name}</b> · {h.acao === 'definido' ? 'dono definido' : 'dono removido'}: {h.email || '—'} <span className="text-[#626a63]">({h.metodo}{h.motivo ? ` · ${h.motivo}` : ''})</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </>
   )
 }

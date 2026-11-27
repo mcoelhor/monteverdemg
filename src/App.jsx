@@ -35,6 +35,7 @@ const semEndereco = typeof window !== 'undefined' && (window.location.origin ===
 const Roteador = import.meta.env.VITE_PREVIA ? (semEndereco ? MemoryRouter : HashRouter) : BrowserRouter
 const Concierge = lazy(() => import('./pages/Concierge').then(m => ({ default: m.Concierge })))
 const Totem = lazy(() => import('./pages/Totem').then(m => ({ default: m.Totem })))
+const AdminConfig = lazy(() => import('./admin/AdminConfig').then(m => ({ default: m.AdminConfig })))
 const AdminEvents = lazy(() => import('./admin/AdminEvents').then(m => ({ default: m.AdminEvents })))
 import { useAdmin } from './admin/useAdmin'
 import { registrarVisita } from './lib/track'
@@ -112,6 +113,7 @@ export default function App() {
         <Route path="/admin/buscas" element={<AdminGuard><AdminBuscas /></AdminGuard>} />
         <Route path="/admin/empresas" element={<AdminGuard><AdminBusinesses /></AdminGuard>} />
         <Route path="/admin/eventos" element={<AdminGuard><AdminEvents /></AdminGuard>} />
+        <Route path="/admin/config" element={<AdminGuard><AdminConfig /></AdminGuard>} />
         <Route path="*" element={<NaoEncontrada />} />
       </Routes>
       </Suspense>
