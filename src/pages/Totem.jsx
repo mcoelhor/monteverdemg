@@ -7,8 +7,9 @@ import { useBusinesses } from '../hooks/useBusinesses'
 import { FOTOS, FOTO_CATEGORIA } from '../data/fotos'
 import { registrar } from '../lib/track'
 import { useOfertas } from '../hooks/useOfertas'
+import { Cardapio } from '../components/Cardapio'
 import { TRILHAS } from '../data/trilhas'
-import { Utensils, Mountain, LifeBuoy, Sparkles, X as Fechar, ChevronLeft } from 'lucide-react'
+import { Utensils, Mountain, LifeBuoy, Sparkles, X as Fechar, ChevronLeft, BookOpen } from 'lucide-react'
 
 // Totem de mesa: um celular num suporte, em cima da mesa do restaurante, café ou pousada.
 // Endereço: /totem?local=<slug do estabelecimento onde está o totem>
@@ -232,6 +233,7 @@ function TelaCasa({ b, local }) {
               {oferta.regras && <p className="mt-1 text-[15px]">{oferta.regras}</p>}
             </div>
           ) : b.description && <p className="mt-3 line-clamp-3 text-[17px] leading-snug text-white/85">{b.description}</p>}
+          {b.cardapio_url && <p className="mt-4 inline-flex rounded-full bg-white/15 px-4 py-2 text-[16px] font-semibold">Toque na tela e veja o cardápio</p>}
         </div>
       </Foto>
       <Rodape url={link(`/estabelecimento/${b.slug}`, local, 'casa')} chamada="Salve esta casa" sub="Fotos, horário e WhatsApp no seu celular, para voltar." />
@@ -261,8 +263,9 @@ function ItemQR({ titulo, sub, url }) {
 /** Modo explorar: o cliente toca no totem e navega pelo guia ali mesmo. Volta ao carrossel sozinho depois de 45 s parado. */
 function Explorar({ businesses, anfitriao, local, onSair }) {
   const [secao, setSecao] = useState(null)
+  const [cardapio, setCardapio] = useState(false)
   const parado = useRef()
-  const mexeu = () => { clearTimeout(parado.current); parado.current = setTimeout(onSair, 45000) }
+  const mexeu = (ms = 45000) => { clearTimeout(parado.current); parado.current = setTimeout(onSair, typeof ms === 'number' ? ms : 45000) }
   useEffect(() => { mexeu(); return () => clearTimeout(parado.current) }, []) // eslint-disable-line react-hooks/exhaustive-deps
   // na mesa de um restaurante, não sugerimos outro lugar para comer
   const secoes = SECOES.filter(x => !(anfitriao && x.cat && x.cat === anfitriao.category))
@@ -271,6 +274,7 @@ function Explorar({ businesses, anfitriao, local, onSair }) {
     : secao.grupos ? businesses.filter(b => secao.grupos.includes(b.category) && b.isOpen).slice(0, 6) : []
   return (
     <div onClick={mexeu} onTouchStart={mexeu} className="absolute inset-0 z-[105] flex flex-col bg-[var(--araucaria)] p-5 pt-8">
+      {cardapio && <Cardapio b={anfitriao} totem onFechar={() => { setCardapio(false); mexeu() }} />}
       <div className="flex items-center justify-between">
         {secao ? <button onClick={() => setSecao(null)} className="flex min-h-12 items-center gap-1 text-[17px] font-semibold"><ChevronLeft size={22} />Voltar</button> : <Marca />}
         <button onClick={onSair} aria-label="Fechar" className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10"><Fechar size={22} /></button>
@@ -278,7 +282,12 @@ function Explorar({ businesses, anfitriao, local, onSair }) {
       {!secao ? (
         <>
           <p className="serifa mt-6 text-[34px] font-semibold leading-tight">{anfitriao ? `Enquanto espera no ${anfitriao.name.split(' ')[0]}, conheça a vila` : 'Explore Monte Verde'}</p>
-          <div className="mt-6 grid flex-1 grid-cols-2 content-start gap-3">
+          {anfitriao?.cardapio_url && (
+            <button onClick={() => { setCardapio(true); mexeu(180000) }} className="mt-5 flex min-h-[84px] items-center gap-4 rounded-[22px] bg-[var(--madeira)] p-4 text-left text-[var(--araucaria)]">
+              <BookOpen size={30} /><span><span className="block text-[21px] font-bold leading-tight">Cardápio do {anfitriao.name.split(' ')[0]}</span><span className="text-[15px]">Veja pratos e preços aqui mesmo</span></span>
+            </button>
+          )}
+          <div className="mt-4 grid flex-1 grid-cols-2 content-start gap-3">
             {secoes.map(x => (
               <button key={x.id} onClick={() => setSecao(x)} className="flex min-h-[120px] flex-col items-start justify-between rounded-[22px] bg-white/[0.08] p-4 text-left">
                 <x.icone size={28} className="text-[var(--broto)]" /><span className="text-[19px] font-semibold leading-tight">{x.nome}</span>

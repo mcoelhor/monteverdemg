@@ -327,7 +327,7 @@ function Editor({ negocio, onSalvo }) {
   async function salvar() {
     setEstado('salvando')
     const hours = Object.fromEntries(Object.entries(b.hours).filter(([, v]) => String(v).trim()).map(([k, v]) => [k, String(v).trim().toLowerCase()]))
-    const p = { description: b.description, whatsapp: String(b.whatsapp || '').replace(/\D/g, ''), phone: b.phone, phone2: b.phone2, instagram: b.instagram, website: b.website, email: b.email, address: b.address, open_24h: b.open_24h, hours: Object.keys(hours).length ? hours : null, amenities: b.amenities || [] }
+    const p = { description: b.description, whatsapp: String(b.whatsapp || '').replace(/\D/g, ''), phone: b.phone, phone2: b.phone2, instagram: b.instagram, website: b.website, email: b.email, address: b.address, open_24h: b.open_24h, hours: Object.keys(hours).length ? hours : null, amenities: b.amenities || [], cardapio_url: b.cardapio_url || '' }
     const { error } = await supabase.rpc('editar_meu_negocio', { p_business: negocio.id, p })
     if (error) { setEstado('erro'); return }
     carregarLugares(true)
@@ -387,7 +387,7 @@ function Editor({ negocio, onSalvo }) {
 
       <section className="mt-6">
         <h3 className="text-[18px] font-extrabold tracking-[-0.02em]">Contato e endereço</h3>
-        {[['whatsapp', 'WhatsApp com DDD', 'tel'], ['phone', 'Telefone', 'tel'], ['phone2', 'Outro telefone', 'tel'], ['instagram', 'Instagram (@)', 'text'], ['website', 'Site', 'url'], ['email', 'E-mail', 'email'], ['address', 'Endereço', 'text']].map(([k, r, t]) => (
+        {[['whatsapp', 'WhatsApp com DDD', 'tel'], ['phone', 'Telefone', 'tel'], ['phone2', 'Outro telefone', 'tel'], ['instagram', 'Instagram (@)', 'text'], ['website', 'Site', 'url'], ['cardapio_url', 'Link do cardápio (https://…)', 'url'], ['email', 'E-mail', 'email'], ['address', 'Endereço', 'text']].map(([k, r, t]) => (
           <div key={k} className="mt-3"><label className="block text-[15px] font-bold" htmlFor={'c' + k}>{r}</label><input id={'c' + k} type={t} value={b[k] || ''} onChange={set(k)} className={campo} /></div>
         ))}
       </section>
@@ -435,7 +435,7 @@ export function MeuNegocio() {
   const carregar = useCallback(async (abrirId = null) => {
     if (!user) return
     const [{ data: donos }, { data: peds }, { data: cfg }] = await Promise.all([
-      supabase.from('business_owners').select('business_id, businesses(id,slug,name,status,plan,plan_expires_at,description,category,subcategory,address,city,phone,phone2,whatsapp,email,instagram,website,hours,open_24h,amenities)').eq('user_id', user.id),
+      supabase.from('business_owners').select('business_id, businesses(id,slug,name,status,plan,plan_expires_at,description,category,subcategory,address,city,phone,phone2,whatsapp,email,instagram,website,hours,open_24h,amenities,cardapio_url)').eq('user_id', user.id),
       supabase.from('reivindicacoes').select('id,status,codigo,business_id,criado_em,businesses(name)').eq('user_id', user.id).order('criado_em', { ascending: false }),
       supabase.from('config').select('valor').eq('chave', 'whatsapp_guia').maybeSingle(),
     ])

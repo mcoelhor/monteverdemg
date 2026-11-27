@@ -10,7 +10,7 @@ const ehTeste = b => /-teste$/.test(b.slug)
 
 // A base inteira tem poucas centenas de lugares: carrega uma vez e filtra no celular.
 // Assim a busca é instantânea e funciona mesmo com sinal fraco depois do primeiro acesso.
-const CACHE_KEY = 'mv_lugares_v5'
+const CACHE_KEY = 'mv_lugares_v6'
 let estado = { lista: lerCache(), carregando: true, erro: null }
 const ouvintes = new Set()
 let pedido = null
