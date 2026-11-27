@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Lock } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { sair } from './useAdmin'
+import { BotaoGoogle } from '../pages/MeuNegocio'
 
 export function AdminLogin({ user }) {
   const [modo, setModo] = useState('entrar') // entrar | criar
@@ -39,6 +40,8 @@ export function AdminLogin({ user }) {
             <button onClick={sair} className="botao botao-sec mt-4 w-full">Sair e usar outra conta</button>
           </>
         ) : (
+          <>
+          <div className="mt-4"><BotaoGoogle volta="/admin" /></div>
           <form onSubmit={enviar} className="mt-4 space-y-3">
             <input className={campo} type="email" autoComplete="email" placeholder="E-mail" value={email} onChange={e => setEmail(e.target.value)} required />
             <input className={campo} type="password" autoComplete={modo === 'entrar' ? 'current-password' : 'new-password'} placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} required />
@@ -49,6 +52,7 @@ export function AdminLogin({ user }) {
               {modo === 'entrar' ? 'Primeiro acesso? Criar conta' : 'Já tenho conta. Entrar'}
             </button>
           </form>
+          </>
         )}
       </div>
     </div>
