@@ -44,7 +44,9 @@ export function Totem() {
   const anfitriao = businesses.find(b => b.slug === local)
   const parceiros = useMemo(() => businesses
     .filter(b => (b.featured || (b.plan && b.plan !== 'free')) && !/teste/.test(b.slug) && b.slug !== local)
-    .sort((a, z) => (z.plan === 'premium') - (a.plan === 'premium')), [businesses, local])
+    // no totem de um lugar, nunca aparece concorrente da mesma categoria (ex.: outro restaurante na mesa do restaurante)
+    .filter(b => !anfitriao || b.category !== anfitriao.category)
+    .sort((a, z) => (z.plan === 'premium') - (a.plan === 'premium')), [businesses, local, anfitriao])
 
   const telas = useMemo(() => {
     const t = [{ tipo: 'portal' }]
