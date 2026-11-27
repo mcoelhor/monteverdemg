@@ -103,18 +103,22 @@ function ConciergeBox() {
     )
   }
   return (
-    <form onSubmit={e => { e.preventDefault(); ir() }} className="superficie p-5">
-      <p className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--musgo)]"><Sparkles size={15} />Concierge</p>
-      <label htmlFor="conc-home" className="serifa mt-1 block text-[24px] font-semibold leading-tight">Como você quer viver Monte Verde?</label>
-      <div className="mt-3 flex items-center gap-2 rounded-full border border-[var(--borda)] bg-[var(--nevoa)] p-1.5 pl-4">
-        <input id="conc-home" value={q} onChange={e => setQ(e.target.value)} maxLength={600} placeholder="Ex.: 2 dias a dois, gostamos de vinho e trilha"
-          className="min-w-0 flex-1 bg-transparent text-[16px] placeholder:text-[var(--leve)]" />
-        <button type="submit" disabled={!q.trim()} aria-label="Perguntar ao concierge" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--musgo)] text-white disabled:opacity-40"><ArrowRight size={19} /></button>
+    <form onSubmit={e => { e.preventDefault(); ir() }} className="superficie p-5 lg:flex lg:items-center lg:gap-5 lg:px-5 lg:py-3">
+      <div className="lg:w-[260px] lg:shrink-0">
+        <p className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--musgo)] lg:text-[12px]"><Sparkles size={15} />Concierge</p>
+        <label htmlFor="conc-home" className="serifa mt-1 block text-[24px] font-semibold leading-tight lg:mt-0.5 lg:text-[19px]">Como você quer viver Monte Verde?</label>
       </div>
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-3 flex items-center gap-2 rounded-full border border-[var(--borda)] bg-[var(--nevoa)] p-1.5 pl-4 lg:mt-0 lg:flex-1 lg:p-1 lg:pl-4">
+        <input id="conc-home" value={q} onChange={e => setQ(e.target.value)} maxLength={600} placeholder="Ex.: 2 dias a dois, gostamos de vinho e trilha"
+          className="min-w-0 flex-1 bg-transparent text-[16px] placeholder:text-[var(--leve)] lg:text-[15px]" />
+        <button type="submit" disabled={!q.trim()} aria-label="Perguntar ao concierge" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--musgo)] text-white disabled:opacity-40 lg:h-10 lg:w-10"><ArrowRight size={19} /></button>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2 lg:hidden">
         {['Fim de semana a dois', 'Com crianças', 'Dia de chuva'].map(t => <button key={t} type="button" onClick={() => ir(t)} className="chip h-10 text-[14px]">{t}</button>)}
       </div>
-      <Link to="/roteiro" className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-[14px] font-semibold text-[var(--musgo)]">Prefere responder perguntas? Monte o roteiro <ArrowRight size={14} /></Link>
+      <Link to="/roteiro" className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-[14px] font-semibold text-[var(--musgo)] lg:mt-0 lg:shrink-0 lg:whitespace-nowrap">
+        <span className="lg:hidden">Prefere responder perguntas? Monte o roteiro</span><span className="hidden lg:inline">Ou monte o roteiro</span> <ArrowRight size={14} />
+      </Link>
     </form>
   )
 }
@@ -257,11 +261,11 @@ function Painel() {
 
       {chegou && <BoasVindas />}
 
-      <div className="mt-4 lg:grid lg:grid-cols-[1.35fr_1fr] lg:items-start lg:gap-6">
+      <div className="mt-4">
         <div className="sobe" style={{ '--i': 3 }}><ConciergeBox /></div>
-        <div className="sobe mt-4 lg:mt-1" style={{ '--i': 4 }}>
-          <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--leve)]">Para agora</p>
-          <div className="-mx-5 mt-2 flex gap-2 overflow-x-auto px-5 pb-1 scrollbar-hide lg:mx-0 lg:flex-wrap lg:px-0">
+        <div className="sobe mt-4 lg:mt-3 lg:flex lg:items-center lg:gap-3" style={{ '--i': 4 }}>
+          <p className="shrink-0 text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--leve)]">Para agora</p>
+          <div className="-mx-5 mt-2 flex gap-2 overflow-x-auto px-5 pb-1 scrollbar-hide lg:mx-0 lg:mt-0 lg:flex-wrap lg:px-0 lg:pb-0">
             {chipsDaHora(a.min, clima?.chuvaHoje).map(([t, termo]) => (
               <Link key={termo} to={`/busca?q=${encodeURIComponent(termo)}`} className="chip">{t}</Link>
             ))}
