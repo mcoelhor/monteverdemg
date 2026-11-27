@@ -169,6 +169,15 @@ function Agora() {
         ))}
       </div>
 
+      <Link to="/concierge" className="sobe pressiona mt-3 flex items-center gap-3 rounded-[var(--raio)] bg-[var(--nevoa)] p-4 text-[var(--araucaria)]" style={{ '--i': 3 }}>
+        <Icon name="Sparkles" size={24} className="shrink-0 text-[var(--musgo)]" />
+        <span className="min-w-0 flex-1">
+          <span className="serifa block text-[19px] font-semibold leading-tight">Concierge: seu roteiro em 1 minuto</span>
+          <span className="block text-[14px] text-[var(--leve)]">Diga com quem veio e do que gosta. A gente monta o dia.</span>
+        </span>
+        <ArrowRight size={18} className="shrink-0 text-[var(--musgo)]" />
+      </Link>
+
       <form onSubmit={e => { e.preventDefault(); if (q.trim()) navigate(`/busca?q=${encodeURIComponent(q.trim())}`) }} role="search"
         className="sobe mt-3 flex h-14 items-center gap-2 rounded-full bg-white pl-5 pr-1.5 text-[var(--araucaria)]" style={{ '--i': 4 }}>
         <Search size={18} className="shrink-0 text-[var(--leve)]" />

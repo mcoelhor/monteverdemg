@@ -210,3 +210,10 @@ h1, h2, h3, .display, .titulo, .serifa {
   letter-spacing: -0.01em !important;
 }
 h1, h2, h3 { font-weight: 600 !important; }
+
+/* Totem de mesa: troca de tela e barra de progresso */
+@keyframes totem-entra { from { opacity: 0; transform: scale(1.03); } to { opacity: 1; transform: none; } }
+.totem-entra { animation: totem-entra 700ms var(--ease-out) both; }
+@keyframes totem-progresso { from { width: 0; } to { width: 100%; } }
+.totem-progresso { animation: totem-progresso linear forwards; }
+@media (prefers-reduced-motion: reduce) { .totem-entra { animation: none; } }

@@ -29,6 +29,8 @@ const AdminPagamentos = lazy(() => import('./admin/AdminPagamentos').then(m => (
 const AdminReivindicacoes = lazy(() => import('./admin/AdminReivindicacoes').then(m => ({ default: m.AdminReivindicacoes })))
 const MeuNegocio = lazy(() => import('./pages/MeuNegocio').then(m => ({ default: m.MeuNegocio })))
 const AdminAvisos = lazy(() => import('./admin/AdminAvisos').then(m => ({ default: m.AdminAvisos })))
+const Concierge = lazy(() => import('./pages/Concierge').then(m => ({ default: m.Concierge })))
+const Totem = lazy(() => import('./pages/Totem').then(m => ({ default: m.Totem })))
 const AdminEvents = lazy(() => import('./admin/AdminEvents').then(m => ({ default: m.AdminEvents })))
 import { useAdmin } from './admin/useAdmin'
 import { registrarVisita } from './lib/track'
@@ -89,6 +91,8 @@ export default function App() {
         <Route path="/anuncie" element={<Anuncie />} />
         <Route path="/anuncie/obrigado" element={<AnuncieObrigado />} />
         <Route path="/roteiro" element={<Roteiro />} />
+        <Route path="/concierge" element={<Concierge />} />
+        <Route path="/totem" element={<Totem />} />
         <Route path="/creditos" element={<Creditos />} />
         <Route path="/uteis" element={<Uteis />} />
         <Route path="/ofertas" element={<Ofertas />} />

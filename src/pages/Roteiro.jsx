@@ -224,6 +224,13 @@ export function Roteiro() {
     return (
       <Layout hideHeader>
         {loading ? <div className="esqueleto h-[44svh]" /> : <Perguntas perfil={perfil} setPerfil={setPerfil} onMontar={() => montar(Math.floor(Math.random() * 1e6))} />}
+        <Link to="/concierge" className="pressiona mx-5 mt-6 flex items-center gap-3 rounded-[var(--raio)] bg-[var(--papel)] p-4">
+          <span className="min-w-0 flex-1">
+            <span className="serifa block text-[18px] font-semibold leading-tight">Prefere conversar?</span>
+            <span className="block text-[14px] text-[var(--leve)]">Conte sua viagem ao concierge e receba o roteiro pronto.</span>
+          </span>
+          <ArrowRight size={18} className="shrink-0 text-[var(--musgo)]" />
+        </Link>
       </Layout>
     )
   }

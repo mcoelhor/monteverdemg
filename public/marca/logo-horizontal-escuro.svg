@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1320 320" role="img" aria-label="Monte Verde MG">
+  <rect width="1320" height="320" fill="#17231e"/>
+  <g transform="translate(20,0) scale(0.625)">
+  <g fill="#f5f3ed">
+    <rect x="246" y="190" width="20" height="230" rx="6"/>
+    <path d="M96 128 C130 150 170 178 256 178 C342 178 382 150 416 128 C410 168 360 214 256 214 C152 214 102 168 96 128 Z"/>
+    <path d="M132 214 C162 232 196 250 256 250 C316 250 350 232 380 214 C372 248 330 282 256 282 C182 282 140 248 132 214 Z"/>
+    <path d="M168 290 C190 302 214 312 256 312 C298 312 322 302 344 290 C336 316 306 338 256 338 C206 338 176 316 168 290 Z"/>
+  </g>
+  <rect x="64" y="414" width="384" height="10" rx="5" fill="#a58a68"/>
+  </g>
+  <text x="360" y="190" font-family="'Playfair Display', Georgia, serif" font-weight="600" font-size="104" fill="#f5f3ed" letter-spacing="-1">Monte Verde <tspan fill="#a58a68">MG</tspan></text>
+  <text x="364" y="252" font-family="Inter, Arial, sans-serif" font-weight="600" font-size="30" fill="#a58a68" letter-spacing="9">GUIA DA VILA NA SERRA</text>
+</svg>
