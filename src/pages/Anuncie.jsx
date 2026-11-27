@@ -128,7 +128,7 @@ function ChamadaDono() {
   return (
     <section className="px-5 pt-12" id="meu-negocio" style={{ scrollMarginTop: 16 }}>
       <h2 className="titulo flex items-center gap-2"><BadgeCheck size={30} className="text-[var(--musgo)]" />Área do dono</h2>
-      <p className="mt-3 text-[16px] leading-relaxed text-[var(--leve)]">Coloque seu e-mail, confirme pelo link que chega e crie sua senha. Depois é só cadastrar o negócio (ou assumir a página que já existe) e pôr as fotos.</p>
+      <p className="mt-3 text-[16px] leading-relaxed text-[var(--leve)]">Coloque seu e-mail, confirme pelo link que chega e crie sua senha. Depois é só cadastrar o negócio (ou assumir a página que já existe) e colocar as fotos.</p>
       <Link to="/meu-negocio" className="botao botao-pri mt-5 h-14 w-full text-[17px]">Entrar ou criar conta <ArrowRight size={18} /></Link>
     </section>
   )

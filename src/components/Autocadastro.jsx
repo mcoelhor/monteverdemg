@@ -29,7 +29,7 @@ export function Autocadastro({ onPronto }) {
     return (
       <div className="rounded-[var(--raio)] bg-[var(--araucaria)] p-6 text-white">
         <p className="flex items-center gap-2 text-[22px] font-extrabold tracking-[-0.02em]"><Check size={24} className="text-[var(--broto)]" />Cadastro recebido</p>
-        <p className="mt-2 text-[16px] leading-relaxed text-white/85">Conferimos os dados e colocamos sua página no ar, normalmente em até 2 dias úteis. Enquanto isso, já dá para pôr as fotos.</p>
+        <p className="mt-2 text-[16px] leading-relaxed text-white/85">Conferimos os dados e colocamos sua página no ar, normalmente em até 2 dias úteis. Enquanto isso, já dá para colocar as fotos.</p>
       </div>
     )
   }

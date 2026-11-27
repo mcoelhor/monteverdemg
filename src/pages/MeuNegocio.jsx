@@ -326,7 +326,7 @@ function Editor({ negocio, onSalvo }) {
         <p className="mt-3 text-[13px] text-white/60">Últimos 30 dias no guia.{b.status === 'active' && <> <Link to={`/estabelecimento/${b.slug}`} className="underline">Ver minha página</Link></>}</p>
       </div>
       {b.status !== 'active' && (
-        <p className="mt-3 flex gap-2.5 rounded-[var(--raio)] bg-[var(--broto)] p-4 text-[15px] leading-snug"><Clock size={18} className="mt-0.5 shrink-0" /><span><b>Em análise.</b> Sua página entra no guia depois que conferirmos, normalmente em até 2 dias úteis. Já pode pôr as fotos e completar os dados.</span></p>
+        <p className="mt-3 flex gap-2.5 rounded-[var(--raio)] bg-[var(--broto)] p-4 text-[15px] leading-snug"><Clock size={18} className="mt-0.5 shrink-0" /><span><b>Em análise.</b> Sua página entra no guia depois que conferirmos, normalmente em até 2 dias úteis. Já pode colocar as fotos e completar os dados.</span></p>
       )}
 
       <Fotos b={b} fotos={fotos} setFotos={setFotos} />
