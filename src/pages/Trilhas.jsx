@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowRight, Clock, Mountain, Footprints, Gauge, Ticket, Navigation, AlertTriangle } from 'lucide-react'
+import { ArrowRight, Clock, Mountain, Footprints, Gauge, Ticket, Navigation, AlertTriangle, MessageCircle, Phone, Globe } from 'lucide-react'
 import { Layout } from '../components/Layout/Layout'
 import { TRILHAS, trilha } from '../data/trilhas'
 import { FOTOS } from '../data/fotos'
@@ -9,13 +9,33 @@ import { NaoEncontrada } from './NaoEncontrada'
 const AVISO = 'Condições de trilha mudam com o tempo e a chuva. Avise alguém do seu roteiro e não saia da trilha.'
 const MOVE_MAPA = 'https://www.google.com/maps/search/?api=1&query=MOVE+Visite+Monte+Verde+Av.+Monte+Verde+70'
 
-/** Aviso principal: acesso às trilhas é pago e passa pela MOVE. */
+/** Aviso principal: acesso às trilhas é pago e passa pela MOVE. Contatos oficiais (conferidos em nov/2026). */
+const CONTATOS_MOVE = [
+  { rot: 'Comprar ingresso das trilhas', sub: 'ingressos.monteverde.org.br', href: 'https://ingressos.monteverde.org.br', ic: Ticket, destaque: true },
+  { rot: 'WhatsApp das trilhas', sub: '(35) 8701-3973', href: 'https://wa.me/553587013973', ic: MessageCircle },
+  { rot: 'Telefone da MOVE', sub: '(35) 3438-1839', href: 'tel:+553534381839', ic: Phone },
+  { rot: 'Instagram', sub: '@visite.monteverde', href: 'https://instagram.com/visite.monteverde', ic: Globe },
+  { rot: 'Site da MOVE', sub: 'monteverde.org.br', href: 'https://monteverde.org.br', ic: Globe },
+  { rot: 'Atendimento presencial', sub: 'Av. Monte Verde, 70', href: MOVE_MAPA, ic: Navigation },
+]
+
 function AvisoMove() {
   return (
     <div className="rounded-[var(--raio)] border-2 border-[var(--madeira)] bg-[#f6efe6] p-4">
       <p className="flex items-center gap-2 text-[16px] font-bold text-[#6b4f3a]"><Ticket size={19} />Antes de ir: fale com a MOVE</p>
       <p className="mt-1.5 text-[15px] leading-relaxed">As trilhas da serra são administradas pela <b>MOVE</b> (Agência de Desenvolvimento de Monte Verde). O acesso é <b>pago</b> e precisa ser <b>agendado</b>. Confirme preço, horário e se a trilha está aberta antes de sair.</p>
-      <a href={MOVE_MAPA} target="_blank" rel="noopener noreferrer" className="botao botao-sec mt-3 inline-flex h-10 min-h-0 items-center gap-2 px-4 text-[14px]"><Navigation size={16} />Onde fica a MOVE</a>
+      <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+        {CONTATOS_MOVE.map(({ rot, sub, href, ic: Ic, destaque }) => (
+          <li key={rot}>
+            <a href={href} target={href.startsWith('tel:') ? undefined : '_blank'} rel="noopener noreferrer"
+              className={`flex min-h-12 items-center gap-3 rounded-[12px] px-3 py-2 ${destaque ? 'bg-[var(--musgo)] text-white' : 'bg-white'}`}>
+              <Ic size={18} className={destaque ? '' : 'text-[var(--madeira)]'} />
+              <span className="min-w-0"><span className="block text-[14px] font-semibold leading-tight">{rot}</span><span className={`block truncate text-[12px] ${destaque ? 'text-white/85' : 'text-[var(--leve)]'}`}>{sub}</span></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-[12px] text-[var(--leve)]">Contatos públicos da MOVE. O portal não vende ingressos nem responde pelas trilhas.</p>
     </div>
   )
 }
