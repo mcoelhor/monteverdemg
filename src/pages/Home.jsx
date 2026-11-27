@@ -9,7 +9,7 @@ import { useBusinesses } from '../hooks/useBusinesses'
 import { useEvents } from '../hooks/useEvents'
 import { CATEGORIES } from '../data/categories'
 import { FOTOS, FOTO_CATEGORIA } from '../data/fotos'
-import { agoraMV, DIAS_NOME, DIAS, hhmm } from '../lib/horario'
+import { agoraMV } from '../lib/horario'
 import { useClima } from '../hooks/useClima'
 import { useOfertas } from '../hooks/useOfertas'
 import { Avisos } from '../components/Avisos'
@@ -31,13 +31,6 @@ const MOMENTOS = [
   ['Dia de chuva', 'chuva'], ['Com crianças', 'criancas'], ['A dois', 'a-dois'],
   ['Aventura', 'aventura'], ['Depois que escurece', 'noite'], ['Com o cachorro', 'pet'],
 ]
-
-function saudacao(min) {
-  if (min < 300) return 'Boa madrugada'
-  if (min < 720) return 'Bom dia'
-  if (min < 1080) return 'Boa tarde'
-  return 'Boa noite'
-}
 
 /** Topo do celular: menu à esquerda, marca no centro, busca à direita (como na referência aprovada). */
 function Topo() {
@@ -266,10 +259,7 @@ function Painel() {
       <div className="mt-4 lg:grid lg:grid-cols-[1.35fr_1fr] lg:items-start lg:gap-6">
         <div className="sobe" style={{ '--i': 3 }}><ConciergeBox /></div>
         <div className="sobe mt-4 lg:mt-1" style={{ '--i': 4 }}>
-          <p className="text-[15px] text-[var(--leve)]">
-            {saudacao(a.min)}. {DIAS_NOME[DIAS[a.dia]]}, <span className="num">{hhmm(a.min)}</span>{clima ? `, ${clima.temp} °C` : ''}.
-          </p>
-          <p className="mt-4 text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--leve)]">Para agora</p>
+          <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--leve)]">Para agora</p>
           <div className="-mx-5 mt-2 flex gap-2 overflow-x-auto px-5 pb-1 scrollbar-hide lg:mx-0 lg:flex-wrap lg:px-0">
             {chipsDaHora(a.min, clima?.chuvaHoje).map(([t, termo]) => (
               <Link key={termo} to={`/busca?q=${encodeURIComponent(termo)}`} className="chip">{t}</Link>
