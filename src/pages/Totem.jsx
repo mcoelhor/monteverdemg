@@ -1,3 +1,4 @@
+import { Logo } from '../components/UI/Logo'
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import QRCode from 'qrcode'
@@ -76,8 +77,7 @@ export function Totem() {
 function Marca({ claro = true }) {
   return (
     <div className="flex items-center gap-2.5">
-      <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="h-9 w-9" />
-      <span className={`serifa text-[22px] font-semibold ${claro ? 'text-white' : 'text-[var(--araucaria)]'}`}>Monte Verde<span className="text-[var(--madeira)]"> MG</span></span>
+      <span className={claro ? 'text-white' : 'text-[var(--araucaria)]'}><Logo tamanho={20} /></span>
     </div>
   )
 }

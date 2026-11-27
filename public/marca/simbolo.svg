@@ -1,15 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Monte Verde MG">
-  <defs><clipPath id="c"><rect width="512" height="512" rx="112"/></clipPath></defs>
-  <g clip-path="url(#c)">
-  <rect width="512" height="512" fill="#17231e"/>
-  <path d="M0 360 L118 286 L190 326 L292 250 L384 312 L512 252 V512 H0 Z" fill="#355b47" opacity=".9"/>
-  <g fill="#f5f3ed">
-    <rect x="246" y="190" width="20" height="230" rx="6"/>
-    <!-- copa em taça: camadas com pontas para cima -->
-    <path d="M96 128 C130 150 170 178 256 178 C342 178 382 150 416 128 C410 168 360 214 256 214 C152 214 102 168 96 128 Z"/>
-    <path d="M132 214 C162 232 196 250 256 250 C316 250 350 232 380 214 C372 248 330 282 256 282 C182 282 140 248 132 214 Z"/>
-    <path d="M168 290 C190 302 214 312 256 312 C298 312 322 302 344 290 C336 316 306 338 256 338 C206 338 176 316 168 290 Z"/>
-  </g>
-  <rect x="64" y="414" width="384" height="10" rx="5" fill="#a58a68"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 56" role="img" aria-label="Monte Verde MG"><g transform="translate(0 0) scale(1)" fill="none" stroke="#17231e" stroke-linecap="round" stroke-linejoin="round"><path d="M6 50 L34 22 L43 30 L62 9 L71 19 L76 15 L114 50" stroke-width="5"/><path d="M55 17 L60 23 L65 18 L69 22" stroke-width="3.5"/></g></svg>

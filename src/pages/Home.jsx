@@ -1,3 +1,4 @@
+import { Logo } from '../components/UI/Logo'
 import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Search, ArrowRight, Route, Menu, X, Sparkles } from 'lucide-react'
@@ -38,8 +39,7 @@ function Topo() {
     <header className="grid grid-cols-[44px_1fr_44px] items-center bg-[var(--papel)] px-3 pb-2 lg:hidden" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 8px)' }}>
       <Link to="/mais" aria-label="Menu" className="pressiona flex h-11 w-11 items-center justify-center rounded-full"><Menu size={22} /></Link>
       <Link to="/" className="flex flex-col items-center leading-none" aria-label="Monte Verde MG, início">
-        <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width="26" height="26" className="mb-0.5" />
-        <span className="serifa text-[18px] font-semibold">Monte Verde MG</span>
+        <Logo tamanho={17} />
       </Link>
       <Link to="/busca" aria-label="Buscar" className="pressiona flex h-11 w-11 items-center justify-center rounded-full"><Search size={21} /></Link>
     </header>

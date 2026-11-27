@@ -1,3 +1,4 @@
+import { Simbolo } from '../UI/Logo'
 import { Link, useLocation } from 'react-router-dom'
 import { Search } from 'lucide-react'
 
@@ -21,10 +22,10 @@ export function TopNav() {
     <nav className="sticky top-0 z-50 hidden h-[76px] border-b border-[var(--borda)] bg-[var(--papel)]/95 text-[var(--araucaria)] backdrop-blur lg:block" aria-label="Menu">
       <div className="mx-auto flex h-full max-w-[1180px] items-center gap-6 px-8">
         <Link to="/" className="flex shrink-0 items-center gap-3" aria-label="Monte Verde MG, início">
-          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width="40" height="40" />
+          <Simbolo size={50} />
           <span className="leading-none">
-            <span className="serifa block text-[22px] font-semibold uppercase tracking-[0.04em]">Monte Verde MG</span>
-            <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.32em] text-[var(--leve)]">Portal de turismo</span>
+            <span className="logo-nome block text-[22px]">Monte Verde MG</span>
+            <span className="mt-1.5 block h-[2px] w-12 rounded-full bg-current opacity-70" />
           </span>
         </Link>
         <div className="flex min-w-0 flex-1 items-center justify-center gap-1">

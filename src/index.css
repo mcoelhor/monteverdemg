@@ -241,3 +241,5 @@ h1, h2, h3 { font-weight: 600 !important; }
 .acao-quadrada:active { transform: scale(0.96); }
 .acao-quadrada svg { color: var(--musgo); }
 @media (hover: hover) { .acao-quadrada:hover { background: var(--nevoa); } }
+
+.logo-nome{font-family:'Montserrat','Inter',system-ui,sans-serif;font-weight:600;letter-spacing:.005em}
