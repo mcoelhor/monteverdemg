@@ -2,6 +2,11 @@ import { useState, useEffect, useMemo, useSyncExternalStore } from 'react'
 import { supabase, BUSINESS_COLS } from '../lib/supabase'
 import { statusHorario, pesoEstado } from '../lib/horario'
 import { buscar } from '../lib/busca'
+import { APP_TOTEM } from '../lib/totemApp'
+
+// Lugares de teste (slug terminando em -teste) não aparecem em listas, mapa e busca do público;
+// a página deles abre pelo endereço direto, e o app do totem consegue escolhê-los.
+const ehTeste = b => /-teste$/.test(b.slug)
 
 // A base inteira tem poucas centenas de lugares: carrega uma vez e filtra no celular.
 // Assim a busca é instantânea e funciona mesmo com sinal fraco depois do primeiro acesso.
@@ -72,7 +77,7 @@ export function ordenar(lista) {
     a.name.localeCompare(b.name, 'pt-BR'))
 }
 
-export function useBusinesses({ category, subcategory, search, openNow, group } = {}) {
+export function useBusinesses({ category, subcategory, search, openNow, group, incluirTeste = APP_TOTEM } = {}) {
   const { lista, carregando, erro } = useLugares()
   const tick = useRelogio()
 
@@ -81,6 +86,7 @@ export function useBusinesses({ category, subcategory, search, openNow, group } 
       const st = statusHorario(b)
       return { ...b, st, isOpen: st.estado === 'aberto' ? true : st.estado === 'fechado' ? false : null }
     })
+    if (!incluirTeste) r = r.filter(b => !ehTeste(b))
     if (group) r = r.filter(b => b.urgency_group === group)
     if (category) r = r.filter(b => b.category === category)
     if (subcategory) r = r.filter(b => b.subcategory === subcategory)
@@ -92,13 +98,13 @@ export function useBusinesses({ category, subcategory, search, openNow, group } 
     if (openNow) r = r.filter(b => b.st.estado === 'aberto')
     return r
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lista, category, subcategory, search, openNow, group, tick])
+  }, [lista, category, subcategory, search, openNow, group, tick, incluirTeste])
 
   return { businesses, loading: carregando && !lista.length, error: lista.length ? null : erro, refetch: () => carregarLugares(true) }
 }
 
 export function useBusinessBySlug(slug) {
-  const { businesses, loading } = useBusinesses()
+  const { businesses, loading } = useBusinesses({ incluirTeste: true })
   const business = businesses.find(b => b.slug === slug) || null
   return { business, loading: loading && !business }
 }

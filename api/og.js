@@ -102,7 +102,7 @@ export default async function handler(req, res) {
     const crumbs = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: cat[0] || 'Guia', item: `${origem}/categoria/${b.category}` }, { '@type': 'ListItem', position: 2, name: sub, item: `${origem}/categoria/${b.category}/${b.subcategory}` }, { '@type': 'ListItem', position: 3, name: b.name, item: url }] }
     const horas = b.hours ? '<h2>Horário</h2><ul>' + Object.entries(b.hours).map(([d, v]) => `<li>${DIAS_PT[d] || d}: ${esc(v)}</li>`).join('') + '</ul>' : ''
     const corpo = `<img src="${esc(imagem)}" alt=""><p>${esc(sub)} · Monte Verde, MG</p><h1>${esc(b.name)}</h1>${b.description ? `<p>${esc(b.description)}</p>` : ''}<p>${esc(local)}</p>${b.phone ? `<p>Telefone: ${esc(b.phone)}</p>` : ''}${horas}`
-    html = pagina_({ titulo: `${b.name} · ${sub} em Monte Verde`, descricao, url, imagem, corpo, ld: [ld, crumbs], tipo: 'place' })
+    html = pagina0({ titulo: `${b.name} · ${sub} em Monte Verde`, descricao, url, imagem, corpo, ld: [ld, crumbs], tipo: 'place', previa: previa || /-teste$/.test(b.slug) })
   } else if (mTrilha && (!mTrilha[1] || TRILHAS.some(t => t.slug === mTrilha[1]))) {
     const t = mTrilha[1] && TRILHAS.find(x => x.slug === mTrilha[1])
     const aviso = 'O acesso às trilhas do Parque Verner Grinberg é pago e agendado pela MOVE (ingressos.monteverde.org.br).'
@@ -124,7 +124,7 @@ export default async function handler(req, res) {
   } else if (mCat && CATS[mCat[1]]) {
     const [nome, desc, foto] = CATS[mCat[1]]
     const sub = mCat[2] && SUBS[mCat[2]] ? SUBS[mCat[2]] : null
-    const lista = await supa(`businesses?category=eq.${mCat[1]}${mCat[2] ? `&subcategory=eq.${mCat[2]}` : ''}&status=eq.active&select=name,slug,subcategory,address&order=name`)
+    const lista = await supa(`businesses?category=eq.${mCat[1]}${mCat[2] ? `&subcategory=eq.${mCat[2]}` : ''}&status=eq.active&slug=not.like.*-teste&select=name,slug,subcategory,address&order=name`)
     const titulo = sub ? `${sub} em Monte Verde, MG` : `${nome} em Monte Verde: ${desc.split(' em ')[0].toLowerCase()}`
     const url = `${origem}${caminho}`
     const ld = { '@context': 'https://schema.org', '@type': 'ItemList', name: titulo, itemListElement: lista.slice(0, 100).map((b, i) => ({ '@type': 'ListItem', position: i + 1, name: b.name, url: `${origem}/estabelecimento/${b.slug}` })) }

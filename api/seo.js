@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     return res.end(`User-agent: *\nAllow: /\nDisallow: /meu-negocio\nDisallow: /api/\nSitemap: ${origem}/sitemap.xml\n`)
   }
   let lista = []
-  try { const r = await fetch(`${SUPA}/rest/v1/businesses?status=eq.active&select=slug,category,subcategory,updated_at&order=name`, { headers: { apikey: KEY, Authorization: `Bearer ${KEY}` }, signal: AbortSignal.timeout(5000) }); lista = r.ok ? await r.json() : [] } catch { /* sem banco: sitemap só com as páginas fixas */ }
+  try { const r = await fetch(`${SUPA}/rest/v1/businesses?status=eq.active&slug=not.like.*-teste&select=slug,category,subcategory,updated_at&order=name`, { headers: { apikey: KEY, Authorization: `Bearer ${KEY}` }, signal: AbortSignal.timeout(5000) }); lista = r.ok ? await r.json() : [] } catch { /* sem banco: sitemap só com as páginas fixas */ }
   const subs = [...new Set(lista.map(b => `${b.category}/${b.subcategory}`))]
   const u = (loc, prio, mod) => `<url><loc>${origem}${loc}</loc>${mod ? `<lastmod>${mod.slice(0, 10)}</lastmod>` : ''}<priority>${prio}</priority></url>`
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`
