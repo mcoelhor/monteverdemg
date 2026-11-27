@@ -46,7 +46,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const corta = (s, n) => { s = String(s || '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1) + '…' : s }
 // JSON-LD vai dentro de <script>: escapar < (e os separadores de linha U+2028/2029) para que
 // nenhum conteúdo do dono (ex.: "</script><script>…") consiga fechar o bloco e injetar HTML.
-const ldJson = x => JSON.stringify(x).replace(/</g, '\\u003c').replace(/ /g, '\\u2028').replace(/ /g, '\\u2029')
+const ldJson = x => JSON.stringify(x).replaceAll('<', '\\u003c').replaceAll('\u2028', '\\u2028').replaceAll('\u2029', '\\u2029')
 
 async function supa(path) {
   try {
