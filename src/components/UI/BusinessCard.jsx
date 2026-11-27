@@ -15,7 +15,7 @@ export function Capa({ b, alto = 'h-40', grande = false }) {
   if (b.images?.[0]) {
     return <img src={b.images[0]} alt="" className={`w-full ${alto} object-cover`} loading="lazy" />
   }
-  const tint = categoria(b.category)?.tint || '#2c6a45'
+  const tint = categoria(b.category)?.tint || '#355b47'
   return (
     <div className={`relative w-full ${alto} overflow-hidden capa-sem-foto`} style={{ '--tint': tint }}>
       <Icon name={iconeDe(b)} size={grande ? 88 : 48} strokeWidth={1.2} className="absolute bottom-8 right-6 text-white/35" />
@@ -25,7 +25,7 @@ export function Capa({ b, alto = 'h-40', grande = false }) {
 
 /** Quadrado com o ícone do tipo, na cor da categoria. */
 export function Selo({ b, tam = 52 }) {
-  const tint = categoria(b.category)?.tint || '#2c6a45'
+  const tint = categoria(b.category)?.tint || '#355b47'
   return (
     <span className="flex shrink-0 items-center justify-center rounded-[14px] text-white" style={{ width: tam, height: tam, background: tint }}>
       <Icon name={iconeDe(b)} size={Math.round(tam * 0.44)} strokeWidth={1.9} />

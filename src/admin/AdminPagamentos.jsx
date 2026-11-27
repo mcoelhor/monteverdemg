@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase'
 import { useBusinesses } from '../hooks/useBusinesses'
 
 const NOME = { destaque: 'Destaque', premium: 'Parceiro' }
-const ST = { pendente: ['Aguardando', '#b98a2e'], aprovado: ['Pago', '#2c6a45'], recusado: ['Recusado', '#8a3b2e'], cancelado: ['Cancelado', '#5a625c'], estornado: ['Estornado', '#8a3b2e'] }
+const ST = { pendente: ['Aguardando', '#a58a68'], aprovado: ['Pago', '#355b47'], recusado: ['Recusado', '#8a3b2e'], cancelado: ['Cancelado', '#59645d'], estornado: ['Estornado', '#8a3b2e'] }
 const reais = v => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 const data = d => (d ? new Date(d).toLocaleDateString('pt-BR') : '—')
 
@@ -14,7 +14,7 @@ function Pedido({ p, lugares, onAtivar }) {
   const [enviando, setEnviando] = useState(false)
   let wa = (p.contato_whatsapp || '').replace(/\D/g, ''); if (wa.length === 11 || wa.length === 10) wa = '55' + wa
   const msg = `Olá${p.contato_nome ? `, ${p.contato_nome.split(' ')[0]}` : ''}! Aqui é do Monte Verde MG. Recebemos seu pedido do plano ${NOME[p.plano]} para ${p.nome_negocio}.`
-  const [rot, cor] = ST[p.status] || [p.status, '#5a625c']
+  const [rot, cor] = ST[p.status] || [p.status, '#59645d']
   return (
     <li className="rounded-[var(--raio)] bg-[var(--papel)] p-4">
       <div className="flex items-start justify-between gap-3">

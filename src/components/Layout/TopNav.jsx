@@ -19,7 +19,7 @@ export function TopNav() {
   return (
     <nav className="sticky top-0 z-50 hidden h-16 bg-[var(--araucaria)] text-white lg:block" aria-label="Menu">
       <div className="mx-auto flex h-full max-w-[1180px] items-center gap-5 px-8">
-        <Link to="/" className="shrink-0 text-[22px] font-extrabold tracking-[-0.035em]">Monte Verde<span className="text-[var(--broto)]"> MG</span></Link>
+        <Link to="/" className="serifa flex shrink-0 items-center gap-2 text-[22px] font-semibold"><img src="/favicon.svg" alt="" width="28" height="28" />Monte Verde<span className="text-[var(--madeira)]"> MG</span></Link>
         <div className="flex min-w-0 flex-1 items-center gap-0.5">
           {LINKS.map(([t, to]) => (
             <Link key={to} to={to} aria-current={ativo(to) ? 'page' : undefined}

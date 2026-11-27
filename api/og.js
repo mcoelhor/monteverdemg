@@ -43,7 +43,7 @@ function pagina({ titulo, descricao, url, imagem, corpo, ld, tipo = 'website' })
 <meta property="og:image" content="${esc(imagem)}"><meta property="og:image:width" content="700"><meta property="og:image:height" content="525">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(titulo)}"><meta name="twitter:description" content="${esc(descricao)}"><meta name="twitter:image" content="${esc(imagem)}">
 ${ld ? `<script type="application/ld+json">${JSON.stringify(ld)}</script>` : ''}
-<style>body{font-family:system-ui,sans-serif;max-width:640px;margin:0 auto;padding:24px;color:#121a15;background:#eef0ec}a{color:#2c6a45}img{max-width:100%;border-radius:16px}</style></head>
+<style>body{font-family:system-ui,sans-serif;max-width:640px;margin:0 auto;padding:24px;color:#17231e;background:#f5f3ed}a{color:#355b47}img{max-width:100%;border-radius:16px}</style></head>
 <body>${corpo}<p><a href="${esc(url)}">Abrir no guia Monte Verde MG</a></p></body></html>`
 }
 
