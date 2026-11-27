@@ -87,7 +87,7 @@ export function Totem() {
         {tela.tipo === 'anuncie' && <TelaAnuncie local={local} />}
       </div>
       <Barra total={telas.length} atual={i % telas.length} />
-      {!explorando && <p className="pointer-events-none absolute bottom-[150px] left-1/2 -translate-x-1/2 animate-pulse rounded-full bg-black/45 px-4 py-2 text-[14px] font-semibold">Toque para explorar Monte Verde</p>}
+      {!explorando && <p className="pointer-events-none absolute right-4 top-9 animate-pulse whitespace-nowrap rounded-full bg-black/45 px-4 py-2 text-[14px] font-semibold">Toque para explorar Monte Verde</p>}
       {explorando && <Explorar businesses={businesses} anfitriao={anfitriao} local={local} onSair={() => setExplorando(false)} />}
       {APP_TOTEM && <button aria-hidden="true" tabIndex={-1} onClick={e => { e.stopPropagation(); cantoSecreto() }} className="absolute left-0 top-0 z-[110] h-20 w-20 opacity-0" />}
     </div>
