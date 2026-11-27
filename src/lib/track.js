@@ -67,8 +67,8 @@ export function registrarPagina(caminho) {
 export function registrarVisita() {
   try {
     const hoje = new Date().toISOString().slice(0, 10)
-    if (localStorage.getItem('mv_visita') === hoje) return
-    localStorage.setItem('mv_visita', hoje)
+    if (localStorage.getItem('mv_visita2') === hoje) return
+    localStorage.setItem('mv_visita2', hoje)
   } catch { /* sem armazenamento: conta mesmo assim */ }
   registrar('visita', { term: origem() })
 }
