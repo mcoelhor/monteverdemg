@@ -1,3 +1,5 @@
+import { ArtesTotemEditor } from '../components/ArtesTotem'
+import { CardapioEditor } from '../components/CardapioEditor'
 import { useEffect, useMemo, useState } from 'react'
 import { Plus, X } from 'lucide-react'
 import { AdminLayout } from './AdminLayout'
@@ -81,6 +83,8 @@ function Editor({ inicial, onClose, onSalvo }) {
         </div>
         {erro && <p className="mt-3 text-sm font-medium text-[#8a3b2e]">{erro}</p>}
         <button onClick={salvar} disabled={salvando} className="botao botao-pri mt-4 w-full disabled:opacity-60">{salvando ? 'Salvando…' : 'Salvar'}</button>
+        {b.id && b.category === 'alimentacao' && <CardapioEditor b={b} />}
+        {b.id && <ArtesTotemEditor b={b} />}
       </div>
     </div>
   )

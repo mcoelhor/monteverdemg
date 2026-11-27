@@ -1,9 +1,11 @@
+import { ArtesTotemEditor } from '../components/ArtesTotem'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Store, LogOut, Loader2, Check, Camera, Trash2, Eye, Phone, MessageCircle, KeyRound, Ticket, Plus, Mail, Search, Clock } from 'lucide-react'
 import { Autocadastro } from '../components/Autocadastro'
 import { Reivindicar, CodigoConfirmacao } from '../components/Reivindicar'
 import { NotificacoesDono } from '../components/NotificacoesDono'
+import { CardapioEditor } from '../components/CardapioEditor'
 import { carregarOfertas } from '../hooks/useOfertas'
 import { Layout } from '../components/Layout/Layout'
 import { StatusPill } from '../components/UI/Badge'
@@ -354,6 +356,8 @@ function Editor({ negocio, onSalvo }) {
       )}
 
       <Fotos b={b} fotos={fotos} setFotos={setFotos} />
+      {b.category === 'alimentacao' && <CardapioEditor b={b} />}
+      <ArtesTotemEditor b={b} />
 
       <section className="mt-6">
         <h3 className="text-[18px] font-extrabold tracking-[-0.02em]">Horário de funcionamento</h3>

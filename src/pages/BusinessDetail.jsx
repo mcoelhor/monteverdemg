@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { MiniMapa } from '../components/MiniMapa'
 import { Cardapio } from '../components/Cardapio'
+import { useCardapio } from '../hooks/useCardapio'
 import { BookOpen } from 'lucide-react'
 import { Phone, MessageCircle, Navigation, Share2, Heart, MapPin, Globe, Clock, ChevronLeft, ChevronDown, Mail, Flag, Store } from 'lucide-react'
 import { useBusinessBySlug, useBusinesses } from '../hooks/useBusinesses'
@@ -60,6 +61,7 @@ export function BusinessDetail() {
   const { isFavoriteBusiness, toggleBusiness } = useFavorites()
   const [horarios, setHorarios] = useState(false)
   const [verCardapio, setVerCardapio] = useState(false)
+  const { itens: cardapio } = useCardapio(b?.id)
   const { porLugar } = useOfertas()
   const ofertas = b ? porLugar.get(b.id) || [] : []
   useTitulo(b ? `${b.name} · ${nomeSub(b)}` : 'Monte Verde MG')
@@ -132,10 +134,10 @@ export function BusinessDetail() {
           </div>
         )}
 
-        {b.cardapio_url && (
+        {(b.cardapio_url || cardapio.length > 0) && (
           <button onClick={() => { setVerCardapio(true); registrar('site', { businessId: b.id, term: 'cardapio' }) }} className="sobe botao botao-pri mt-4 flex w-full items-center justify-center gap-2" style={{ '--i': 1 }}><BookOpen size={19} />Ver cardápio</button>
         )}
-        {verCardapio && <Cardapio b={b} onFechar={() => setVerCardapio(false)} />}
+        {verCardapio && <Cardapio b={b} itens={cardapio} onFechar={() => setVerCardapio(false)} />}
 
         {/* Ações principais: quatro botões quadrados, só os que têm dado real por trás */}
         <div className="sobe mt-5 grid grid-cols-4 gap-2 lg:mt-4 [&>*]:lg:min-h-[64px]" style={{ '--i': 1 }}>

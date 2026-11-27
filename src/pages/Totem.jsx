@@ -8,6 +8,8 @@ import { FOTOS, FOTO_CATEGORIA } from '../data/fotos'
 import { registrar } from '../lib/track'
 import { useOfertas } from '../hooks/useOfertas'
 import { Cardapio } from '../components/Cardapio'
+import { useCardapio } from '../hooks/useCardapio'
+import { useArtes } from '../components/ArtesTotem'
 import { TRILHAS } from '../data/trilhas'
 import { Utensils, Mountain, LifeBuoy, Sparkles, X as Fechar, ChevronLeft, BookOpen } from 'lucide-react'
 
@@ -47,6 +49,8 @@ export function Totem() {
   const [explorando, setExplorando] = useState(false)
 
   const anfitriao = businesses.find(b => b.slug === local)
+  const { itens: cardapio } = useCardapio(anfitriao?.id)
+  const { artes } = useArtes(anfitriao?.id)
   const parceiros = useMemo(() => businesses
     .filter(b => (b.featured || (b.plan && b.plan !== 'free')) && !/teste/.test(b.slug) && b.slug !== local)
     // no totem de um lugar, nunca aparece concorrente da mesma categoria (ex.: outro restaurante na mesa do restaurante)
@@ -56,11 +60,15 @@ export function Totem() {
   const telas = useMemo(() => {
     const t = [{ tipo: 'portal' }]
     if (anfitriao) t.push({ tipo: 'casa' })
-    parceiros.slice(0, 6).forEach((b, k) => { t.push({ tipo: 'parceiro', b }); if (k === 1) t.push({ tipo: 'concierge' }) })
+    // artes da casa entram intercaladas com o resto (a casa é a protagonista no próprio totem)
+    const fila = [...artes]
+    if (fila.length) t.push({ tipo: 'arte', a: fila.shift() })
+    parceiros.slice(0, 6).forEach((b, k) => { t.push({ tipo: 'parceiro', b }); if (fila.length) t.push({ tipo: 'arte', a: fila.shift() }); if (k === 1) t.push({ tipo: 'concierge' }) })
+    while (fila.length) t.push({ tipo: 'arte', a: fila.shift() })
     if (parceiros.length < 2) t.push({ tipo: 'concierge' })
     t.push({ tipo: 'emergencia' }, { tipo: 'anuncie' })
     return t
-  }, [parceiros, anfitriao])
+  }, [parceiros, anfitriao, artes])
 
   // Gira as telas, mantém a tela acesa e recarrega a cada 6 horas (pega parceiros novos)
   useEffect(() => { if (explorando) return; const id = setInterval(() => setI(x => x + 1), TEMPO); return () => clearInterval(id) }, [explorando])
@@ -81,7 +89,8 @@ export function Totem() {
     <div onClick={explorando ? undefined : tocar} className="fixed inset-0 z-[100] flex cursor-none select-none flex-col overflow-hidden bg-[var(--araucaria)] text-white">
       <div key={i} className="totem-entra flex min-h-0 flex-1 flex-col">
         {tela.tipo === 'portal' && <TelaPortal local={local} anfitriao={anfitriao} />}
-        {tela.tipo === 'casa' && <TelaCasa b={anfitriao} local={local} />}
+        {tela.tipo === 'casa' && <TelaCasa b={anfitriao} local={local} temCardapio={cardapio.length > 0} />}
+        {tela.tipo === 'arte' && <TelaArte a={tela.a} />}
         {tela.tipo === 'parceiro' && <TelaParceiro b={tela.b} local={local} />}
         {tela.tipo === 'concierge' && <TelaConcierge local={local} />}
         {tela.tipo === 'emergencia' && <TelaEmergencia local={local} />}
@@ -89,7 +98,7 @@ export function Totem() {
       </div>
       <Barra total={telas.length} atual={i % telas.length} />
       {!explorando && <p className="pointer-events-none absolute right-4 top-[92px] animate-pulse whitespace-nowrap rounded-full bg-black/45 px-4 py-2 text-[14px] font-semibold">Toque para explorar Monte Verde</p>}
-      {explorando && <Explorar businesses={businesses} anfitriao={anfitriao} local={local} onSair={() => setExplorando(false)} />}
+      {explorando && <Explorar businesses={businesses} anfitriao={anfitriao} local={local} cardapio={cardapio} onSair={() => setExplorando(false)} />}
       {APP_TOTEM && <button aria-hidden="true" tabIndex={-1} onClick={e => { e.stopPropagation(); cantoSecreto() }} className="absolute left-0 top-0 z-[110] h-20 w-20 opacity-0" />}
     </div>
   )
@@ -214,8 +223,18 @@ function TelaAnuncie({ local }) {
   )
 }
 
+/** Arte pronta enviada pela casa: ocupa a tela inteira (fundo desfocado da própria arte nas sobras). */
+function TelaArte({ a }) {
+  return (
+    <div className="relative min-h-0 flex-1 overflow-hidden bg-black">
+      <img src={a.imagem_url} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl" />
+      <img src={a.imagem_url} alt="Arte da casa" className="relative h-full w-full object-contain" />
+    </div>
+  )
+}
+
 /** Tela da casa: o estabelecimento onde o totem está, com a oferta dele (se houver). */
-function TelaCasa({ b, local }) {
+function TelaCasa({ b, local, temCardapio }) {
   const { porLugar } = useOfertas()
   const oferta = (porLugar.get(b.id) || [])[0]
   const foto = b.images?.[0] || (FOTO_CATEGORIA[b.category] || FOTOS.avenida).g
@@ -233,7 +252,7 @@ function TelaCasa({ b, local }) {
               {oferta.regras && <p className="mt-1 text-[15px]">{oferta.regras}</p>}
             </div>
           ) : b.description && <p className="mt-3 line-clamp-3 text-[17px] leading-snug text-white/85">{b.description}</p>}
-          {b.cardapio_url && <p className="mt-4 inline-flex rounded-full bg-white/15 px-4 py-2 text-[16px] font-semibold">Toque na tela e veja o cardápio</p>}
+          {(b.cardapio_url || temCardapio) && <p className="mt-4 inline-flex rounded-full bg-white/15 px-4 py-2 text-[16px] font-semibold">Toque na tela e veja o cardápio</p>}
         </div>
       </Foto>
       <Rodape url={link(`/estabelecimento/${b.slug}`, local, 'casa')} chamada="Salve esta casa" sub="Fotos, horário e WhatsApp no seu celular, para voltar." />
@@ -261,9 +280,9 @@ function ItemQR({ titulo, sub, url }) {
 }
 
 /** Modo explorar: o cliente toca no totem e navega pelo guia ali mesmo. Volta ao carrossel sozinho depois de 45 s parado. */
-function Explorar({ businesses, anfitriao, local, onSair }) {
+function Explorar({ businesses, anfitriao, local, onSair, cardapio = [] }) {
   const [secao, setSecao] = useState(null)
-  const [cardapio, setCardapio] = useState(false)
+  const [verCard, setCardapio] = useState(false)
   const parado = useRef()
   const mexeu = (ms = 45000) => { clearTimeout(parado.current); parado.current = setTimeout(onSair, typeof ms === 'number' ? ms : 45000) }
   useEffect(() => { mexeu(); return () => clearTimeout(parado.current) }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -274,7 +293,7 @@ function Explorar({ businesses, anfitriao, local, onSair }) {
     : secao.grupos ? businesses.filter(b => secao.grupos.includes(b.category) && b.isOpen).slice(0, 6) : []
   return (
     <div onClick={mexeu} onTouchStart={mexeu} className="absolute inset-0 z-[105] flex flex-col bg-[var(--araucaria)] p-5 pt-8">
-      {cardapio && <Cardapio b={anfitriao} totem onFechar={() => { setCardapio(false); mexeu() }} />}
+      {verCard && <Cardapio b={anfitriao} itens={cardapio} totem onFechar={() => { setCardapio(false); mexeu() }} />}
       <div className="flex items-center justify-between">
         {secao ? <button onClick={() => setSecao(null)} className="flex min-h-12 items-center gap-1 text-[17px] font-semibold"><ChevronLeft size={22} />Voltar</button> : <Marca />}
         <button onClick={onSair} aria-label="Fechar" className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10"><Fechar size={22} /></button>
@@ -282,7 +301,7 @@ function Explorar({ businesses, anfitriao, local, onSair }) {
       {!secao ? (
         <>
           <p className="serifa mt-6 text-[34px] font-semibold leading-tight">{anfitriao ? `Enquanto espera no ${anfitriao.name.split(' ')[0]}, conheça a vila` : 'Explore Monte Verde'}</p>
-          {anfitriao?.cardapio_url && (
+          {(anfitriao?.cardapio_url || cardapio.length > 0) && (
             <button onClick={() => { setCardapio(true); mexeu(180000) }} className="mt-5 flex min-h-[84px] items-center gap-4 rounded-[22px] bg-[var(--madeira)] p-4 text-left text-[var(--araucaria)]">
               <BookOpen size={30} /><span><span className="block text-[21px] font-bold leading-tight">Cardápio do {anfitriao.name.split(' ')[0]}</span><span className="text-[15px]">Veja pratos e preços aqui mesmo</span></span>
             </button>
