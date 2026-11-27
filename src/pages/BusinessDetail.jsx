@@ -177,7 +177,7 @@ export function BusinessDetail() {
         </div>
 
         <div className="lg:flex lg:gap-5"><Link to="/mais#corrigir" className="mt-2 flex min-h-11 items-center gap-2 px-1 text-[14px] text-[var(--leve)]"><Flag size={14} />Informação desatualizada? Avise a gente.</Link>
-        <Link to="/meu-negocio" className="flex min-h-11 items-center gap-2 px-1 text-[14px] text-[var(--leve)]"><Store size={14} />É o dono? Ponha fotos e atualize sua página.</Link></div>
+        <Link to="/meu-negocio" className="flex min-h-11 items-center gap-2 px-1 text-[14px] text-[var(--leve)]"><Store size={14} />É o dono? Coloque fotos e atualize sua página.</Link></div>
       </div>
       </div>
 

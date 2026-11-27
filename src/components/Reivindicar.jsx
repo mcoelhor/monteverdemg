@@ -21,7 +21,7 @@ export function CodigoConfirmacao({ codigo, negocio, whatsappGuia, escuro = true
       ) : (
         <p className={`mt-2 text-[15px] leading-relaxed ${escuro ? 'text-white/85' : 'text-[var(--leve)]'}`}>Vamos chamar no WhatsApp cadastrado do negócio e pedir este código.</p>
       )}
-      <p className={`mt-3 text-[14px] leading-relaxed ${escuro ? 'text-white/65' : 'text-[var(--leve)]'}`}>Confirmado o código, o negócio aparece aqui na sua conta e você já pode editar e pôr fotos.</p>
+      <p className={`mt-3 text-[14px] leading-relaxed ${escuro ? 'text-white/65' : 'text-[var(--leve)]'}`}>Confirmado o código, o negócio aparece aqui na sua conta e você já pode editar e colocar fotos.</p>
     </div>
   )
 }

@@ -214,7 +214,7 @@ function Fotos({ b, fotos, setFotos }) {
   return (
     <section className="mt-6">
       <h3 className="text-[18px] font-extrabold tracking-[-0.02em]">Fotos do seu negócio <span className="text-[14px] font-medium text-[var(--leve)]">({fotos.length} de 5)</span></h3>
-      <p className="mt-1 text-[14px] text-[var(--leve)]">Só o dono pode pôr fotos. A primeira vira a capa; fotos de verdade, na horizontal, ficam melhores.</p>
+      <p className="mt-1 text-[14px] text-[var(--leve)]">Só o dono pode colocar fotos. A primeira vira a capa; fotos de verdade, na horizontal, ficam melhores.</p>
       <div className="mt-3 grid grid-cols-3 gap-2">
         {fotos.map(f => (
           <div key={f.id} className="relative aspect-square overflow-hidden rounded-[14px] bg-[var(--nevoa-2)]">
