@@ -128,23 +128,23 @@ function BottomSheet({ business, onClose, eu }) {
           <p className="text-sm text-gray-500 mt-0.5">{nomeSub(business)}</p>
           <StatusPill st={business.st} className="mt-1" />
           {eu && business.latitude && <p className="mt-1 text-xs font-semibold text-[#2563eb]">{textoDist(distKm(eu, { lat: business.latitude, lng: business.longitude }))} de você (em linha reta)</p>}
-          <div className="flex gap-2 mt-2">
+          <div className="mt-2 grid grid-cols-3 gap-1.5">
             <button
               onClick={() => navigate(`/estabelecimento/${business.slug}`)}
-              className="flex-1 py-2 rounded-xl text-xs font-semibold text-white"
+              className="whitespace-nowrap py-2 rounded-xl text-xs font-semibold text-white"
               style={{ background: '#14532d' }}
             >
-              Ver detalhes
+              Detalhes
             </button>
             <a href={linkRota(business)} target="_blank" rel="noopener noreferrer" onClick={() => registrar('rota', { businessId: business.id })}
-              className="flex items-center gap-1 px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs font-semibold text-gray-700">
+              className="flex items-center justify-center gap-1 py-2 rounded-xl border border-gray-200 bg-white text-xs font-semibold text-gray-700">
               <Navigation size={13} /> Rota
             </a>
             {business.whatsapp && (
               <a
                 href={linkWhatsApp(business.whatsapp)} target="_blank" rel="noopener noreferrer"
                 onClick={() => registrar('whatsapp', { businessId: business.id })}
-                className="flex items-center gap-1 px-3 py-2 rounded-xl bg-green-500 text-white text-xs font-semibold"
+                className="flex items-center justify-center gap-1 py-2 rounded-xl bg-green-500 text-white text-xs font-semibold"
               >
                 <MessageCircle size={13} /> WhatsApp
               </a>
