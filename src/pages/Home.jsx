@@ -104,9 +104,9 @@ function ConciergeBox() {
   }
   return (
     <form onSubmit={e => { e.preventDefault(); ir() }} className="superficie p-5 lg:flex lg:items-center lg:gap-5 lg:px-5 lg:py-3">
-      <div className="lg:w-[260px] lg:shrink-0">
+      <div className="lg:shrink-0">
         <p className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--musgo)] lg:text-[12px]"><Sparkles size={15} />Concierge</p>
-        <label htmlFor="conc-home" className="serifa mt-1 block text-[24px] font-semibold leading-tight lg:mt-0.5 lg:text-[19px]">Como você quer viver Monte Verde?</label>
+        <label htmlFor="conc-home" className="serifa mt-1 block text-[24px] font-semibold leading-tight lg:mt-0.5 lg:whitespace-nowrap lg:text-[19px]">Como você quer viver Monte Verde?</label>
       </div>
       <div className="mt-3 flex items-center gap-2 rounded-full border border-[var(--borda)] bg-[var(--nevoa)] p-1.5 pl-4 lg:mt-0 lg:flex-1 lg:p-1 lg:pl-4">
         <input id="conc-home" value={q} onChange={e => setQ(e.target.value)} maxLength={600} placeholder="Ex.: 2 dias a dois, gostamos de vinho e trilha"
