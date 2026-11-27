@@ -6,7 +6,19 @@ import { TRILHAS, trilha } from '../data/trilhas'
 import { FOTOS } from '../data/fotos'
 import { NaoEncontrada } from './NaoEncontrada'
 
-const AVISO = 'Condições de trilha mudam com o tempo e a chuva. Confirme com a MOVE (Centro de Atendimento ao Turista) antes de ir, avise alguém do seu roteiro e não saia da trilha.'
+const AVISO = 'Condições de trilha mudam com o tempo e a chuva. Avise alguém do seu roteiro e não saia da trilha.'
+const MOVE_MAPA = 'https://www.google.com/maps/search/?api=1&query=MOVE+Visite+Monte+Verde+Av.+Monte+Verde+70'
+
+/** Aviso principal: acesso às trilhas é pago e passa pela MOVE. */
+function AvisoMove() {
+  return (
+    <div className="rounded-[var(--raio)] border-2 border-[var(--madeira)] bg-[#f6efe6] p-4">
+      <p className="flex items-center gap-2 text-[16px] font-bold text-[#6b4f3a]"><Ticket size={19} />Antes de ir: fale com a MOVE</p>
+      <p className="mt-1.5 text-[15px] leading-relaxed">As trilhas da serra são administradas pela <b>MOVE</b> (Agência de Desenvolvimento de Monte Verde). O acesso é <b>pago</b> e precisa ser <b>agendado</b>. Confirme preço, horário e se a trilha está aberta antes de sair.</p>
+      <a href={MOVE_MAPA} target="_blank" rel="noopener noreferrer" className="botao botao-sec mt-3 inline-flex h-10 min-h-0 items-center gap-2 px-4 text-[14px]"><Navigation size={16} />Onde fica a MOVE</a>
+    </div>
+  )
+}
 
 function Ficha({ t }) {
   const itens = [[Gauge, 'Nível', t.nivel], [Footprints, 'Distância', t.distancia], [Clock, 'Tempo', t.tempo], [Mountain, 'Altitude', t.altitude]]
@@ -27,7 +39,7 @@ export function Trilhas() {
   return (
     <Layout title="Trilhas" subtitle="Caminhadas na Serra da Mantiqueira" showBack>
       <div className="px-5 lg:mx-auto lg:max-w-[1180px] lg:px-8">
-        <p className="flex gap-2 rounded-[14px] bg-[var(--nevoa-2)] p-3.5 text-[14px] leading-relaxed"><AlertTriangle size={18} className="mt-0.5 shrink-0 text-[var(--madeira)]" />{AVISO}</p>
+        <AvisoMove />
         <ul className="mt-4 grid gap-3 lg:grid-cols-2">
           {TRILHAS.map((t, k) => (
             <li key={t.slug} className="entra" style={{ '--i': k }}>
@@ -40,7 +52,7 @@ export function Trilhas() {
                 <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] font-semibold">
                   <span className="inline-flex items-center gap-1"><Clock size={14} className="text-[var(--salvia)]" />{t.tempo}</span>
                   <span className="inline-flex items-center gap-1"><Mountain size={14} className="text-[var(--salvia)]" />{t.altitude}</span>
-                  <span className={t.paga ? 'text-[var(--madeira)]' : 'text-[var(--musgo)]'}>{t.paga ? 'Ingresso pago' : 'Gratuita'}</span>
+                  <span className="text-[var(--madeira)]">Acesso pela MOVE</span>
                 </p>
               </Link>
             </li>
@@ -62,9 +74,9 @@ export function TrilhaDetalhe() {
     <Layout title={t.nome} subtitle={`Trilha · ${t.nivel}`} showBack>
       <div className="px-5 lg:mx-auto lg:grid lg:max-w-[1180px] lg:grid-cols-[1.1fr_1fr] lg:gap-10 lg:px-8">
         <div>
-          <Ficha t={t} />
+          <AvisoMove />
+          <div className="mt-4"><Ficha t={t} /></div>
           <div className="mt-5 space-y-3 text-[16px] leading-relaxed">{t.texto.map((p, i) => <p key={i}>{p}</p>)}</div>
-          {t.paga && <p className="mt-4 flex items-center gap-2 text-[15px] font-semibold text-[var(--madeira)]"><Ticket size={17} />Ingresso pago, comprado pela internet com a MOVE.</p>}
           <h2 className="serifa mt-6 text-[20px] font-semibold">Dicas</h2>
           <ul className="mt-2 space-y-1.5 text-[15px]">{t.dicas.map(d => <li key={d} className="flex gap-2"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--salvia)]" />{d}</li>)}</ul>
           <p className="mt-5 flex gap-2 rounded-[14px] bg-[var(--nevoa-2)] p-3.5 text-[14px] leading-relaxed"><AlertTriangle size={18} className="mt-0.5 shrink-0 text-[var(--madeira)]" />{AVISO}</p>

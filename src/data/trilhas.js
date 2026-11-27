@@ -15,7 +15,7 @@ export const TRILHAS = [
     texto: [
       'É a caminhada mais procurada de Monte Verde. O caminho tem escadas, pontes e contenções, e um mirante de madeira no meio da subida, bom para recuperar o fôlego.',
       'Lá em cima a pedra é plana como um terraço. Dá para ver as montanhas do sul de Minas, os vales de São Paulo e, em dia limpo, a região de Campos do Jordão.',
-      'A trilha é administrada pela MOVE (Agência de Desenvolvimento de Monte Verde) e tem ingresso pago, comprado pela internet antes de ir.',
+      'Como as outras trilhas da serra, o acesso é controlado pela MOVE (Agência de Desenvolvimento de Monte Verde), com ingresso pago e agendado antes de ir.',
     ],
     dicas: ['Compre o ingresso antes', 'O pôr do sol é o melhor horário: leve lanterna para a volta', 'Tem escadas: não é indicada para quem tem dificuldade de locomoção'],
     inicio: ESTACIONAMENTO, cume: { nome: 'Pedra Redonda', lat: -22.88861, lng: -46.01942 },
@@ -28,7 +28,7 @@ export const TRILHAS = [
     nivel: 'Fácil', distancia: 'cerca de 700 m (ida)', tempo: '1h ida e volta', altitude: '1.950 m',
     paga: false,
     texto: [
-      'Sai do mesmo estacionamento da Pedra Redonda, seguindo a placa para a direita. É uma das opções gratuitas com vista parecida.',
+      'Sai do mesmo estacionamento da Pedra Redonda, seguindo a placa para a direita. A vista lembra a da Pedra Redonda.',
       'O nome vem da pedra no fim do caminho. Chegar até ela é fácil; subir no topo é outra história: exige força e jeito para escalar, com ajuda de uma barra de ferro.',
     ],
     dicas: ['Só suba na pedra se tiver experiência', 'Dá para emendar com o Platô'],
@@ -89,7 +89,7 @@ export const TRILHAS = [
       'Uma caminhada leve pela mata, perto do centro, que termina no Pinheiro Velho: uma araucária com cerca de 500 anos e quase 1,70 m de diâmetro.',
       'Boa para fazer com crianças ou num fim de tarde, sem precisar de carro 4x4 nem preparo.',
     ],
-    dicas: ['Ótima para crianças', 'Não precisa de ingresso'],
+    dicas: ['Ótima para crianças', 'Pergunte à MOVE sobre o acesso'],
     inicio: { nome: 'Entrada da trilha', lat: -22.86162, lng: -46.03676 }, cume: null,
     wikiloc: '',
   },
