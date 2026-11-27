@@ -55,7 +55,7 @@ export function Concierge() {
       })
       const d = await r.json().catch(() => ({}))
       if (!r.ok) throw new Error(d.erro || 'O concierge não respondeu agora.')
-      setMsgs([...nova, { role: 'assistant', text: d.texto || '', dias: d.dias || [], sugestoes: d.sugestoes || [], indisponivel: !!d.indisponivel }])
+      setMsgs([...nova, { role: 'assistant', text: d.texto || '', lugares: d.lugares || [], dias: d.dias || [], sugestoes: d.sugestoes || [], indisponivel: !!d.indisponivel }])
     } catch (e) {
       setErro(e.message || 'Sem conexão. Tente de novo.')
       setMsgs(nova)
@@ -122,8 +122,27 @@ function Resposta({ m, porSlug }) {
       {m.indisponivel && (
         <Link to="/roteiro" className="botao botao-pri mt-3 h-12 min-h-0 px-5 text-[15px]"><RouteIcon size={17} />Montar roteiro agora</Link>
       )}
+      {!m.dias?.length && m.lugares?.length > 0 && (
+        <ul className="mt-3 space-y-2">
+          {m.lugares.map(l => {
+            const b = porSlug.get(l.slug)
+            return (
+              <li key={l.slug}>
+                <Link to={`/estabelecimento/${l.slug}`} className="pressiona superficie flex items-center gap-3 p-3">
+                  <MapPin size={18} className="shrink-0 text-[var(--musgo)]" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[16px] font-semibold leading-snug">{b?.name || l.nome}</span>
+                    {l.porque && <span className="block text-[14px] leading-snug text-[var(--leve)]">{l.porque}</span>}
+                  </span>
+                  {b?.st && <span className={`shrink-0 text-[12px] font-semibold ${b.st.estado === 'aberto' ? 'text-[var(--musgo)]' : 'text-[var(--leve)]'}`}>{b.st.estado === 'aberto' ? 'Aberto' : ''}</span>}
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      )}
       {m.dias?.map((d, k) => (
-        <div key={k} className="mt-3 rounded-[var(--raio)] bg-[var(--papel)] p-4">
+        <div key={k} className="superficie mt-3 p-4">
           {d.titulo && <h3 className="text-[20px] leading-tight">{d.titulo}</h3>}
           <ol className="mt-2 space-y-3">
             {d.paradas.map((p, i) => {

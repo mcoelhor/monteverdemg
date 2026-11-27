@@ -16,7 +16,7 @@ const json = (b: unknown, s: number, h: Record<string, string>) =>
 const MODELOS = (Deno.env.get('GEMINI_MODEL') || 'gemini-3.5-flash-lite,gemini-2.5-flash').split(',').map(s => s.trim()).filter(Boolean)
 
 // Guia em cache por 10 minutos (evita ler o banco a cada mensagem)
-let cache: { em: number; texto: string; slugs: Set<string> } | null = null
+let cache: { em: number; texto: string; slugs: Set<string>; nomes: Map<string, string> } | null = null
 async function guia() {
   if (cache && Date.now() - cache.em < 600_000) return cache
   const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } })
@@ -29,7 +29,7 @@ async function guia() {
     const desc = (b.description || '').replace(/\s+/g, ' ').slice(0, 110)
     return `${b.slug} | ${b.name}${destaque} | ${b.category}/${b.subcategory} | ${(b.tags || []).slice(0, 6).join(', ')} | ${h}${desc ? ' | ' + desc : ''}`
   })
-  cache = { em: Date.now(), texto: linhas.join('\n'), slugs: new Set((data || []).map(b => b.slug)) }
+  cache = { em: Date.now(), texto: linhas.join('\n'), slugs: new Set((data || []).map(b => b.slug)), nomes: new Map((data || []).map(b => [b.slug, b.name])) }
   return cache
 }
 
@@ -39,19 +39,21 @@ function agora() {
 }
 
 const REGRAS = `Você é o Concierge do Monte Verde MG, o guia independente e curado de Monte Verde (distrito de Camanducaia, MG, 1.555 m, Serra da Mantiqueira).
-Fale como um anfitrião local: acolhedor, direto e prático, em português do Brasil. Sem exageros ("imperdível", "o melhor!!!").
+Fale como um anfitrião local: acolhedor, direto e prático, em português do Brasil. Sem exageros ("imperdível", "incrível", "o melhor!!!").
 Regras:
-- Recomende SOMENTE lugares da lista GUIA abaixo, citando o slug exato. Nunca invente lugar, preço, telefone ou horário.
+- Recomende SOMENTE lugares da lista GUIA abaixo. Nunca invente lugar, preço, telefone, horário ou característica.
+- No campo "texto", escreva sempre o NOME do lugar, nunca o slug. Os slugs vão só nos campos "slug".
+- O "porque" de cada lugar deve vir só do que o GUIA diz (categoria, etiquetas, descrição). Não acrescente adjetivos ou fatos que não estejam lá (ex.: não diga "vista panorâmica" se o guia não diz).
 - Respeite o horário de cada lugar no dia e período sugeridos. Se o horário não for informado, avise "confirme o horário".
 - Quando houver empate, prefira os marcados [parceiro], sem deixar de ser honesto.
 - Pode sugerir paradas livres da vila (passeio pela Avenida Monte Verde, procurar o mar de nuvens cedo, fim de tarde entre araucárias) sem slug.
 - Leve em conta frio e chuva: sugira casaco e alternativas cobertas quando fizer sentido.
-- Emergência (saúde, acidente): oriente ligar 192 (SAMU), 193 (Bombeiros) ou 190 (Polícia) e abrir a página SOS do app.
+- Só fale de emergência se o turista relatar uma: então oriente ligar 192 (SAMU), 193 (Bombeiros) ou 190 (Polícia) e indique o pronto-socorro do GUIA.
 - Se faltar informação essencial (quantos dias, com quem), pergunte UMA coisa curta e já adiante uma sugestão.
-- Respostas curtas: no máximo 120 palavras no campo "texto".
+- Respostas curtas: no máximo 90 palavras no campo "texto".
 Responda APENAS em JSON válido neste formato:
-{"texto": "resposta ao turista", "dias": [{"titulo": "Sábado", "paradas": [{"periodo": "manha|almoco|tarde|cafe|jantar", "slug": "slug-ou-vazio", "nome": "nome", "porque": "1 frase"}]}], "sugestoes": ["próxima pergunta curta", "outra"]}
-"dias" pode ser [] quando não for um roteiro.`
+{"texto": "resposta ao turista", "lugares": [{"slug": "slug", "porque": "1 frase"}], "dias": [{"titulo": "Sábado", "paradas": [{"periodo": "manha|almoco|tarde|cafe|jantar", "slug": "slug-ou-vazio", "nome": "nome", "porque": "1 frase"}]}], "sugestoes": ["próxima pergunta curta", "outra"]}
+Use "dias" para roteiros de um ou mais dias. Use "lugares" (até 4) para respostas rápidas que citam lugares sem montar roteiro. Os dois podem ser [].`
 
 async function gemini(chave: string, sistema: string, conversa: { role: string; text: string }[]) {
   const corpo = {
@@ -108,7 +110,7 @@ Deno.serve(async (req) => {
   const sistema = `${REGRAS}\n\nAgora em Monte Verde: ${agora()}.\n\nGUIA (slug | nome | categoria | etiquetas | horário | descrição):\n${g.texto}`
   try {
     const bruto = await gemini(chave, sistema, conversa)
-    let r: { texto?: string; dias?: { titulo?: string; paradas?: { periodo?: string; slug?: string; nome?: string; porque?: string }[] }[]; sugestoes?: string[] }
+    let r: { texto?: string; lugares?: { slug?: string; porque?: string }[]; dias?: { titulo?: string; paradas?: { periodo?: string; slug?: string; nome?: string; porque?: string }[] }[]; sugestoes?: string[] }
     try { r = JSON.parse(bruto.replace(/^```json\s*|```$/g, '')) } catch { r = { texto: bruto.slice(0, 800), dias: [] } }
     // Descarta qualquer slug que não exista no guia
     const dias = (r.dias || []).slice(0, 7).map(d => ({
@@ -120,7 +122,11 @@ Deno.serve(async (req) => {
         porque: String(p.porque || '').slice(0, 160),
       })).filter(p => p.nome),
     }))
-    return json({ texto: String(r.texto || '').slice(0, 1500), dias, sugestoes: (r.sugestoes || []).slice(0, 3).map(s => String(s).slice(0, 60)) }, 200, h)
+    const lugares = (r.lugares || []).filter(l => l.slug && g.slugs.has(l.slug)).slice(0, 4).map(l => ({ slug: l.slug!, nome: g.nomes.get(l.slug!) || '', porque: String(l.porque || '').slice(0, 160) }))
+    // Se algum slug escapar para o texto, troca pelo nome do lugar
+    let texto = String(r.texto || '').slice(0, 1500)
+    for (const [slug, nome] of [...g.nomes].sort((a, z) => z[0].length - a[0].length)) if (texto.includes(slug)) texto = texto.split(slug).join(nome)
+    return json({ texto, lugares, dias, sugestoes: (r.sugestoes || []).slice(0, 3).map(s => String(s).slice(0, 60)) }, 200, h)
   } catch (e) {
     console.error('gemini', String(e).slice(0, 500))
     return json({ erro: 'O concierge não respondeu agora. Tente de novo em instantes.' }, 502, h)
