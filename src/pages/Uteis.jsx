@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Siren, ArrowRight, Phone, Map } from 'lucide-react'
+import { Parceiros } from '../components/Parceiros'
 import { Layout } from '../components/Layout/Layout'
 import { Icon } from '../components/UI/Icon'
 import { StatusPill } from '../components/UI/Badge'
@@ -79,6 +80,7 @@ export function Uteis() {
         <Link to="/mapa" className="mt-6 flex min-h-12 items-center gap-2 text-[16px] font-bold text-[var(--musgo)]"><Map size={18} />Ver no mapa</Link>
         <p className="mt-4 text-[14px] leading-relaxed text-[var(--leve)]">Horários vêm do cadastro de cada lugar. Em feriados, ligue antes. Viu algo errado? <Link to="/mais#corrigir" className="font-semibold underline underline-offset-4">Avise a gente</Link>.</p>
       </div>
+      <div className="mt-10"><Parceiros contexto="busca" /></div>
     </Layout>
   )
 }

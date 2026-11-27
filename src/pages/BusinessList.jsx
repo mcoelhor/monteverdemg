@@ -9,7 +9,7 @@ import { Parceiros } from '../components/Parceiros'
 import { useBusinesses } from '../hooks/useBusinesses'
 import { CATEGORIES } from '../data/categories'
 import { FOTO_CATEGORIA } from '../data/fotos'
-import { SITUACOES, ehObra, ehUrgente, situacaoDoTermo, subsDoTermo } from '../lib/busca'
+import { SITUACOES, ehUrgente, situacaoDoTermo, subsDoTermo } from '../lib/busca'
 import { registrar } from '../lib/track'
 import { BotaoVoz } from '../components/BotaoVoz'
 import { FILTROS, nomeComodidade, iconeComodidade } from '../data/comodidades'
@@ -108,7 +108,6 @@ export function BusinessList() {
         </div>
       )}
 
-      {q && ehObra(q) && <Parceiros contexto="busca" />}
       {cat && (category === 'construcao' || category === 'imobiliarias') && !q && <Parceiros contexto={category} />}
 
       {loading ? (
