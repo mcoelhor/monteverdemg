@@ -18,15 +18,17 @@ function Pedido({ p, onMudou }) {
   const [acesso, setAcesso] = useState(null)
   const [erro, setErro] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [conf, setConf] = useState('')
   let wa = (p.whatsapp || '').replace(/\D/g, ''); if (wa.length === 10 || wa.length === 11) wa = '55' + wa
   const nome = p.businesses?.name || '?'
   const msgPedido = `Olá, ${p.nome_contato.split(' ')[0]}! Aqui é do Monte Verde MG. Recebemos seu pedido de acesso a ${nome}. Para confirmar, responda com o código que apareceu na tela, pelo WhatsApp do negócio.`
   const msgAcesso = acesso ? `Pronto, ${p.nome_contato.split(' ')[0]}! ${nome} já está ligado à sua conta no Monte Verde MG. Entre em monteverdemg.com.br/meu-negocio com o e-mail ${acesso.email}${acesso.convite ? ' (mandamos um convite para você criar a senha)' : ''} e edite horário, fotos e contatos.` : ''
 
   async function decidir(acao) {
+    if (acao === 'aprovar' && conf.trim().length < 3) { setErro('Antes de aprovar, escreva de qual contato você conferiu a prova (ex.: WhatsApp do pedido, telefone do guia, CNPJ).'); return }
     setEnviando(true); setErro('')
     try {
-      const d = await chamar({ acao, id: p.id })
+      const d = await chamar({ acao, id: p.id, contato_conferido: conf.trim(), evidencia: '' })
       if (acao === 'aprovar') setAcesso({ email: d.email, convite: d.convite })
       onMudou()
     } catch (e) { setErro(e.message) }
@@ -49,7 +51,10 @@ function Pedido({ p, onMudou }) {
         </p>
       )}
       {p.status === 'pendente' && (
-        <div className="mt-3 flex flex-wrap gap-2">
+        <input value={conf} onChange={e => setConf(e.target.value)} placeholder="Conferi que a prova veio de… (nº do WhatsApp, telefone do guia, CNPJ)" className="mt-3 w-full rounded-xl bg-[var(--creme)] px-3 py-2.5 text-sm" />
+      )}
+      {p.status === 'pendente' && (
+        <div className="mt-2 flex flex-wrap gap-2">
           {wa.length >= 12 && <a href={`https://wa.me/${wa}?text=${encodeURIComponent(msgPedido)}`} target="_blank" rel="noopener noreferrer" className="botao botao-wa h-10 min-h-0 flex-1 text-[14px]"><MessageCircle size={15} />Pedir o código</a>}
           <button disabled={enviando} onClick={() => decidir('aprovar')} className="botao botao-pri h-10 min-h-0 flex-1 text-[14px]"><Check size={15} />Código confere: aprovar</button>
           <button disabled={enviando} onClick={() => decidir('recusar')} className="botao botao-sec h-10 min-h-0 px-3 text-[14px]"><X size={15} />Recusar</button>

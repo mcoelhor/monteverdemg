@@ -98,21 +98,21 @@ async function lerLimites() {
   limites = { em: Date.now(), teto: v('concierge_teto_diario', 800), porVisitante: v('concierge_limite_10min', 20) }
   return limites
 }
-function inicioDoDiaSP() {
-  const hoje = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date())
-  return new Date(`${hoje}T00:00:00-03:00`).toISOString()
+// Limitador atômico no banco (vale para todas as instâncias; sem corrida). Lança erro se indisponível.
+async function limite(chave: string, lim: number, seg: number): Promise<boolean> {
+  const { data, error } = await db.rpc('consumir_limite', { p_chave: chave, p_limite: lim, p_janela_seg: seg })
+  if (error) throw new Error('limitador: ' + error.message)
+  return data === true
 }
 async function verificarUso(visitante: string, ip: string): Promise<'ok' | 'teto' | 'visitante'> {
   const lim = await lerLimites()
-  const dez = new Date(Date.now() - 600_000).toISOString()
-  const [{ count: hoje }, { count: recentes }] = await Promise.all([
-    db.from('concierge_uso').select('id', { count: 'exact', head: true }).gte('criado_em', inicioDoDiaSP()),
-    db.from('concierge_uso').select('id', { count: 'exact', head: true }).gte('criado_em', dez).or(`ip.eq.${ip},visitante.eq.${visitante}`),
-  ])
-  if ((hoje ?? 0) >= lim.teto) return 'teto'
-  if ((recentes ?? 0) >= lim.porVisitante) return 'visitante'
-  await db.from('concierge_uso').insert({ visitante, ip })
-  if (Math.random() < 0.01) await db.from('concierge_uso').delete().lt('criado_em', new Date(Date.now() - 30 * 86400e3).toISOString())
+  // Primeiro rajada por IP e por visitante (10 min); quem já estourou não consome o balde diário.
+  const okIp = await limite('cc:ip:' + ip, lim.porVisitante, 600)
+  const okVis = await limite('cc:vis:' + visitante, lim.porVisitante, 600)
+  if (!okIp || !okVis) return 'visitante'
+  if (!await limite('cc:dia', lim.teto, 86400)) return 'teto'
+  // Registro só para estatística, sem guardar IP em claro (F15).
+  await db.from('concierge_uso').insert({ visitante, ip: '' }).then(() => {}, () => {})
   return 'ok'
 }
 
@@ -129,13 +129,15 @@ Deno.serve(async (req) => {
     .filter(m => m && typeof m.text === 'string' && m.text.trim())
     .slice(-12).map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', text: m.text.trim().slice(0, 1200) }))
   if (!conversa.length || conversa[conversa.length - 1].role !== 'user') return json({ erro: 'Escreva sua pergunta.' }, 400, h)
+  if (conversa.reduce((s, m) => s + m.text.length, 0) > 14000) return json({ erro: 'Conversa muito longa. Comece uma nova pergunta.' }, 413, h)
 
   const chave = Deno.env.get('GEMINI_API_KEY')
   if (!chave) return json({ indisponivel: true, texto: 'O concierge entra no ar em breve. Enquanto isso, monte seu roteiro logo abaixo.' }, 200, h)
 
   const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim().replace(/[^0-9a-fA-F:.]/g, '').slice(0, 45) || 'sem-ip'
   const visitante = String(b.visitante || '').replace(/[^0-9a-zA-Z_-]/g, '').slice(0, 32) || ip
-  const uso = await verificarUso(visitante, ip).catch(e => { console.error('uso', String(e)); return 'ok' as const })
+  const uso = await verificarUso(visitante, ip).catch(e => { console.error('uso', String(e)); return 'erro' as const })
+  if (uso === 'erro') return json({ erro: 'Não foi possível validar o uso agora. Tente de novo em instantes.' }, 503, h)
   if (uso === 'teto') return json({ erro: MSG_TETO, teto: true }, 429, h)
   if (uso === 'visitante') return json({ erro: 'Você mandou muitas mensagens seguidas. Espere alguns minutos e continue.' }, 429, h)
 

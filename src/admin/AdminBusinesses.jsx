@@ -95,7 +95,8 @@ export function AdminBusinesses() {
   const [q, setQ] = useState('')
   const [filtro, setFiltro] = useState('todos')
   const [editando, setEditando] = useState(null)
-  const carregar = () => supabase.from('businesses').select('*').order('name').then(({ data }) => setLista(data || []))
+  // Lê a tabela inteira (inclui colunas internas) pela RPC de admin: conta comum não tem mais SELECT nessas colunas.
+  const carregar = () => supabase.rpc('admin_lugares').then(({ data }) => setLista((data || []).sort((a, b) => a.name.localeCompare(b.name))))
   useEffect(() => { carregar() }, [])
 
   const filtrada = useMemo(() => (lista || []).filter(b => {
