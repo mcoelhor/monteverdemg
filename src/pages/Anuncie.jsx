@@ -117,7 +117,7 @@ function Pedido({ plano, onFechar }) {
       <button disabled={estado === 'enviando'} className="botao botao-pri mt-5 h-14 w-full text-[17px]">
         {estado === 'enviando' ? <><Loader2 size={18} className="animate-spin" />Abrindo pagamento…</> : <>Pagar com Pix ou cartão <ArrowRight size={18} /></>}
       </button>
-      <p className="mt-3 text-center text-[14px] text-[var(--leve)]">Pagamento seguro pelo Mercado Pago. Vale {plano.dias} dias, sem fidelidade.</p>
+      <p className="mt-3 text-center text-[14px] text-[var(--leve)]">Pagamento seguro pelo Mercado Pago. Vale {plano.dias} dias, sem fidelidade. Ao continuar, você concorda com os <Link to="/termos-anunciante" className="underline underline-offset-4">termos do anunciante</Link>.</p>
       <button type="button" onClick={onFechar} className="mt-2 w-full py-2 text-[15px] font-semibold text-[var(--leve)]">Escolher outro plano</button>
     </form>
   )

@@ -30,6 +30,7 @@ export function More() {
       <div className="space-y-2 px-5 pt-2">
         {!nativo && <Linha icon={Download} destaque label="Baixar o app (Android e iPhone)" onClick={() => navigate('/app')} />}
         <Linha icon={Route} label="Meu roteiro" onClick={() => navigate('/roteiro')} />
+        <Linha icon={Mountain} label="Sobre Monte Verde (história)" onClick={() => navigate('/sobre')} />
         <Linha icon={Car} label="Como chegar a Monte Verde" onClick={() => navigate('/como-chegar')} />
         <Linha icon={Leaf} label="O que está na época" onClick={() => navigate('/epoca')} />
         <Linha icon={Mountain} label="Trilhas" onClick={() => navigate('/trilhas')} />
@@ -41,6 +42,7 @@ export function More() {
         <Linha icon={Store} label="Meu negócio (área do responsável)" onClick={() => navigate('/meu-negocio')} />
         <Linha icon={Image} label="Créditos das fotos" onClick={() => navigate('/creditos')} />
         <Linha icon={Shield} label="Privacidade" onClick={() => navigate('/privacidade')} />
+        <Linha icon={Shield} label="Termos de uso" onClick={() => navigate('/termos')} />
       </div>
 
       <section id="cadastro" className="px-5 pt-12" style={{ scrollMarginTop: 90 }}>

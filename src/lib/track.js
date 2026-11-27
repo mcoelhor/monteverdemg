@@ -30,6 +30,7 @@ export function origem() {
     const medium = u.searchParams.get('utm_medium')
     let v = ''
     if (utm) v = `${utm}${medium ? '/' + medium : ''}`.toLowerCase().slice(0, 60)
+    else if (window.Capacitor?.isNativePlatform?.()) v = 'app android'
     else if (window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone) v = 'app instalado'
     else if (document.referrer) {
       const h = new URL(document.referrer).hostname.replace(/^(www|l|lm|m)\./, '')
@@ -54,6 +55,12 @@ export function registrar(kind, { businessId = null, term = '', results = -1 } =
     kind, business_id: businessId, term: String(term).slice(0, 120), results, visitor: visitante(),
     source: origem(), path: location.pathname.slice(0, 80),
   }).then(() => {}, () => {})
+}
+
+/** Página vista (sem a parte de busca/filtros), no máximo 1 vez a cada 30 min por página. */
+export function registrarPagina(caminho) {
+  if (caminho.startsWith('/bastidores-mv')) return
+  registrar('pagina', { term: caminho.slice(0, 120) })
 }
 
 /** Uma visita por dia por aparelho, com a origem. Chamar uma vez ao abrir o app. */

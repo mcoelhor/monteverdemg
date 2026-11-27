@@ -17,6 +17,8 @@ import { ComoChegar } from './pages/ComoChegar'
 import { Epoca } from './pages/Epoca'
 import { Trilhas, TrilhaDetalhe } from './pages/Trilhas'
 import { BaixarApp } from './pages/BaixarApp'
+import { Sobre } from './pages/Sobre'
+import { TermosUso, TermosAnunciante } from './pages/Termos'
 import { Privacidade } from './pages/Privacidade'
 import { Cookies } from './components/Cookies'
 import { pagina } from './lib/marketing'
@@ -40,7 +42,7 @@ const Totem = lazy(() => import('./pages/Totem').then(m => ({ default: m.Totem }
 const AdminConfig = lazy(() => import('./admin/AdminConfig').then(m => ({ default: m.AdminConfig })))
 const AdminEvents = lazy(() => import('./admin/AdminEvents').then(m => ({ default: m.AdminEvents })))
 import { useAdmin } from './admin/useAdmin'
-import { registrarVisita } from './lib/track'
+import { registrarVisita, registrarPagina } from './lib/track'
 
 function AdminGuard({ children }) {
   const { carregando, user, admin } = useAdmin()
@@ -76,11 +78,19 @@ function Rolagem() {
   return null
 }
 
+/** Conta as páginas vistas (anônimo), para o painel saber o que o público mais usa. */
+function PaginaVista() {
+  const { pathname } = useLocation()
+  useEffect(() => { registrarPagina(pathname) }, [pathname])
+  return null
+}
+
 export default function App() {
   useEffect(() => { registrarVisita() }, [])
   return (
     <Roteador>
       <Rolagem />
+      <PaginaVista />
       <Suspense fallback={<div className="p-6"><div className="esqueleto h-40 rounded-2xl" /></div>}>
       <Routes>
         <Route path="/" element={<Home />} />
@@ -107,6 +117,9 @@ export default function App() {
         <Route path="/epoca" element={<Epoca />} />
         <Route path="/trilhas" element={<Trilhas />} />
         <Route path="/app" element={<BaixarApp />} />
+        <Route path="/sobre" element={<Sobre />} />
+        <Route path="/termos" element={<TermosUso />} />
+        <Route path="/termos-anunciante" element={<TermosAnunciante />} />
         <Route path="/trilhas/:slug" element={<TrilhaDetalhe />} />
         <Route path="/privacidade" element={<Privacidade />} />
         <Route path="/bastidores-mv" element={<AdminGuard><AdminDashboard /></AdminGuard>} />

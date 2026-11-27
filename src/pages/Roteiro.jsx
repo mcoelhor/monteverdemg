@@ -12,6 +12,7 @@ import { linkRota, registrar } from '../lib/track'
 import { COM_QUEM, GOSTOS, RITMOS, SLOTS, candidatos, montarRoteiro, alternativas, motivo, textoCompartilhar, inicioPadrao } from '../lib/roteiro'
 import { AvisarChegada } from '../components/Avisar'
 import { evento } from '../lib/marketing'
+import { imgMini } from '../lib/miniatura'
 
 const CHAVE = 'mv_roteiro_v1'
 const ler = () => { try { return JSON.parse(localStorage.getItem(CHAVE)) } catch { return null } }
@@ -122,7 +123,7 @@ function Parada({ p, dia, perfil, primeira, ultima, onTrocar, onRemover, onSubir
         {item.foto && <img src={item.foto.p} alt={item.foto.legenda} loading="lazy" className="aspect-[16/8] w-full object-cover" />}
         <div className="flex gap-3.5 p-4">
           {lugar && !item.b.images?.[0] && <Selo b={item.b} tam={48} />}
-          {lugar && item.b.images?.[0] && <img src={item.b.images[0]} alt="" className="h-12 w-12 shrink-0 rounded-[14px] object-cover" />}
+          {lugar && item.b.images?.[0] && <img {...imgMini(item.b.images[0])} alt="" className="h-12 w-12 shrink-0 rounded-[14px] object-cover" />}
           <div className="min-w-0 flex-1">
             {lugar ? (
               <Link to={`/estabelecimento/${item.b.slug}`} className="block text-[19px] font-extrabold leading-tight tracking-[-0.02em]">{item.name}</Link>

@@ -8,13 +8,14 @@ import { iconeDe, nomeSub } from '../../data/categories'
 import { FOTOS, FOTO_CATEGORIA } from '../../data/fotos'
 import { registrar, linkWhatsApp, linkTel } from '../../lib/track'
 import { useOfertas } from '../../hooks/useOfertas'
+import { imgMini } from '../../lib/miniatura'
 
 export const planoAtivo = b => (b.plan === 'premium' || b.plan === 'destaque') && (!b.plan_expires_at || new Date(b.plan_expires_at) > new Date()) ? b.plan : 'free'
 
 /** Topo com foto do lugar; sem foto, uma foto da vila da mesma categoria, marcada como ilustrativa. */
 export function Capa({ b, alto = 'h-40', grande = false }) {
   if (b.images?.[0]) {
-    return <img src={b.images[0]} alt="" className={`w-full ${alto} object-cover`} loading="lazy" />
+    return <img {...imgMini(b.images[0])} alt="" className={`w-full ${alto} object-cover`} loading="lazy" />
   }
   const f = FOTO_CATEGORIA[b.category] || FOTOS.avenida
   return (

@@ -47,6 +47,53 @@ function Relatorio({ r, dias, onClose }) {
   )
 }
 
+const NOMES = { '/': 'Início', '/mapa': 'Mapa', '/categorias': 'Explorar', '/busca': 'Busca', '/roteiro': 'Roteiro', '/concierge': 'Concierge', '/uteis': 'Úteis', '/sos': 'Emergência', '/trilhas': 'Trilhas', '/ofertas': 'Ofertas', '/eventos': 'Eventos', '/favoritos': 'Salvos', '/mais': 'Mais', '/anuncie': 'Anuncie', '/meu-negocio': 'Meu negócio', '/totem': 'Totem', '/app': 'Baixar o app' }
+const nomePagina = p => NOMES[p] || (p.startsWith('/estabelecimento/') ? 'Lugar: ' + p.slice(17) : p.startsWith('/categoria/') ? 'Categoria: ' + p.slice(11) : p.startsWith('/trilhas/') ? 'Trilha: ' + p.slice(9) : p)
+
+/** Audiência: pessoas por dia (barras), páginas mais vistas, totem e app. */
+function Audiencia({ dias }) {
+  const [a, setA] = useState(null)
+  useEffect(() => {
+    let vivo = true; setA(null)
+    supabase.rpc('admin_audiencia', { dias }).then(({ data }) => { if (vivo) setA(data || { por_dia: [], paginas: [] }) })
+    return () => { vivo = false }
+  }, [dias])
+  if (!a) return <div className="esqueleto mt-5 h-48 rounded-2xl" />
+  const max = Math.max(1, ...a.por_dia.map(d => d.pessoas))
+  const ultimos = a.por_dia.slice(-31)
+  return (
+    <section className="mt-5 rounded-2xl bg-white p-4">
+      <div className="flex items-baseline justify-between gap-2">
+        <h2 className="font-bold">Audiência</h2>
+        <p className="text-xs text-[#626a63]"><span className="num font-bold text-[var(--verde)]">{a.pessoas || 0}</span> pessoas no período · totem <span className="num font-semibold">{a.totem || 0}</span> · app <span className="num font-semibold">{a.app || 0}</span></p>
+      </div>
+      {ultimos.length === 0 ? <p className="mt-3 text-sm text-[#626a63]">Ainda sem visitas registradas no período.</p> : (
+        <div className="mt-3 flex h-28 items-end gap-[3px]" role="img" aria-label="Pessoas por dia">
+          {ultimos.map(d => (
+            <div key={d.dia} className="group relative flex-1">
+              <div className="rounded-t bg-[var(--verde)]/80" style={{ height: `${Math.max(4, (d.pessoas / max) * 100)}%` }} title={`${new Date(d.dia + 'T12:00').toLocaleDateString('pt-BR')}: ${d.pessoas} pessoas, ${d.paginas} páginas, ${d.contatos} contatos`} />
+            </div>
+          ))}
+        </div>
+      )}
+      {a.paginas.length > 0 && (
+        <>
+          <h3 className="mt-4 text-sm font-bold">Páginas mais vistas</h3>
+          <ul className="mt-1 divide-y divide-black/5">
+            {a.paginas.slice(0, 10).map(p => (
+              <li key={p.pagina} className="flex items-center gap-3 py-1.5 text-sm">
+                <span className="min-w-0 flex-1 truncate">{nomePagina(p.pagina)}</span>
+                <span className="num text-[#626a63]">{p.pessoas} pessoas</span>
+                <span className="num w-14 text-right font-semibold">{p.vezes}×</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
+  )
+}
+
 export function AdminDashboard() {
   const navigate = useNavigate()
   const [dias, setDias] = useState(30)
@@ -97,6 +144,8 @@ export function AdminDashboard() {
         <Kpi rotulo="Cliques nos parceiros" valor={k.parc} sub="Toca + Construtora" />
         <Kpi rotulo="Lugares ativos" valor={k.lugares} onClick={() => navigate('/bastidores-mv/empresas')} />
       </div>
+
+      <Audiencia dias={dias} />
 
       <section className="mt-5 rounded-2xl bg-white p-4">
         <h2 className="font-bold">De onde vêm</h2>

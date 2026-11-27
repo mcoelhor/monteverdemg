@@ -218,6 +218,9 @@ function Fotos({ b, fotos, setFotos }) {
         const nome = `lugares/${b.id}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.webp`
         const { error } = await supabase.storage.from('fotos').upload(nome, blob, { contentType: 'image/webp' })
         if (error) throw error
+        // cópia pequena para cartões e listas (carrega rápido no 4G da serra)
+        const mini = await comprimir(f, 640, 0.72)
+        await supabase.storage.from('fotos').upload(nome.replace(/\.webp$/, '-p.webp'), mini, { contentType: 'image/webp' }).catch(() => {})
         const { data, error: e2 } = await supabase.from('business_images').insert({ business_id: b.id, image_url: FOTOS_URL + nome, display_order: fotos.length }).select('id,image_url,display_order').single()
         if (e2) throw e2
         setFotos(v => [...v, data])
@@ -229,7 +232,7 @@ function Fotos({ b, fotos, setFotos }) {
     if (!confirm('Remover esta foto?')) return
     await supabase.from('business_images').delete().eq('id', f.id)
     const caminho = f.image_url.replace(FOTOS_URL, '')
-    if (caminho.startsWith('lugares/')) await supabase.storage.from('fotos').remove([caminho])
+    if (caminho.startsWith('lugares/')) await supabase.storage.from('fotos').remove([caminho, caminho.replace(/\.webp$/, '-p.webp')])
     setFotos(v => v.filter(x => x.id !== f.id))
   }
   return (

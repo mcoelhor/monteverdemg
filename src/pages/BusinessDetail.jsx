@@ -21,6 +21,7 @@ import { useOfertas } from '../hooks/useOfertas'
 import { nomeSub } from '../data/categories'
 import { semanaLinhas } from '../lib/horario'
 import { registrar, linkTel, linkWhatsApp, linkRota, linkInstagram } from '../lib/track'
+import { imgMini } from '../lib/miniatura'
 
 function Fotos({ b }) {
   const [i, setI] = useState(0)
@@ -206,7 +207,7 @@ function OutrosMini({ lista }) {
       <div className="mt-2 grid grid-cols-2 gap-2">
         {lista.map(x => (
           <Link key={x.id} to={`/estabelecimento/${x.slug}`} className="flex min-w-0 items-center gap-3 rounded-[14px] border border-[var(--borda)] bg-[var(--papel)] p-2.5 transition-colors hover:bg-[var(--nevoa)]">
-            {x.images?.[0] ? <img src={x.images[0]} alt="" className="h-11 w-11 shrink-0 rounded-[10px] object-cover" loading="lazy" /> : <Selo b={x} tam={44} />}
+            {x.images?.[0] ? <img {...imgMini(x.images[0])} alt="" className="h-11 w-11 shrink-0 rounded-[10px] object-cover" loading="lazy" /> : <Selo b={x} tam={44} />}
             <span className="min-w-0">
               <span className="serifa block truncate text-[15px] font-semibold">{x.name}</span>
               <span className="mt-0.5 block truncate text-[12px] text-[var(--leve)]">{nomeSub(x)}{x.st?.estado === 'aberto' ? ' · aberto agora' : ''}</span>

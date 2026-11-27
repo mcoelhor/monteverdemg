@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Siren, ArrowRight } from 'lucide-react'
 
 const LINKS = [
+  ['Sobre Monte Verde', '/sobre'],
   ['Anuncie seu negócio', '/anuncie'],
   ['Meu negócio', '/meu-negocio'],
   ['Como chegar', '/como-chegar'],
@@ -10,9 +11,11 @@ const LINKS = [
   ['Eventos', '/eventos'],
   ['Todas as categorias', '/categorias'],
   ['Corrigir uma informação', '/mais#corrigir'],
-  ['Instalar o app', '/mais'],
+  ['Baixar o app', '/app'],
   ['Créditos das fotos', '/creditos'],
   ['Privacidade', '/privacidade'],
+  ['Termos de uso', '/termos'],
+  ['Termos do anunciante', '/termos-anunciante'],
 ]
 
 /** Fecho de todas as páginas: emergência discreta, links e o nome em tamanho de pôster. */

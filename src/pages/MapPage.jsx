@@ -10,6 +10,7 @@ import { StatusPill } from '../components/UI/Badge'
 import { registrar, linkWhatsApp, linkRota } from '../lib/track'
 import { MapaBase } from '../components/MapaBase'
 import { BotaoMapaOffline } from '../components/MapaOffline'
+import { imgMini } from '../lib/miniatura'
 
 /** Distância em texto curto. */
 const textoDist = km => (km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1).replace('.', ',')} km`)
@@ -102,6 +103,8 @@ function MapView({ businesses, onSelect, selecionado, eu, centrarEm }) {
           key={b.id}
           position={[b.latitude, b.longitude]}
           icon={createIcon(b)}
+          title={b.name}
+          alt={b.name}
           eventHandlers={{ click: () => onSelect(b) }}
         />
       ) : null)}
@@ -117,7 +120,7 @@ function BottomSheet({ business, onClose, eu }) {
     <div className="absolute bottom-20 left-0 right-0 mx-5 bg-white rounded-[var(--raio)] shadow-2xl p-4 z-[1000]">
       <div className="flex items-start gap-3">
         {business.images?.[0] ? (
-          <img src={business.images[0]} alt={business.name} className="w-16 h-16 rounded-xl object-cover shrink-0" />
+          <img {...imgMini(business.images[0])} alt={business.name} className="w-16 h-16 rounded-xl object-cover shrink-0" />
         ) : (
           <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center text-2xl shrink-0">
             <Icon name={iconeDe(business)} size={24} className="text-[var(--leve)]" />
@@ -129,7 +132,7 @@ function BottomSheet({ business, onClose, eu }) {
           <StatusPill st={business.st} className="mt-1" />
           {eu && business.latitude && <p className="mt-1 text-xs font-semibold text-[#2563eb]">{textoDist(distKm(eu, { lat: business.latitude, lng: business.longitude }))} de você (em linha reta)</p>}
         </div>
-        <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 shrink-0">
+        <button onClick={onClose} aria-label="Fechar" className="w-11 h-11 -m-2 flex items-center justify-center rounded-full bg-gray-100 shrink-0">
           <X size={14} className="text-gray-500" />
         </button>
       </div>
