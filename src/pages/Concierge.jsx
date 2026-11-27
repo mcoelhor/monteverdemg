@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowUp, Loader2, MapPin, RotateCcw, Sparkles, Route as RouteIcon } from 'lucide-react'
 import { Layout } from '../components/Layout/Layout'
 import { useBusinesses } from '../hooks/useBusinesses'
@@ -35,6 +35,9 @@ export function Concierge() {
   const fim = useRef(null)
   const { businesses } = useBusinesses({})
   const porSlug = useMemo(() => new Map(businesses.map(b => [b.slug, b])), [businesses])
+  // Pergunta vinda da página inicial (?q=): envia uma vez e limpa o endereço
+  const [params, setParams] = useSearchParams()
+  const inicial = useRef(params.get('q'))
 
   useEffect(() => { gravar(msgs); fim.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }) }, [msgs])
 
@@ -58,6 +61,14 @@ export function Concierge() {
       setMsgs(nova)
     } finally { setEnviando(false) }
   }
+
+  useEffect(() => {
+    const q = inicial.current
+    if (!q) return
+    inicial.current = null
+    setParams({}, { replace: true })
+    enviar(q)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const ultima = msgs[msgs.length - 1]
   const sugestoes = ultima?.role === 'assistant' && ultima.sugestoes?.length ? ultima.sugestoes : msgs.length ? [] : INICIAIS

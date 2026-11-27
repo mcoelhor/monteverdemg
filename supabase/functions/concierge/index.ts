@@ -7,7 +7,7 @@ const permitido = (o: string | null) => !!o && (SITES.includes(o) || /^https:\/\
 const cors = (o: string | null) => ({
   'Access-Control-Allow-Origin': permitido(o) ? o! : SITES[0],
   'Access-Control-Allow-Headers': 'content-type, apikey, authorization, x-client-info',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Vary': 'Origin',
 })
 const json = (b: unknown, s: number, h: Record<string, string>) =>
@@ -87,6 +87,8 @@ function excedeu(id: string) {
 Deno.serve(async (req) => {
   const o = req.headers.get('origin'); const h = cors(o)
   if (req.method === 'OPTIONS') return new Response('ok', { headers: h })
+  // GET: só diz se o concierge está ligado (o site decide se mostra a caixa de conversa)
+  if (req.method === 'GET') return json({ ativo: !!Deno.env.get('GEMINI_API_KEY') }, 200, { ...h, 'Cache-Control': 'public, max-age=300' })
   if (req.method !== 'POST') return json({ erro: 'metodo' }, 405, h)
 
   let b: { mensagens?: { role: string; text: string }[]; visitante?: string }

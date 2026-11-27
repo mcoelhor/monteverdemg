@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Search, ArrowRight, Route, Menu, X } from 'lucide-react'
+import { Search, ArrowRight, Route, Menu, X, Sparkles } from 'lucide-react'
 import { Icon } from '../components/UI/Icon'
 import { Layout } from '../components/Layout/Layout'
 import { EventCard } from '../components/UI/EventCard'
@@ -58,6 +58,75 @@ function Topo() {
    Quem pede movimento reduzido vê só a foto parada. */
 const HERO_VIDEO = { mp4: '', webm: '', creditos: '' }
 
+/** Clima no canto do banner: pílula de vidro; chuva ou frio forte viram uma segunda linha clicável. */
+function ClimaPilula() {
+  const clima = useClima()
+  const a = agoraMV()
+  if (!clima) return null
+  const frio = clima.minNoite != null && clima.minNoite <= 10 && a.min >= 840
+  const alerta = clima.chuvaProx ? 'Chuva nas próximas horas' : clima.chuvaHoje ? 'Chove hoje' : frio ? `Esfria à noite: ${clima.minNoite} °C` : ''
+  return (
+    <div className="absolute right-4 top-4 z-20 flex flex-col items-end gap-1.5 lg:right-8 lg:top-6">
+      <p className="flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3.5 py-2 text-[14px] text-white backdrop-blur-md lg:text-[15px]">
+        <Icon name={clima.icone} size={17} /><span className="num font-semibold">{clima.temp} °C</span><span className="text-white/85">· {clima.texto}</span>
+      </p>
+      {alerta && (
+        <Link to={clima.chuvaProx || clima.chuvaHoje ? '/busca?q=chuva' : '/busca?q=fondue'} className="flex items-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-3 py-1.5 text-[13px] text-white backdrop-blur-md">
+          <Icon name={clima.chuvaProx || clima.chuvaHoje ? 'CloudRain' : 'Snowflake'} size={14} />{alerta}<ArrowRight size={13} />
+        </Link>
+      )}
+    </div>
+  )
+}
+
+/** O concierge está ligado? (a função responde GET sem gastar IA). Fica em cache na sessão. */
+function useConciergeAtivo() {
+  const [ativo, setAtivo] = useState(() => { try { return sessionStorage.getItem('mv_conc_ativo') === '1' } catch { return false } })
+  useEffect(() => {
+    let vivo = true
+    fetch('https://isotmggdbtqlyvddxmpe.supabase.co/functions/v1/concierge').then(r => r.json()).then(d => {
+      if (!vivo) return
+      setAtivo(!!d.ativo); try { sessionStorage.setItem('mv_conc_ativo', d.ativo ? '1' : '0') } catch { /* */ }
+    }).catch(() => {})
+    return () => { vivo = false }
+  }, [])
+  return ativo
+}
+
+/** A estrela do site: conversa com o concierge direto da página inicial. Desligado, vira o convite ao roteiro. */
+function ConciergeBox() {
+  const navigate = useNavigate()
+  const ativo = useConciergeAtivo()
+  const [q, setQ] = useState('')
+  const ir = t => { const v = (t ?? q).trim(); if (v) navigate(`/concierge?q=${encodeURIComponent(v)}`) }
+  if (!ativo) {
+    return (
+      <div className="superficie p-5">
+        <p className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--musgo)]"><Route size={15} />Roteiro</p>
+        <p className="serifa mt-1 text-[24px] font-semibold leading-tight">Seu fim de semana, já montado</p>
+        <p className="mt-1 text-[15px] text-[var(--leve)]">Quantos dias, com quem e do que gosta. Montamos manhã, almoço, tarde e jantar.</p>
+        <button type="button" onClick={() => navigate('/roteiro')} className="botao botao-pri mt-4 h-[52px] w-full"><Route size={19} />Montar meu roteiro</button>
+      </div>
+    )
+  }
+  return (
+    <form onSubmit={e => { e.preventDefault(); ir() }} className="superficie p-5">
+      <p className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--musgo)]"><Sparkles size={15} />Concierge</p>
+      <label htmlFor="conc-home" className="serifa mt-1 block text-[24px] font-semibold leading-tight">Como você quer viver Monte Verde?</label>
+      <div className="mt-3 flex items-center gap-2 rounded-full border border-[var(--borda)] bg-[var(--nevoa)] p-1.5 pl-4">
+        <input id="conc-home" value={q} onChange={e => setQ(e.target.value)} maxLength={600} placeholder="Ex.: 2 dias a dois, gostamos de vinho e trilha"
+          className="min-w-0 flex-1 bg-transparent text-[16px] placeholder:text-[var(--leve)]" />
+        <button type="submit" disabled={!q.trim()} aria-label="Perguntar ao concierge" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--musgo)] text-white disabled:opacity-40"><ArrowRight size={19} /></button>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {['Fim de semana a dois', 'Com crianças', 'Dia de chuva'].map(t => <button key={t} type="button" onClick={() => ir(t)} className="chip h-10 text-[14px]">{t}</button>)}
+      </div>
+      <Link to="/roteiro" className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-[14px] font-semibold text-[var(--musgo)]">Prefere responder perguntas? Monte o roteiro <ArrowRight size={14} /></Link>
+    </form>
+  )
+}
+
+/** Banner + painel. No computador tudo aparece sobre o banner, na primeira tela; no celular o painel vem logo abaixo da foto. */
 function Hero() {
   const navigate = useNavigate()
   const [q, setQ] = useState('')
@@ -73,8 +142,8 @@ function Hero() {
     return () => { clearTimeout(pre); clearTimeout(t) }
   }, [i, reduzido, comVideo])
   return (
-    <section className="relative" aria-labelledby="h-hero">
-      <div className="relative h-[62svh] min-h-[420px] max-h-[640px] overflow-hidden bg-[var(--nevoa-2)] lg:h-[86svh] lg:max-h-[860px]">
+    <section className="relative lg:flex lg:min-h-[calc(100svh-76px)] lg:flex-col lg:justify-end" aria-labelledby="h-hero">
+      <div className="absolute inset-x-0 top-0 h-[clamp(420px,62svh,640px)] overflow-hidden bg-[var(--nevoa-2)] lg:inset-0 lg:h-auto">
         {comVideo ? (
           <video className="absolute inset-0 h-full w-full object-cover" autoPlay muted loop playsInline preload="metadata" poster={POSTER[0].g} aria-hidden="true">
             {HERO_VIDEO.webm && <source src={HERO_VIDEO.webm} type="video/webm" />}
@@ -86,27 +155,31 @@ function Hero() {
               className={`h-full w-full object-cover ${reduzido ? '' : 'deriva'}`} fetchPriority={k === 0 ? 'high' : 'auto'} />
           </div>
         ))}
-        <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(180deg, rgb(20 22 20 / .18) 0%, rgb(20 22 20 / 0) 30%, rgb(20 22 20 / .1) 55%, rgb(20 22 20 / .6) 100%)' }} />
-        <div className="absolute inset-x-0 bottom-0 px-5 pb-6 text-white lg:pb-28">
-          <div className="lg:mx-auto lg:max-w-[1180px] lg:px-3">
-            <h1 id="h-hero" className="sobe serifa font-semibold leading-[1.02]" style={{ '--i': 0 }}>
-              <span className="block text-[30px] font-medium italic lg:text-[46px]">Descubra</span>
-              <span className="block text-[48px] lg:text-[96px]">Monte Verde</span>
-            </h1>
-            <p className="sobe mt-2 max-w-[38ch] text-[16px] leading-snug text-white/90 lg:text-[19px]" style={{ '--i': 1 }}>
-              Experiências autênticas, boa gastronomia e o charme da serra em um só lugar.
-            </p>
-            <form onSubmit={e => { e.preventDefault(); if (q.trim()) navigate(`/busca?q=${encodeURIComponent(q.trim())}`) }} role="search"
-              className="sobe mt-4 flex h-[52px] items-center gap-2 rounded-full bg-[var(--papel)] pl-4 pr-1.5 text-[var(--araucaria)] lg:h-[58px] lg:max-w-[560px]" style={{ '--i': 2 }}>
-              <Search size={19} className="shrink-0 text-[var(--leve)]" />
-              <input type="search" enterKeyHint="search" value={q} onChange={e => setQ(e.target.value)} aria-label="O que você procura hoje?"
-                placeholder="O que você procura hoje?" className="min-w-0 flex-1 bg-transparent text-[16px] placeholder:text-[var(--leve)]" />
-              {q && <button type="button" onClick={() => setQ('')} aria-label="Limpar busca" className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--leve)]"><X size={17} /></button>}
-              <BotaoVoz onTexto={t => navigate(`/busca?q=${encodeURIComponent(t)}`)} />
-            </form>
-          </div>
-        </div>
-        {!comVideo && <p className="absolute right-4 top-4 hidden rounded-full bg-black/30 px-2.5 py-1 text-[11px] text-white/90 lg:block">{POSTER[i].legenda} · foto {POSTER[i].autor}</p>}
+        <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(180deg, rgb(20 22 20 / .25) 0%, rgb(20 22 20 / 0) 28%, rgb(20 22 20 / .12) 50%, rgb(20 22 20 / .62) 100%)' }} />
+        {!comVideo && <p className="absolute bottom-3 right-3 hidden rounded-full bg-black/25 px-2.5 py-1 text-[11px] text-white/80 lg:block">{POSTER[i].legenda} · foto {POSTER[i].autor}</p>}
+      </div>
+      <ClimaPilula />
+
+      <div className="relative flex min-h-[clamp(420px,62svh,640px)] flex-col justify-end px-5 pb-6 text-white lg:mx-auto lg:min-h-0 lg:w-full lg:max-w-[1180px] lg:px-3 lg:pb-6 lg:pt-28">
+        <h1 id="h-hero" className="sobe serifa font-semibold leading-[1.02]" style={{ '--i': 0 }}>
+          <span className="block text-[30px] font-medium italic lg:text-[44px]">Descubra</span>
+          <span className="block text-[48px] lg:text-[88px]">Monte Verde</span>
+        </h1>
+        <p className="sobe mt-2 max-w-[38ch] text-[16px] leading-snug text-white/90 lg:text-[19px]" style={{ '--i': 1 }}>
+          Experiências autênticas, boa gastronomia e o charme da serra em um só lugar.
+        </p>
+        <form onSubmit={e => { e.preventDefault(); if (q.trim()) navigate(`/busca?q=${encodeURIComponent(q.trim())}`) }} role="search"
+          className="sobe mt-4 flex h-[52px] items-center gap-2 rounded-full bg-[var(--papel)] pl-4 pr-1.5 text-[var(--araucaria)] lg:h-[56px] lg:max-w-[560px]" style={{ '--i': 2 }}>
+          <Search size={19} className="shrink-0 text-[var(--leve)]" />
+          <input type="search" enterKeyHint="search" value={q} onChange={e => setQ(e.target.value)} aria-label="O que você procura hoje?"
+            placeholder="O que você procura hoje?" className="min-w-0 flex-1 bg-transparent text-[16px] placeholder:text-[var(--leve)]" />
+          {q && <button type="button" onClick={() => setQ('')} aria-label="Limpar busca" className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--leve)]"><X size={17} /></button>}
+          <BotaoVoz onTexto={t => navigate(`/busca?q=${encodeURIComponent(t)}`)} />
+        </form>
+      </div>
+
+      <div className="relative lg:mx-auto lg:w-full lg:max-w-[1180px] lg:px-3 lg:pb-8">
+        <Painel />
       </div>
     </section>
   )
@@ -158,14 +231,12 @@ function BoasVindas() {
   )
 }
 
-/** Atalhos e o agora: as quatro decisões da viagem, o clima e o concierge. */
-function Agora() {
-  const navigate = useNavigate()
+/** Painel: atalhos, o concierge (a estrela) e o agora. No computador fica sobre o banner, em vidro claro. */
+function Painel() {
   const a = agoraMV()
   const clima = useClima()
   const { businesses } = useBusinesses({})
   const abertos = businesses.filter(b => b.st.estado === 'aberto' || b.st.estado === 'plantao')
-  const frio = clima && clima.minNoite != null && clima.minNoite <= 10 && a.min >= 840
   const chegou = useChegou()
   const ACOES = [
     ['Comer agora', '/categoria/alimentacao?aberto=1', 'Utensils'],
@@ -173,60 +244,39 @@ function Agora() {
     ['Fazer hoje', '/categoria/turismo', 'Mountain'],
     ['Serviços úteis', '/uteis', 'MapPin'],
   ]
-
   return (
-    <section className="relative px-5 pt-5 lg:mx-auto lg:max-w-[1180px] lg:px-3 lg:pt-0" aria-label="Atalhos">
-      <nav className="sobe grid grid-cols-4 gap-2.5 lg:-mt-16 lg:gap-4" style={{ '--i': 2 }} aria-label="Atalhos principais">
+    <div className="bg-[var(--nevoa)] px-5 pt-5 lg:rounded-[24px] lg:border lg:border-white/40 lg:bg-[var(--papel)]/85 lg:p-6 lg:shadow-[0_12px_40px_rgb(20_22_20/0.18)] lg:backdrop-blur-xl">
+      <nav className="sobe grid grid-cols-4 gap-2.5 lg:gap-4" style={{ '--i': 2 }} aria-label="Atalhos principais">
         {ACOES.map(([t, to, ic]) => (
-          <Link key={to} to={to} className="pressiona superficie flex min-h-[88px] flex-col items-center justify-center gap-2 px-1 text-center shadow-[var(--sombra)] lg:min-h-[120px] lg:flex-row lg:gap-3">
+          <Link key={to} to={to} className="pressiona superficie flex min-h-[88px] flex-col items-center justify-center gap-2 px-1 text-center shadow-[var(--sombra)] lg:min-h-[76px] lg:flex-row lg:gap-3">
             <Icon name={ic} size={26} strokeWidth={1.6} className="text-[var(--araucaria)]" />
             <span className="text-[13px] font-semibold leading-tight lg:text-[17px]">{t}</span>
           </Link>
         ))}
       </nav>
 
-      <div className="lg:mt-8 lg:grid lg:grid-cols-2 lg:gap-x-8"><div>
-      <p className="sobe mt-5 flex flex-wrap items-center gap-x-1.5 text-[15px] text-[var(--leve)] lg:mt-0" style={{ '--i': 3 }}>
-        <span>{saudacao(a.min)}. {DIAS_NOME[DIAS[a.dia]]}, <span className="num">{hhmm(a.min)}</span>.</span>
-        {clima && <span className="inline-flex items-center gap-1 text-[var(--araucaria)]"><Icon name={clima.icone} size={16} className="text-[var(--salvia)]" /><span><span className="num">{clima.temp} °C</span>, {clima.texto}</span></span>}
-        {abertos.length > 0 && <Link to="/categoria/alimentacao?aberto=1" className="font-semibold text-[var(--musgo)]"><span className="num">{abertos.length}</span> lugares abertos agora</Link>}
-      </p>
-
       {chegou && <BoasVindas />}
 
-      {clima && (clima.chuvaProx || clima.chuvaHoje || frio) && (
-        <Link to={clima.chuvaProx || clima.chuvaHoje ? '/busca?q=chuva' : '/busca?q=fondue'} className="sobe pressiona superficie mt-3 flex items-center gap-3 p-4" style={{ '--i': 3 }}>
-          <Icon name={clima.chuvaProx || clima.chuvaHoje ? 'CloudRain' : 'Snowflake'} size={24} className="shrink-0 text-[var(--salvia)]" />
-          <span className="min-w-0 flex-1">
-            <span className="block text-[16px] font-semibold leading-tight">
-              {clima.chuvaProx ? 'Chuva nas próximas horas' : clima.chuvaHoje ? 'Chove hoje' : `Esfria à noite: ${clima.minNoite} °C`}
-            </span>
-            <span className="block text-[14px] text-[var(--leve)]">{clima.chuvaProx || clima.chuvaHoje ? 'Plano B: chocolaterias, cervejarias, galerias e lugares cobertos' : 'Leve casaco. Fondue, lareira e vinho são a pedida'}</span>
-          </span>
-          <ArrowRight size={18} className="shrink-0 text-[var(--musgo)]" />
-        </Link>
-      )}
-
-      <div className="sobe -mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-1 scrollbar-hide lg:mx-0 lg:flex-wrap lg:px-0" style={{ '--i': 4 }}>
-        {chipsDaHora(a.min, clima?.chuvaHoje).map(([t, termo]) => (
-          <Link key={termo} to={`/busca?q=${encodeURIComponent(termo)}`} className="chip">{t}</Link>
-        ))}
+      <div className="mt-4 lg:grid lg:grid-cols-[1.35fr_1fr] lg:items-start lg:gap-6">
+        <div className="sobe" style={{ '--i': 3 }}><ConciergeBox /></div>
+        <div className="sobe mt-4 lg:mt-1" style={{ '--i': 4 }}>
+          <p className="text-[15px] text-[var(--leve)]">
+            {saudacao(a.min)}. {DIAS_NOME[DIAS[a.dia]]}, <span className="num">{hhmm(a.min)}</span>{clima ? `, ${clima.temp} °C` : ''}.
+          </p>
+          {abertos.length > 0 && (
+            <Link to="/categoria/alimentacao?aberto=1" className="serifa mt-1 block text-[24px] font-semibold leading-tight text-[var(--araucaria)]">
+              <span className="num">{abertos.length}</span> lugares abertos agora <ArrowRight size={18} className="inline text-[var(--musgo)]" />
+            </Link>
+          )}
+          <p className="mt-4 text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--leve)]">Para agora</p>
+          <div className="-mx-5 mt-2 flex gap-2 overflow-x-auto px-5 pb-1 scrollbar-hide lg:mx-0 lg:flex-wrap lg:px-0">
+            {chipsDaHora(a.min, clima?.chuvaHoje).map(([t, termo]) => (
+              <Link key={termo} to={`/busca?q=${encodeURIComponent(termo)}`} className="chip">{t}</Link>
+            ))}
+          </div>
+        </div>
       </div>
-
-      </div><div>
-      <Link to="/concierge" className="sobe pressiona superficie mt-4 flex items-center gap-3 p-4 lg:mt-0" style={{ '--i': 5 }}>
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--broto)]"><Icon name="Sparkles" size={20} className="text-[var(--musgo)]" /></span>
-        <span className="min-w-0 flex-1">
-          <span className="serifa block text-[18px] font-semibold leading-tight">Concierge: seu roteiro em 1 minuto</span>
-          <span className="block text-[14px] text-[var(--leve)]">Diga com quem veio e do que gosta.</span>
-        </span>
-        <ArrowRight size={18} className="shrink-0 text-[var(--musgo)]" />
-      </Link>
-      <button type="button" onClick={() => navigate('/roteiro')} className="sobe botao botao-pri mt-3 h-[52px] w-full" style={{ '--i': 5 }}>
-        <Route size={19} />Montar meu roteiro
-      </button>
-      </div></div>
-    </section>
+    </div>
   )
 }
 
@@ -444,7 +494,6 @@ export function Home() {
       <Avisos />
       <Topo />
       <Hero />
-      <Agora />
       <div className="lg:mx-auto lg:max-w-[1180px] lg:px-3">
         <Destaques />
         <Explorar />
