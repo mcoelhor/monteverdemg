@@ -39,7 +39,13 @@ export function Concierge() {
   const [params, setParams] = useSearchParams()
   const inicial = useRef(params.get('q'))
 
-  useEffect(() => { gravar(msgs); fim.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }) }, [msgs])
+  useEffect(() => { gravar(msgs) }, [msgs])
+  // Sempre que chega mensagem, resposta ou aviso, rola até o fim: a última resposta e o campo de digitar ficam à vista.
+  useEffect(() => {
+    if (!msgs.length && !enviando) return
+    const t = setTimeout(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' }), 80)
+    return () => clearTimeout(t)
+  }, [msgs, enviando, erro])
 
   async function enviar(pergunta) {
     const q = (pergunta ?? texto).trim()
@@ -84,7 +90,7 @@ export function Concierge() {
         )}
       </section>
 
-      <div className="space-y-4 px-5 pb-40 pt-5" aria-live="polite">
+      <div className="space-y-4 px-5 pb-64 pt-5" aria-live="polite">
         {msgs.map((m, i) => m.role === 'user'
           ? <p key={i} className="ml-auto w-fit max-w-[85%] rounded-[20px] rounded-br-md bg-[var(--musgo)] px-4 py-3 text-[16px] leading-relaxed text-white">{m.text}</p>
           : <Resposta key={i} m={m} porSlug={porSlug} />
