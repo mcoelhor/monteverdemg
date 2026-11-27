@@ -93,7 +93,7 @@ function MapaTrilha({ t }) {
   const pontos = [t.inicio, t.cume].filter(Boolean)
   if (!m) return <div className="esqueleto h-[300px] rounded-[var(--raio)]" />
   const { L, MapContainer, TileLayer, Marker, Tooltip } = m
-  const pino = (txt, cor) => L.divIcon({ html: `<div class="pino" style="background:${cor};width:auto;padding:0 10px;border-radius:999px;font:600 12px Inter,sans-serif;color:#fff;white-space:nowrap">${txt}</div>`, className: '', iconSize: null, iconAnchor: [20, 34] })
+  const pino = (txt, cor) => L.divIcon({ html: `<div style="display:inline-block;transform:translate(-50%,-100%);background:${cor};padding:5px 11px;border-radius:999px;font:600 12px Inter,sans-serif;color:#fff;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,.25);border:2px solid #fff">${txt}</div>`, className: '', iconSize: [0, 0], iconAnchor: [0, 0] })
   const bounds = pontos.length > 1 ? L.latLngBounds(pontos.map(p => [p.lat, p.lng])).pad(0.4) : null
   return (
     <div className="h-[300px] overflow-hidden rounded-[var(--raio)] border border-[var(--borda)] lg:h-[380px]">
