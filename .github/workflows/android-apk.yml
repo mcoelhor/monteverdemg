@@ -1,0 +1,26 @@
+# Gera o APK de teste do app Android (Capacitor) a cada push que mexe no app.
+# O arquivo fica em Actions > (execução) > Artifacts > monte-verde-mg-apk.
+name: APK Android (teste)
+on:
+  workflow_dispatch:
+  push:
+    branches: [lancamento]
+    paths: ['src/**', 'public/**', 'android/**', 'capacitor.config.json', 'package.json', '.github/workflows/android-apk.yml']
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21, cache: gradle }
+      - run: npm ci
+      - run: npm run build
+      - run: npx cap sync android
+      - run: chmod +x android/gradlew && cd android && ./gradlew assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: monte-verde-mg-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30

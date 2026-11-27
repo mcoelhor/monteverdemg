@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Monte Verde MG</string>
+    <string name="title_activity_main">Monte Verde MG</string>
+    <string name="package_name">br.com.monteverdemg.app</string>
+    <string name="custom_url_scheme">br.com.monteverdemg.app</string>
+</resources>

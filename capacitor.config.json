@@ -1,0 +1,7 @@
+{
+  "appId": "br.com.monteverdemg.app",
+  "appName": "Monte Verde MG",
+  "webDir": "dist",
+  "android": { "allowMixedContent": false },
+  "server": { "androidScheme": "https" }
+}
