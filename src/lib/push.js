@@ -44,7 +44,8 @@ export function assinaturaLocal() { try { return JSON.parse(localStorage.getItem
 /** "Avise quando abrir" para um lugar. */
 export async function avisarQuandoAbrir(businessId) {
   const sub = await assinar()
-  const r = await fetch(`${FUNCAO}?acao=abrir`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ endpoint: sub.endpoint, business_id: businessId }) })
+  const auth = sub.toJSON().keys?.auth
+  const r = await fetch(`${FUNCAO}?acao=abrir`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ endpoint: sub.endpoint, auth, business_id: businessId }) })
   if (!r.ok) throw new Error('Não foi possível registrar o aviso.')
   try {
     const l = JSON.parse(localStorage.getItem('mv_push_abrir') || '[]'); if (!l.includes(businessId)) l.push(businessId)

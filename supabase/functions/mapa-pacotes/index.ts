@@ -97,6 +97,10 @@ Deno.serve(async (req) => {
   if (!tok || req.headers.get('x-tarefa') !== tok) return new Response('sem permissão', { status: 403 })
   const pedido = await req.json().catch(() => ({}))
   const so: string[] | undefined = pedido.pacotes
+  // A fonte, quando informada, só pode vir do provedor oficial (evita baixar/servir um arquivo arbitrário).
+  if (pedido.fonte && !/^https:\/\/build\.protomaps\.com\//.test(String(pedido.fonte))) {
+    return new Response('fonte não permitida', { status: 400 })
+  }
   try {
     const fonte = pedido.fonte || await buildRecente()
     const origem = new PMTiles(fonte)
