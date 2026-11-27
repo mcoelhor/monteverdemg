@@ -107,16 +107,16 @@ export default function App() {
         <Route path="/trilhas" element={<Trilhas />} />
         <Route path="/trilhas/:slug" element={<TrilhaDetalhe />} />
         <Route path="/privacidade" element={<Privacidade />} />
-        <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-        <Route path="/admin/avisos" element={<AdminGuard><AdminAvisos /></AdminGuard>} />
-        <Route path="/admin/donos" element={<AdminGuard><AdminReivindicacoes /></AdminGuard>} />
+        <Route path="/bastidores-mv" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+        <Route path="/bastidores-mv/avisos" element={<AdminGuard><AdminAvisos /></AdminGuard>} />
+        <Route path="/bastidores-mv/donos" element={<AdminGuard><AdminReivindicacoes /></AdminGuard>} />
         <Route path="/meu-negocio" element={<MeuNegocio />} />
-        <Route path="/admin/pagamentos" element={<AdminGuard><AdminPagamentos /></AdminGuard>} />
-        <Route path="/admin/leads" element={<AdminGuard><AdminLeads /></AdminGuard>} />
-        <Route path="/admin/buscas" element={<AdminGuard><AdminBuscas /></AdminGuard>} />
-        <Route path="/admin/empresas" element={<AdminGuard><AdminBusinesses /></AdminGuard>} />
-        <Route path="/admin/eventos" element={<AdminGuard><AdminEvents /></AdminGuard>} />
-        <Route path="/admin/config" element={<AdminGuard><AdminConfig /></AdminGuard>} />
+        <Route path="/bastidores-mv/pagamentos" element={<AdminGuard><AdminPagamentos /></AdminGuard>} />
+        <Route path="/bastidores-mv/leads" element={<AdminGuard><AdminLeads /></AdminGuard>} />
+        <Route path="/bastidores-mv/buscas" element={<AdminGuard><AdminBuscas /></AdminGuard>} />
+        <Route path="/bastidores-mv/empresas" element={<AdminGuard><AdminBusinesses /></AdminGuard>} />
+        <Route path="/bastidores-mv/eventos" element={<AdminGuard><AdminEvents /></AdminGuard>} />
+        <Route path="/bastidores-mv/config" element={<AdminGuard><AdminConfig /></AdminGuard>} />
         <Route path="*" element={<NaoEncontrada />} />
       </Routes>
       </Suspense>

@@ -3,15 +3,15 @@ import { LayoutDashboard, Building2, Calendar, Inbox, Search, ArrowLeft, LogOut,
 import { sair } from './useAdmin'
 
 const NAV = [
-  { path: '/admin', icon: LayoutDashboard, label: 'Painel', exact: true },
-  { path: '/admin/pagamentos', icon: Wallet, label: 'Pagamentos' },
-  { path: '/admin/donos', icon: BadgeCheck, label: 'Donos' },
-  { path: '/admin/avisos', icon: Megaphone, label: 'Avisos e clima' },
-  { path: '/admin/leads', icon: Inbox, label: 'Leads' },
-  { path: '/admin/buscas', icon: Search, label: 'Buscas' },
-  { path: '/admin/empresas', icon: Building2, label: 'Lugares' },
-  { path: '/admin/eventos', icon: Calendar, label: 'Eventos' },
-  { path: '/admin/config', icon: Settings, label: 'Configurações' },
+  { path: '/bastidores-mv', icon: LayoutDashboard, label: 'Painel', exact: true },
+  { path: '/bastidores-mv/pagamentos', icon: Wallet, label: 'Pagamentos' },
+  { path: '/bastidores-mv/donos', icon: BadgeCheck, label: 'Donos' },
+  { path: '/bastidores-mv/avisos', icon: Megaphone, label: 'Avisos e clima' },
+  { path: '/bastidores-mv/leads', icon: Inbox, label: 'Leads' },
+  { path: '/bastidores-mv/buscas', icon: Search, label: 'Buscas' },
+  { path: '/bastidores-mv/empresas', icon: Building2, label: 'Lugares' },
+  { path: '/bastidores-mv/eventos', icon: Calendar, label: 'Eventos' },
+  { path: '/bastidores-mv/config', icon: Settings, label: 'Configurações' },
 ]
 
 export function AdminLayout({ children }) {

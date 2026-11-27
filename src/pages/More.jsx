@@ -43,7 +43,6 @@ export function More() {
         <Linha icon={Store} label="Meu negócio (área do responsável)" onClick={() => navigate('/meu-negocio')} />
         <Linha icon={Image} label="Créditos das fotos" onClick={() => navigate('/creditos')} />
         <Linha icon={Shield} label="Privacidade" onClick={() => navigate('/privacidade')} />
-        <Linha icon={Settings} label="Área do administrador" onClick={() => navigate('/admin')} />
       </div>
 
       <section id="cadastro" className="px-5 pt-12" style={{ scrollMarginTop: 90 }}>

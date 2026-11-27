@@ -20,7 +20,7 @@ export function AdminLogin({ user }) {
       if (error) setMsg(error.message.includes('confirm') ? 'Confirme o e-mail antes de entrar (veja a caixa de entrada).' : 'E-mail ou senha incorretos.')
     } else {
       if (senha.length < 8) { setMsg('Use uma senha com pelo menos 8 caracteres.'); setEnviando(false); return }
-      const { error } = await supabase.auth.signUp({ email: email.trim(), password: senha, options: { emailRedirectTo: `${location.origin}/admin` } })
+      const { error } = await supabase.auth.signUp({ email: email.trim(), password: senha, options: { emailRedirectTo: `${location.origin}/bastidores-mv` } })
       if (error) setMsg(error.message)
       else setOk('Conta criada. Abra o e-mail de confirmação e depois entre aqui.')
     }
@@ -41,7 +41,7 @@ export function AdminLogin({ user }) {
           </>
         ) : (
           <>
-          <div className="mt-4"><BotaoGoogle volta="/admin" /></div>
+          <div className="mt-4"><BotaoGoogle volta="/bastidores-mv" /></div>
           <form onSubmit={enviar} className="mt-4 space-y-3">
             <input className={campo} type="email" autoComplete="email" placeholder="E-mail" value={email} onChange={e => setEmail(e.target.value)} required />
             <input className={campo} type="password" autoComplete={modo === 'entrar' ? 'current-password' : 'new-password'} placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} required />

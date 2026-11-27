@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   if (String(req.query.tipo) === 'robots') {
     res.setHeader('Content-Type', 'text/plain; charset=utf-8')
     res.setHeader('Cache-Control', 'public, s-maxage=86400')
-    return res.end(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /meu-negocio\nDisallow: /api/\nSitemap: ${origem}/sitemap.xml\n`)
+    return res.end(`User-agent: *\nAllow: /\nDisallow: /meu-negocio\nDisallow: /api/\nSitemap: ${origem}/sitemap.xml\n`)
   }
   let lista = []
   try { const r = await fetch(`${SUPA}/rest/v1/businesses?status=eq.active&select=slug,category,subcategory,updated_at&order=name`, { headers: { apikey: KEY, Authorization: `Bearer ${KEY}` }, signal: AbortSignal.timeout(5000) }); lista = r.ok ? await r.json() : [] } catch { /* sem banco: sitemap só com as páginas fixas */ }

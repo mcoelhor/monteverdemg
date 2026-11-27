@@ -87,15 +87,15 @@ export function AdminDashboard() {
 
       <div className="grid grid-cols-2 gap-2">
         <Kpi rotulo="Visitas" valor={k.visitas} sub="uma por aparelho por dia" />
-        <Kpi rotulo="Leads aguardando" valor={k.leads} sub="toque para responder" onClick={() => navigate('/admin/leads')} />
+        <Kpi rotulo="Leads aguardando" valor={k.leads} sub="toque para responder" onClick={() => navigate('/bastidores-mv/leads')} />
         <Kpi rotulo="Contatos gerados" valor={k.wa == null ? null : k.wa + k.tel + k.rota} sub="WhatsApp + ligação + rota" />
         <Kpi rotulo="Visitas a lugares" valor={k.view} />
-        <Kpi rotulo="Buscas" valor={k.busca} onClick={() => navigate('/admin/buscas')} />
+        <Kpi rotulo="Buscas" valor={k.busca} onClick={() => navigate('/bastidores-mv/buscas')} />
         <Kpi rotulo="WhatsApp" valor={k.wa} />
         <Kpi rotulo="Ligações" valor={k.tel} />
         <Kpi rotulo="Ofertas usadas" valor={k.cupons} sub="mostradas no balcão" />
         <Kpi rotulo="Cliques nos parceiros" valor={k.parc} sub="Toca + Construtora" />
-        <Kpi rotulo="Lugares ativos" valor={k.lugares} onClick={() => navigate('/admin/empresas')} />
+        <Kpi rotulo="Lugares ativos" valor={k.lugares} onClick={() => navigate('/bastidores-mv/empresas')} />
       </div>
 
       <section className="mt-5 rounded-2xl bg-white p-4">
