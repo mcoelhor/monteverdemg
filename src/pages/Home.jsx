@@ -66,12 +66,12 @@ function ClimaPilula() {
   const frio = clima.minNoite != null && clima.minNoite <= 10 && a.min >= 840
   const alerta = clima.chuvaProx ? 'Chuva nas próximas horas' : clima.chuvaHoje ? 'Chove hoje' : frio ? `Esfria à noite: ${clima.minNoite} °C` : ''
   return (
-    <div className="absolute right-4 top-4 z-20 flex flex-col items-end gap-1.5 lg:right-8 lg:top-6">
-      <p className="flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3.5 py-2 text-[14px] text-white backdrop-blur-md lg:text-[15px]">
+    <div className="absolute right-3 top-3 z-20 flex flex-col items-end gap-1.5 lg:right-8 lg:top-6">
+      <p className="flex items-center gap-2 rounded-full border border-white/25 bg-black/25 px-3 py-1.5 text-[13px] text-white backdrop-blur-md lg:px-3.5 lg:py-2 lg:text-[15px]">
         <Icon name={clima.icone} size={17} /><span className="num font-semibold">{clima.temp} °C</span><span className="text-white/85">· {clima.texto}</span>
       </p>
       {alerta && (
-        <Link to={clima.chuvaProx || clima.chuvaHoje ? '/busca?q=chuva' : '/busca?q=fondue'} className="flex items-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-3 py-1.5 text-[13px] text-white backdrop-blur-md">
+        <Link to={clima.chuvaProx || clima.chuvaHoje ? '/busca?q=chuva' : '/busca?q=fondue'} className="flex items-center gap-1.5 rounded-full border border-white/25 bg-black/25 px-3 py-1.5 text-[13px] text-white backdrop-blur-md">
           <Icon name={clima.chuvaProx || clima.chuvaHoje ? 'CloudRain' : 'Snowflake'} size={14} />{alerta}<ArrowRight size={13} />
         </Link>
       )}
@@ -143,7 +143,7 @@ function Hero() {
   }, [i, reduzido, comVideo])
   return (
     <section className="relative lg:flex lg:min-h-[calc(100svh-76px)] lg:flex-col lg:justify-end" aria-labelledby="h-hero">
-      <div className="absolute inset-x-0 top-0 h-[clamp(420px,62svh,640px)] overflow-hidden bg-[var(--nevoa-2)] lg:inset-0 lg:h-auto">
+      <div className="absolute inset-x-0 top-0 h-[clamp(320px,46svh,440px)] overflow-hidden bg-[var(--nevoa-2)] lg:inset-0 lg:h-auto">
         {comVideo ? (
           <video className="absolute inset-0 h-full w-full object-cover" autoPlay muted loop playsInline preload="metadata" poster={POSTER[0].g} aria-hidden="true">
             {HERO_VIDEO.webm && <source src={HERO_VIDEO.webm} type="video/webm" />}
@@ -160,16 +160,16 @@ function Hero() {
       </div>
       <ClimaPilula />
 
-      <div className="relative flex min-h-[clamp(420px,62svh,640px)] flex-col justify-end px-5 pb-12 text-white lg:mx-auto lg:min-h-0 lg:w-full lg:max-w-[1180px] lg:px-3 lg:pb-6 lg:pt-28">
+      <div className="relative flex min-h-[clamp(320px,46svh,440px)] flex-col justify-end px-5 pb-11 pt-16 text-white lg:mx-auto lg:min-h-0 lg:w-full lg:max-w-[1180px] lg:px-3 lg:pb-6 lg:pt-28">
         <h1 id="h-hero" className="sobe serifa font-semibold leading-[1.02]" style={{ '--i': 0 }}>
-          <span className="block text-[30px] font-medium italic lg:text-[44px]">Descubra</span>
-          <span className="block text-[48px] lg:text-[88px]">Monte Verde</span>
+          <span className="block text-[26px] font-medium italic lg:text-[44px]">Descubra</span>
+          <span className="block text-[42px] lg:text-[88px]">Monte Verde</span>
         </h1>
-        <p className="sobe mt-2 max-w-[38ch] text-[16px] leading-snug text-white/90 lg:text-[19px]" style={{ '--i': 1 }}>
+        <p className="sobe mt-1.5 max-w-[38ch] text-[15px] leading-snug text-white/90 lg:mt-2 lg:text-[19px]" style={{ '--i': 1 }}>
           Experiências autênticas, boa gastronomia e o charme da serra em um só lugar.
         </p>
         <form onSubmit={e => { e.preventDefault(); if (q.trim()) navigate(`/busca?q=${encodeURIComponent(q.trim())}`) }} role="search"
-          className="sobe mt-4 flex h-[52px] items-center gap-2 rounded-full bg-[var(--papel)] pl-4 pr-1.5 text-[var(--araucaria)] lg:h-[56px] lg:max-w-[560px]" style={{ '--i': 2 }}>
+          className="sobe mt-3 flex h-[50px] items-center gap-2 rounded-full bg-[var(--papel)] pl-4 pr-1.5 text-[var(--araucaria)] lg:h-[56px] lg:max-w-[560px]" style={{ '--i': 2 }}>
           <Search size={19} className="shrink-0 text-[var(--leve)]" />
           <input type="search" enterKeyHint="search" value={q} onChange={e => setQ(e.target.value)} aria-label="O que você procura hoje?"
             placeholder="O que você procura hoje?" className="min-w-0 flex-1 bg-transparent text-[16px] placeholder:text-[var(--leve)]" />
