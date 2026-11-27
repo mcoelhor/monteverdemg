@@ -1,4 +1,4 @@
-import { BrowserRouter, HashRouter, Routes, Route, useLocation, useNavigationType } from 'react-router-dom'
+import { BrowserRouter, HashRouter, MemoryRouter, Routes, Route, useLocation, useNavigationType } from 'react-router-dom'
 import { useEffect, useLayoutEffect, lazy, Suspense } from 'react'
 import { Home } from './pages/Home'
 import { Sos } from './pages/Sos'
@@ -30,7 +30,9 @@ const AdminReivindicacoes = lazy(() => import('./admin/AdminReivindicacoes').the
 const MeuNegocio = lazy(() => import('./pages/MeuNegocio').then(m => ({ default: m.MeuNegocio })))
 const AdminAvisos = lazy(() => import('./admin/AdminAvisos').then(m => ({ default: m.AdminAvisos })))
 // Prévia publicada como página única (sem servidor): rotas pelo # do endereço
-const Roteador = import.meta.env.VITE_PREVIA ? HashRouter : BrowserRouter
+// Em visualizadores sem endereço web (ex.: prévia de HTML do app do Claude, origem "null"), navega só na memória.
+const semEndereco = typeof window !== 'undefined' && (window.location.origin === 'null' || !/^https?:|^file:/.test(window.location.protocol))
+const Roteador = import.meta.env.VITE_PREVIA ? (semEndereco ? MemoryRouter : HashRouter) : BrowserRouter
 const Concierge = lazy(() => import('./pages/Concierge').then(m => ({ default: m.Concierge })))
 const Totem = lazy(() => import('./pages/Totem').then(m => ({ default: m.Totem })))
 const AdminEvents = lazy(() => import('./admin/AdminEvents').then(m => ({ default: m.AdminEvents })))
