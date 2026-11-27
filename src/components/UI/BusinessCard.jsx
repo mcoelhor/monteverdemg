@@ -4,31 +4,32 @@ import { Icon } from './Icon'
 import { StatusPill, ParceiroBadge, VerificadoBadge } from './Badge'
 import { useFavorites } from '../../hooks/useFavorites'
 import { useGeolocation } from '../../hooks/useGeolocation'
-import { iconeDe, nomeSub, categoria } from '../../data/categories'
+import { iconeDe, nomeSub } from '../../data/categories'
+import { FOTOS, FOTO_CATEGORIA } from '../../data/fotos'
 import { registrar, linkWhatsApp, linkTel } from '../../lib/track'
 import { useOfertas } from '../../hooks/useOfertas'
 
 export const planoAtivo = b => (b.plan === 'premium' || b.plan === 'destaque') && (!b.plan_expires_at || new Date(b.plan_expires_at) > new Date()) ? b.plan : 'free'
 
-/** Topo com foto do lugar; sem foto, um campo chapado na cor do tipo com o ícone. */
+/** Topo com foto do lugar; sem foto, uma foto da vila da mesma categoria, marcada como ilustrativa. */
 export function Capa({ b, alto = 'h-40', grande = false }) {
   if (b.images?.[0]) {
     return <img src={b.images[0]} alt="" className={`w-full ${alto} object-cover`} loading="lazy" />
   }
-  const tint = categoria(b.category)?.tint || '#355b47'
+  const f = FOTO_CATEGORIA[b.category] || FOTOS.avenida
   return (
-    <div className={`relative w-full ${alto} overflow-hidden capa-sem-foto`} style={{ '--tint': tint }}>
-      <Icon name={iconeDe(b)} size={grande ? 88 : 48} strokeWidth={1.2} className="absolute bottom-8 right-6 text-white/35" />
+    <div className={`relative w-full ${alto} overflow-hidden bg-[var(--nevoa-2)]`}>
+      <img src={grande ? f.g : f.p} alt="" className="h-full w-full object-cover" loading="lazy" />
+      <span className="absolute bottom-7 right-3 rounded-full bg-black/35 px-2.5 py-1 text-[11px] text-white/90">Foto ilustrativa da vila</span>
     </div>
   )
 }
 
-/** Quadrado com o ícone do tipo, na cor da categoria. */
+/** Quadrado com o ícone do tipo, em tom suave. */
 export function Selo({ b, tam = 52 }) {
-  const tint = categoria(b.category)?.tint || '#355b47'
   return (
-    <span className="flex shrink-0 items-center justify-center rounded-[14px] text-white" style={{ width: tam, height: tam, background: tint }}>
-      <Icon name={iconeDe(b)} size={Math.round(tam * 0.44)} strokeWidth={1.9} />
+    <span className="flex shrink-0 items-center justify-center rounded-[14px] bg-[var(--broto)] text-[var(--musgo)]" style={{ width: tam, height: tam }}>
+      <Icon name={iconeDe(b)} size={Math.round(tam * 0.46)} strokeWidth={1.6} />
     </span>
   )
 }
@@ -39,7 +40,7 @@ function Texto({ b, dist, formatDistance }) {
   const temOferta = porLugar.has(b.id)
   return (
     <div className="min-w-0 flex-1">
-      <h3 className="line-clamp-2 text-[19px] font-extrabold leading-tight tracking-[-0.02em]">{b.name}</h3>
+      <h3 className="line-clamp-2 text-[20px] leading-tight">{b.name}</h3>
       <p className="mt-0.5 text-[14px] text-[var(--leve)]">
         {nomeSub(b)}{b.city && b.city !== 'Monte Verde' ? ` · ${b.city}` : ''}
         {dist !== null && <span className="ml-1 inline-flex items-center gap-0.5"><MapPin size={12} />{formatDistance(dist)}</span>}
@@ -63,7 +64,7 @@ export function BusinessCard({ business: b, compacto = false, index = 0 }) {
   const abrir = () => navigate(`/estabelecimento/${b.slug}`)
 
   return (
-    <article className="entra overflow-hidden rounded-[var(--raio)] bg-[var(--papel)]" style={{ '--i': Math.min(index, 10) }}>
+    <article className="entra overflow-hidden rounded-[18px] border border-[var(--borda)] bg-[var(--papel)]" style={{ '--i': Math.min(index, 10) }}>
       {b.images?.[0] ? (
         <button onClick={abrir} className="pressiona block w-full text-left" aria-label={`Ver ${b.name}`}>
           <Capa b={b} alto={compacto ? 'h-32' : 'h-48'} />

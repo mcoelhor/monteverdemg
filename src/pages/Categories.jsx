@@ -22,19 +22,21 @@ export function Categories() {
           const on = aberta === c.id
           const f = FOTO_CATEGORIA[c.id]
           return (
-            <div key={c.id} className="entra overflow-hidden rounded-[var(--raio)] bg-[var(--papel)]" style={{ '--i': i }}>
+            <div key={c.id} className="entra overflow-hidden rounded-[18px] border border-[var(--borda)] bg-[var(--papel)]" style={{ '--i': i }}>
               <button className="pressiona relative block w-full text-left" onClick={() => setAberta(on ? null : c.id)} aria-expanded={on}>
-                <img src={f.p} alt="" loading={i < 3 ? 'eager' : 'lazy'} className="aspect-[16/7] w-full object-cover" />
-                <div className="flex items-center gap-3 px-4 py-3.5">
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-[22px] font-extrabold leading-tight tracking-[-0.02em]">{c.name} <span className="num text-[15px] font-bold text-[var(--leve)]">{conta(c.id) || ''}</span></span>
-                    <span className="block truncate text-[15px] text-[var(--leve)]">{c.description}</span>
+                <span className="card-foto block aspect-[16/7] rounded-none">
+                  <img src={f.p} alt="" loading={i < 3 ? 'eager' : 'lazy'} />
+                  <span className="rotulo flex items-end justify-between gap-3">
+                    <span className="min-w-0">
+                      <span className="serifa block text-[24px] font-semibold leading-tight">{c.name} <span className="num font-sans text-[14px] font-semibold text-white/80">{conta(c.id) || ''}</span></span>
+                      <span className="block truncate text-[14px] text-white/85">{c.description}</span>
+                    </span>
+                    <ChevronDown size={20} className="shrink-0 transition-transform duration-200" style={{ transform: on ? 'rotate(180deg)' : 'none' }} />
                   </span>
-                  <ChevronDown size={20} className="shrink-0 text-[var(--leve)] transition-transform duration-200" style={{ transform: on ? 'rotate(180deg)' : 'none' }} />
-                </div>
+                </span>
               </button>
               <div className={`abre ${on ? 'aberto' : ''}`}><div>
-                <div className="px-4 pb-3">
+                <div className="px-4 pb-3 pt-3">
                   <Link to={`/categoria/${c.slug}`} className="botao botao-pri h-11 min-h-0 w-full">Ver todos <ArrowRight size={17} /></Link>
                   {c.subcategories.filter(s => conta(c.id, s.id)).map(s => (
                     <Link key={s.id} to={`/categoria/${c.slug}/${s.slug}`} className="flex items-center gap-3 py-3 text-[16px] font-semibold">

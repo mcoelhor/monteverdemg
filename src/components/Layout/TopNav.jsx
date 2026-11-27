@@ -17,18 +17,18 @@ export function TopNav() {
   const { pathname } = useLocation()
   const ativo = p => (p === '/' ? pathname === '/' : pathname.startsWith(p) || (p === '/categorias' && pathname.startsWith('/categoria/')))
   return (
-    <nav className="sticky top-0 z-50 hidden h-16 bg-[var(--araucaria)] text-white lg:block" aria-label="Menu">
+    <nav className="sticky top-0 z-50 hidden h-16 border-b border-[var(--borda)] bg-[var(--papel)] text-[var(--araucaria)] lg:block" aria-label="Menu">
       <div className="mx-auto flex h-full max-w-[1180px] items-center gap-5 px-8">
         <Link to="/" className="serifa flex shrink-0 items-center gap-2 text-[22px] font-semibold"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width="28" height="28" />Monte Verde<span className="text-[var(--madeira)]"> MG</span></Link>
         <div className="flex min-w-0 flex-1 items-center gap-0.5">
           {LINKS.map(([t, to]) => (
             <Link key={to} to={to} aria-current={ativo(to) ? 'page' : undefined}
-              className={`rounded-full px-3 py-2 text-[15px] font-semibold transition-colors duration-150 ${ativo(to) ? 'bg-white/12 text-white' : 'text-white/70 hover:text-white'}`}>{t}</Link>
+              className={`rounded-full px-3 py-2 text-[15px] font-semibold transition-colors duration-150 ${ativo(to) ? 'bg-[var(--broto)] text-[var(--musgo-2)]' : 'text-[var(--leve)] hover:text-[var(--araucaria)]'}`}>{t}</Link>
           ))}
         </div>
-        <Link to="/busca" aria-label="Buscar" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 transition-colors duration-150 hover:bg-white/20"><Search size={18} /></Link>
-        <Link to="/meu-negocio" className="shrink-0 text-[14px] font-semibold text-white/70 transition-colors duration-150 hover:text-white">Meu negócio</Link>
-        <Link to="/anuncie" className="botao botao-broto h-10 min-h-0 shrink-0 px-4 text-[14px]">Anuncie</Link>
+        <Link to="/busca" aria-label="Buscar" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--nevoa)] transition-colors duration-150 hover:bg-[var(--nevoa-2)]"><Search size={18} /></Link>
+        <Link to="/meu-negocio" className="shrink-0 text-[14px] font-semibold text-[var(--leve)] transition-colors duration-150 hover:text-[var(--araucaria)]">Meu negócio</Link>
+        <Link to="/anuncie" className="botao botao-pri h-10 min-h-0 shrink-0 px-4 text-[14px]">Anuncie</Link>
       </div>
     </nav>
   )

@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Search, ArrowRight, Route } from 'lucide-react'
+import { Search, ArrowRight, Route, Menu, X } from 'lucide-react'
 import { Icon } from '../components/UI/Icon'
 import { Layout } from '../components/Layout/Layout'
 import { EventCard } from '../components/UI/EventCard'
-import { StatusPill } from '../components/UI/Badge'
 import { Parceiros } from '../components/Parceiros'
 import { useBusinesses } from '../hooks/useBusinesses'
 import { useEvents } from '../hooks/useEvents'
@@ -40,33 +39,60 @@ function saudacao(min) {
   return 'Boa noite'
 }
 
-/** Pôster: o nome dividido nos cantos, as fotos da vila trocando por baixo. */
-function Poster() {
+/** Topo do celular: marca à esquerda, busca à direita (no computador quem faz isso é o menu do topo). */
+function Topo() {
+  return (
+    <header className="flex items-center justify-between px-5 pb-3 lg:hidden" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 12px)' }}>
+      <Link to="/" className="serifa flex items-center gap-2 text-[21px] font-semibold" aria-label="Monte Verde MG, início">
+        <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width="30" height="30" />Monte Verde<span className="text-[var(--madeira)]"> MG</span>
+      </Link>
+      <Link to="/mais" aria-label="Mais opções" className="pressiona flex h-11 w-11 items-center justify-center rounded-full text-[var(--araucaria)]">
+        <Menu size={22} />
+      </Link>
+    </header>
+  )
+}
+
+/** Hero: foto real da serra (troca devagar), chamada e busca visível. */
+function Hero() {
+  const navigate = useNavigate()
+  const [q, setQ] = useState('')
   const [i, setI] = useState(0)
   const [prontas, setProntas] = useState(() => new Set([0]))
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
-    // A próxima foto só entra no DOM 1,5 s antes da troca: no load carrega uma foto só.
-    const pre = setTimeout(() => setProntas(p => new Set(p).add((i + 1) % POSTER.length)), 3700)
-    const t = setTimeout(() => setI((i + 1) % POSTER.length), 5200)
+    const pre = setTimeout(() => setProntas(p => new Set(p).add((i + 1) % POSTER.length)), 5000)
+    const t = setTimeout(() => setI((i + 1) % POSTER.length), 7000)
     return () => { clearTimeout(pre); clearTimeout(t) }
   }, [i])
   return (
-    <section className="relative h-[60svh] min-h-[400px] overflow-hidden bg-[var(--araucaria)] lg:h-auto lg:min-h-[calc(100svh-64px)]" aria-label="Monte Verde">
-      {POSTER.map((f, k) => prontas.has(k) && (
-        <div key={f.id} className={`slide ${k === i ? 'on' : ''}`} aria-hidden={k !== i}>
-          <img src={f.g} srcSet={`${f.p} 700w, ${f.g} 1600w`} sizes="(min-width: 1024px) 60vw, 480px" alt={f.legenda}
-            className="deriva h-full w-full object-cover" fetchPriority={k === 0 ? 'high' : 'auto'} />
+    <section className="px-5 lg:px-0" aria-labelledby="h-hero">
+      <div className="relative h-[54svh] min-h-[380px] max-h-[560px] overflow-hidden rounded-[22px] bg-[var(--nevoa-2)] lg:h-[calc(100svh-120px)] lg:max-h-[720px]">
+        {POSTER.map((f, k) => prontas.has(k) && (
+          <div key={f.id} className={`slide ${k === i ? 'on' : ''}`} aria-hidden={k !== i}>
+            <img src={f.g} srcSet={`${f.p} 700w, ${f.g} 1600w`} sizes="(min-width: 1024px) 60vw, 480px" alt={f.legenda}
+              className="deriva h-full w-full object-cover" fetchPriority={k === 0 ? 'high' : 'auto'} />
+          </div>
+        ))}
+        <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(180deg, rgb(20 22 20 / .05) 0%, rgb(20 22 20 / .15) 40%, rgb(20 22 20 / .62) 100%)' }} />
+        <div className="absolute inset-x-0 bottom-0 p-5 text-white lg:p-10">
+          <h1 id="h-hero" className="sobe serifa text-[44px] font-semibold leading-[1.02] lg:text-[72px]" style={{ '--i': 0 }}>
+            <span className="block text-[30px] italic font-medium lg:text-[44px]">Descubra</span>Monte Verde
+          </h1>
+          <p className="sobe mt-2 max-w-[34ch] text-[16px] leading-snug text-white/90 lg:text-[18px]" style={{ '--i': 1 }}>
+            Gastronomia, chalés, trilhas e o charme da serra, num guia local feito com curadoria.
+          </p>
+          <form onSubmit={e => { e.preventDefault(); if (q.trim()) navigate(`/busca?q=${encodeURIComponent(q.trim())}`) }} role="search"
+            className="sobe mt-4 flex h-[52px] items-center gap-2 rounded-full bg-[var(--papel)] pl-4 pr-1.5 text-[var(--araucaria)] lg:max-w-[520px]" style={{ '--i': 2 }}>
+            <Search size={19} className="shrink-0 text-[var(--leve)]" />
+            <input type="search" enterKeyHint="search" value={q} onChange={e => setQ(e.target.value)} aria-label="O que você procura hoje?"
+              placeholder="O que você procura hoje?" className="min-w-0 flex-1 bg-transparent text-[16px] placeholder:text-[var(--leve)]" />
+            {q && <button type="button" onClick={() => setQ('')} aria-label="Limpar busca" className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--leve)]"><X size={17} /></button>}
+            <BotaoVoz onTexto={t => navigate(`/busca?q=${encodeURIComponent(t)}`)} />
+          </form>
         </div>
-      ))}
-      <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(10,14,12,.55) 0%, rgba(10,14,12,0) 30%, rgba(10,14,12,0) 55%, rgba(10,14,12,.6) 100%)' }} />
-      <h1 className="sr-only">Monte Verde, Minas Gerais</h1>
-      <p className="sobe display absolute left-5 text-[length:var(--fs-poster)] text-white" style={{ top: 'calc(env(safe-area-inset-top) + 18px)', '--i': 0 }} aria-hidden="true">Monte</p>
-      <p className="sobe display absolute bottom-5 right-5 text-[length:var(--fs-poster)] text-white" style={{ '--i': 1 }} aria-hidden="true">Verde</p>
-      <p key={i} className="entra absolute left-5 max-w-[60%] text-[14px] leading-snug text-white/90" style={{ top: 'calc(env(safe-area-inset-top) + 18px + var(--fs-poster) * 0.95)' }}>{POSTER[i].legenda}</p>
-      <Link to="/busca" aria-label="Buscar" className="pressiona absolute right-5 flex h-11 w-11 items-center justify-center rounded-full bg-white text-[var(--araucaria)] lg:hidden" style={{ top: 'calc(env(safe-area-inset-top) + 26px)' }}>
-        <Search size={19} />
-      </Link>
+        <p className="absolute right-3 top-3 rounded-full bg-black/30 px-2.5 py-1 text-[11px] text-white/90">{POSTER[i].legenda}</p>
+      </div>
     </section>
   )
 }
@@ -109,7 +135,7 @@ function BoasVindas() {
   const { podeInstalar, instalar, ios, instalado } = useInstalar()
   return (
     <div className="sobe mt-4 rounded-[var(--raio)] bg-[var(--broto)] p-4 text-[var(--araucaria)]" style={{ '--i': 2 }}>
-      <p className="text-[18px] font-extrabold leading-tight tracking-[-0.02em]">Você está em Monte Verde. Bem-vindo!</p>
+      <p className="text-[18px] font-semibold leading-tight">Você está em Monte Verde. Bem-vindo!</p>
       <p className="mt-1 text-[14px] leading-snug">Este guia mostra quem está aberto agora, monta seu roteiro e tem os contatos de emergência da vila.</p>
       {!instalado && podeInstalar && <button onClick={instalar} className="botao botao-escuro mt-3 h-11 min-h-0 w-full text-[15px]">Instalar o app no celular</button>}
       {!instalado && !podeInstalar && ios && <p className="mt-2 text-[13px]">No iPhone: Compartilhar → Adicionar à Tela de Início.</p>}
@@ -117,83 +143,98 @@ function BoasVindas() {
   )
 }
 
-/** Logo abaixo do pôster: o agora e as quatro decisões da viagem, na primeira tela e meia. */
+/** Atalhos e o agora: as quatro decisões da viagem, o clima e o concierge. */
 function Agora() {
   const navigate = useNavigate()
-  const [q, setQ] = useState('')
   const a = agoraMV()
   const clima = useClima()
   const { businesses } = useBusinesses({})
   const abertos = businesses.filter(b => b.st.estado === 'aberto' || b.st.estado === 'plantao')
   const frio = clima && clima.minNoite != null && clima.minNoite <= 10 && a.min >= 840
   const chegou = useChegou()
-  const n = cat => abertos.filter(b => b.category === cat).length
   const ACOES = [
-    ['Comer agora', `${n('alimentacao')} abertos`, '/categoria/alimentacao?aberto=1', 'Utensils'],
-    ['Fazer hoje', `${businesses.filter(b => b.category === 'turismo').length} passeios`, '/categoria/turismo', 'Mountain'],
-    ['Ficar', `${businesses.filter(b => b.category === 'hospedagem').length} pousadas`, '/categoria/hospedagem', 'BedDouble'],
-    ['Úteis', 'farmácia, posto, caixa', '/uteis', 'LifeBuoy'],
+    ['Comer agora', '/categoria/alimentacao?aberto=1', 'Utensils'],
+    ['Ficar', '/categoria/hospedagem', 'BedDouble'],
+    ['Fazer hoje', '/categoria/turismo', 'Mountain'],
+    ['Serviços úteis', '/uteis', 'MapPin'],
   ]
 
   return (
-    <section className="bg-[var(--araucaria)] px-5 pb-8 pt-6 text-white lg:flex lg:flex-col lg:justify-center lg:px-12 lg:py-12" aria-labelledby="h-agora">
-      <p className="sobe flex flex-wrap items-center gap-x-1.5 text-[15px] text-white/75" style={{ '--i': 2 }}>
-        <span>{saudacao(a.min)}. {DIAS_NOME[DIAS[a.dia]]}, <span className="num">{hhmm(a.min)}</span> em Monte Verde.</span>
-        {clima && <span className="inline-flex items-center gap-1 text-white"><Icon name={clima.icone} size={16} className="text-[var(--broto)]" /><span><span className="num">{clima.temp} °C</span>, {clima.texto}</span></span>}
+    <section className="px-5 pt-5 lg:flex lg:flex-col lg:justify-center lg:px-0 lg:pt-0" aria-label="Atalhos">
+      <nav className="sobe grid grid-cols-4 gap-2.5" style={{ '--i': 2 }} aria-label="Atalhos principais">
+        {ACOES.map(([t, to, ic]) => (
+          <Link key={to} to={to} className="pressiona superficie flex min-h-[88px] flex-col items-center justify-center gap-2 px-1 text-center shadow-[var(--sombra)] lg:min-h-[110px]">
+            <Icon name={ic} size={26} strokeWidth={1.6} className="text-[var(--araucaria)]" />
+            <span className="text-[13px] font-semibold leading-tight lg:text-[15px]">{t}</span>
+          </Link>
+        ))}
+      </nav>
+
+      <p className="sobe mt-5 flex flex-wrap items-center gap-x-1.5 text-[15px] text-[var(--leve)]" style={{ '--i': 3 }}>
+        <span>{saudacao(a.min)}. {DIAS_NOME[DIAS[a.dia]]}, <span className="num">{hhmm(a.min)}</span>.</span>
+        {clima && <span className="inline-flex items-center gap-1 text-[var(--araucaria)]"><Icon name={clima.icone} size={16} className="text-[var(--salvia)]" /><span><span className="num">{clima.temp} °C</span>, {clima.texto}</span></span>}
+        {abertos.length > 0 && <Link to="/categoria/alimentacao?aberto=1" className="font-semibold text-[var(--musgo)]"><span className="num">{abertos.length}</span> lugares abertos agora</Link>}
       </p>
-      <h2 id="h-agora" className="sobe mt-1 text-[26px] font-extrabold leading-tight tracking-[-0.03em] lg:text-[36px]" style={{ '--i': 2 }}>
-        {abertos.length ? <><span className="num">{abertos.length}</span> lugares abertos agora</> : 'O que você precisa agora?'}
-      </h2>
 
       {chegou && <BoasVindas />}
 
       {clima && (clima.chuvaProx || clima.chuvaHoje || frio) && (
-        <Link to={clima.chuvaProx || clima.chuvaHoje ? '/busca?q=chuva' : '/busca?q=fondue'} className="sobe pressiona mt-4 flex items-center gap-3 rounded-[var(--raio)] bg-[var(--ceu)] p-4 text-[var(--araucaria)]" style={{ '--i': 3 }}>
-          <Icon name={clima.chuvaProx || clima.chuvaHoje ? 'CloudRain' : 'Snowflake'} size={24} className="shrink-0 text-[var(--musgo)]" />
+        <Link to={clima.chuvaProx || clima.chuvaHoje ? '/busca?q=chuva' : '/busca?q=fondue'} className="sobe pressiona superficie mt-3 flex items-center gap-3 p-4" style={{ '--i': 3 }}>
+          <Icon name={clima.chuvaProx || clima.chuvaHoje ? 'CloudRain' : 'Snowflake'} size={24} className="shrink-0 text-[var(--salvia)]" />
           <span className="min-w-0 flex-1">
-            <span className="block text-[17px] font-extrabold leading-tight tracking-[-0.02em]">
+            <span className="block text-[16px] font-semibold leading-tight">
               {clima.chuvaProx ? 'Chuva nas próximas horas' : clima.chuvaHoje ? 'Chove hoje' : `Esfria à noite: ${clima.minNoite} °C`}
             </span>
-            <span className="block text-[14px] text-[var(--leve)]">{clima.chuvaProx || clima.chuvaHoje ? 'Plano B: chocolaterias, cervejarias, galerias e outros lugares cobertos' : 'Leve casaco. Fondue, lareira e vinho são a pedida'}</span>
+            <span className="block text-[14px] text-[var(--leve)]">{clima.chuvaProx || clima.chuvaHoje ? 'Plano B: chocolaterias, cervejarias, galerias e lugares cobertos' : 'Leve casaco. Fondue, lareira e vinho são a pedida'}</span>
           </span>
           <ArrowRight size={18} className="shrink-0 text-[var(--musgo)]" />
         </Link>
       )}
 
-      <div className="sobe mt-4 grid grid-cols-2 gap-2.5" style={{ '--i': 3 }}>
-        {ACOES.map(([t, sub, to, ic]) => (
-          <Link key={to} to={to} className="pressiona flex min-h-[92px] flex-col justify-between rounded-[var(--raio)] bg-white/10 p-4">
-            <Icon name={ic} size={22} className="text-[var(--broto)]" />
-            <span><span className="block text-[18px] font-extrabold leading-tight tracking-[-0.02em]">{t}</span><span className="block text-[13px] text-white/65">{sub}</span></span>
-          </Link>
+      <div className="sobe -mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-1 scrollbar-hide lg:mx-0 lg:flex-wrap lg:px-0" style={{ '--i': 4 }}>
+        {chipsDaHora(a.min, clima?.chuvaHoje).map(([t, termo]) => (
+          <Link key={termo} to={`/busca?q=${encodeURIComponent(termo)}`} className="chip">{t}</Link>
         ))}
       </div>
 
-      <Link to="/concierge" className="sobe pressiona mt-3 flex items-center gap-3 rounded-[var(--raio)] bg-[var(--nevoa)] p-4 text-[var(--araucaria)]" style={{ '--i': 3 }}>
-        <Icon name="Sparkles" size={24} className="shrink-0 text-[var(--musgo)]" />
+      <Link to="/concierge" className="sobe pressiona superficie mt-4 flex items-center gap-3 p-4" style={{ '--i': 5 }}>
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--broto)]"><Icon name="Sparkles" size={20} className="text-[var(--musgo)]" /></span>
         <span className="min-w-0 flex-1">
-          <span className="serifa block text-[19px] font-semibold leading-tight">Concierge: seu roteiro em 1 minuto</span>
-          <span className="block text-[14px] text-[var(--leve)]">Diga com quem veio e do que gosta. A gente monta o dia.</span>
+          <span className="serifa block text-[18px] font-semibold leading-tight">Concierge: seu roteiro em 1 minuto</span>
+          <span className="block text-[14px] text-[var(--leve)]">Diga com quem veio e do que gosta.</span>
         </span>
         <ArrowRight size={18} className="shrink-0 text-[var(--musgo)]" />
       </Link>
+      <button type="button" onClick={() => navigate('/roteiro')} className="sobe botao botao-pri mt-3 h-[52px] w-full" style={{ '--i': 5 }}>
+        <Route size={19} />Montar meu roteiro
+      </button>
+    </section>
+  )
+}
 
-      <form onSubmit={e => { e.preventDefault(); if (q.trim()) navigate(`/busca?q=${encodeURIComponent(q.trim())}`) }} role="search"
-        className="sobe mt-3 flex h-14 items-center gap-2 rounded-full bg-white pl-5 pr-1.5 text-[var(--araucaria)]" style={{ '--i': 4 }}>
-        <Search size={18} className="shrink-0 text-[var(--leve)]" />
-        <input type="search" enterKeyHint="search" value={q} onChange={e => setQ(e.target.value)} aria-label="O que você procura?"
-          placeholder="fondue, farmácia, trilha…" className="min-w-0 flex-1 bg-transparent text-[16px] placeholder:text-[var(--leve)]" />
-        <BotaoVoz onTexto={t => navigate(`/busca?q=${encodeURIComponent(t)}`)} />
-      </form>
-      <div className="sobe -mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-1 scrollbar-hide" style={{ '--i': 4 }}>
-        {chipsDaHora(a.min, clima?.chuvaHoje).map(([t, termo]) => (
-          <Link key={termo} to={`/busca?q=${encodeURIComponent(termo)}`} className="chip bg-white/10 text-white">{t}</Link>
+/** Paisagens e programas da vila: cards fotográficos (fotos da cidade, não de estabelecimentos). */
+const DESTAQUES = [
+  [FOTOS.marDeNuvens, 'Mar de nuvens', 'Manhãs no mirante', 'mirante'],
+  [FOTOS.avenida, 'A Avenida', 'Lojinhas, cafés e chocolate', 'avenida'],
+  [FOTOS.chalesMata, 'Chalés na mata', 'Onde dormir no frio', 'chale'],
+  [FOTOS.serra, 'Trilhas e serra', 'Natureza e aventura', 'trilha'],
+  [FOTOS.enxaimel, 'Arquitetura', 'Casas enxaimel e capelas', 'passeio'],
+]
+function Destaques() {
+  return (
+    <section className="mt-12 lg:mt-16" aria-labelledby="h-destaques">
+      <div className="flex items-end justify-between px-5 lg:px-0">
+        <h2 id="h-destaques" className="titulo revela">Destaques da Serra</h2>
+        <Link to="/categorias" className="shrink-0 whitespace-nowrap text-[15px] font-semibold text-[var(--musgo)]">Ver todos <ArrowRight size={15} className="inline" /></Link>
+      </div>
+      <div className="mt-5 flex gap-3 overflow-x-auto px-5 pb-1 scrollbar-hide lg:grid lg:grid-cols-5 lg:overflow-visible lg:px-0" style={{ scrollSnapType: 'x mandatory', scrollPaddingInline: 20 }}>
+        {DESTAQUES.map(([f, t, sub, q]) => (
+          <Link key={q} to={`/busca?q=${q}`} className="card-foto aspect-[4/5] w-[62%] shrink-0 lg:w-auto" style={{ scrollSnapAlign: 'start' }}>
+            <img src={f.p} alt={f.legenda} loading="lazy" />
+            <span className="rotulo"><span className="serifa block text-[21px] font-semibold leading-tight">{t}</span><span className="block text-[13px] text-white/85">{sub}</span></span>
+          </Link>
         ))}
       </div>
-
-      <Link to="/roteiro" className="sobe botao botao-broto mt-5 h-14 w-full justify-between px-6 text-[17px]" style={{ '--i': 5 }}>
-        <span className="flex items-center gap-2.5"><Route size={20} />Montar meu roteiro</span><ArrowRight size={20} />
-      </Link>
     </section>
   )
 }
@@ -317,43 +358,44 @@ function SoAqui() {
   )
 }
 
-/** Categorias: linhas com uma foto da vila e o que tem em cada uma. */
+/** Explore por categoria: cards fotográficos, como uma revista de viagem. */
 function Explorar() {
-  const ORDEM = ['alimentacao', 'turismo', 'hospedagem', 'compras']
-  const cats = ORDEM.map(id => CATEGORIES.find(c => c.id === id)).filter(Boolean)
+  const ITENS = [
+    ['alimentacao', 'Gastronomia', 'Restaurantes, cafés e sabores da serra'],
+    ['hospedagem', 'Hospedagem', 'Pousadas, chalés e hotéis'],
+    ['turismo', 'Natureza e passeios', 'Trilhas, mirantes e atrações'],
+    ['compras', 'Compras', 'Lojas, artesanato e produtos locais'],
+  ]
   return (
-    <section className="mt-16 px-5" aria-labelledby="h-explorar">
-      <h2 id="h-explorar" className="titulo revela">Explore a vila</h2>
-      <ul className="mt-6 space-y-2">
-        {cats.map((c, k) => {
-          const f = FOTO_CATEGORIA[c.id]
+    <section className="mt-12 px-5 lg:mt-16 lg:px-0" aria-labelledby="h-explorar">
+      <h2 id="h-explorar" className="titulo revela">Explore Monte Verde</h2>
+      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {ITENS.map(([id, t, sub], k) => {
+          const c = CATEGORIES.find(x => x.id === id)
+          if (!c) return null
+          const f = FOTO_CATEGORIA[id]
           return (
-            <li key={c.id} className="revela" style={{ '--i': k % 3 }}>
-              <Link to={`/categoria/${c.slug}`} className="pressiona flex items-center gap-4 rounded-[var(--raio)] bg-[var(--papel)] p-2.5 pr-4">
-                <img src={f.p} alt="" loading="lazy" className="h-[72px] w-[72px] shrink-0 rounded-[14px] object-cover" />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[20px] font-extrabold tracking-[-0.02em]">{c.name}</span>
-                  <span className="block truncate text-[14px] text-[var(--leve)]">{c.description}</span>
-                </span>
-                <ArrowRight size={19} className="shrink-0 text-[var(--musgo)]" />
-              </Link>
-            </li>
+            <Link key={id} to={`/categoria/${c.slug}`} className="revela card-foto aspect-[16/7]" style={{ '--i': k % 2 }}>
+              <img src={f.p} alt="" loading="lazy" />
+              <span className="rotulo flex items-end justify-between gap-3">
+                <span><span className="serifa block text-[24px] font-semibold leading-tight">{t}</span><span className="block text-[14px] text-white/85">{sub}</span></span>
+                <ArrowRight size={20} className="shrink-0" />
+              </span>
+            </Link>
           )
         })}
-        <li className="revela" style={{ '--i': 1 }}>
-          <Link to="/uteis" className="pressiona flex items-center gap-4 rounded-[var(--raio)] bg-[var(--araucaria)] p-2.5 pr-4 text-white">
-            <span className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-[14px] bg-white/10 text-[var(--broto)]"><Icon name="LifeBuoy" size={30} /></span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-[20px] font-extrabold tracking-[-0.02em]">Úteis</span>
-              <span className="block truncate text-[14px] text-white/65">Farmácia, posto, caixa, táxi, emergência</span>
-            </span>
-            <ArrowRight size={19} className="shrink-0 text-[var(--broto)]" />
-          </Link>
-        </li>
-      </ul>
+        <Link to="/uteis" className="revela superficie flex items-center gap-4 p-4 sm:col-span-2">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--broto)]"><Icon name="LifeBuoy" size={24} className="text-[var(--musgo)]" /></span>
+          <span className="min-w-0 flex-1">
+            <span className="serifa block text-[20px] font-semibold">Serviços úteis</span>
+            <span className="block truncate text-[14px] text-[var(--leve)]">Farmácia, posto, caixa, táxi, saúde e emergência</span>
+          </span>
+          <ArrowRight size={19} className="shrink-0 text-[var(--musgo)]" />
+        </Link>
+      </div>
       <div className="mt-3 flex flex-wrap gap-x-6">
-        <Link to="/categorias" className="inline-flex min-h-12 items-center gap-2 text-[16px] font-bold text-[var(--musgo)]">Todas as categorias <ArrowRight size={17} /></Link>
-        <Link to="/como-chegar" className="inline-flex min-h-12 items-center gap-2 text-[16px] font-bold text-[var(--musgo)]">Como chegar <ArrowRight size={17} /></Link>
+        <Link to="/categorias" className="inline-flex min-h-12 items-center gap-2 text-[16px] font-semibold text-[var(--musgo)]">Todas as categorias <ArrowRight size={17} /></Link>
+        <Link to="/como-chegar" className="inline-flex min-h-12 items-center gap-2 text-[16px] font-semibold text-[var(--musgo)]">Como chegar <ArrowRight size={17} /></Link>
       </div>
     </section>
   )
@@ -366,12 +408,12 @@ function ParaNegocios() {
       <div className="revela-foto overflow-hidden">
         <img src={FOTOS.vilaAerea.g} alt={FOTOS.vilaAerea.legenda} loading="lazy" className="aspect-[4/3] w-full object-cover lg:h-full" />
       </div>
-      <div className="bg-[var(--musgo)] px-5 pb-10 pt-8 text-white lg:flex lg:flex-col lg:justify-center lg:p-12">
+      <div className="bg-[var(--nevoa-2)] px-5 pb-10 pt-8 lg:flex lg:flex-col lg:justify-center lg:p-12">
         <h2 id="h-negocio" className="titulo revela">Tem um negócio em Monte Verde?</h2>
-        <p className="revela mt-3 max-w-[34ch] text-[17px] leading-relaxed text-white" style={{ '--i': 1 }}>
+        <p className="revela mt-3 max-w-[34ch] text-[17px] leading-relaxed text-[var(--leve)]" style={{ '--i': 1 }}>
           Apareça para o turista na hora em que ele decide onde comer, dormir e passear. Cadastro grátis; destaque a partir de R$ 49 por mês.
         </p>
-        <Link to="/anuncie" className="revela botao botao-claro mt-6 w-full" style={{ '--i': 2 }}>Ver planos e anunciar <ArrowRight size={18} /></Link>
+        <Link to="/anuncie" className="revela botao botao-pri mt-6 w-full" style={{ '--i': 2 }}>Ver planos e anunciar <ArrowRight size={18} /></Link>
       </div>
     </section>
   )
@@ -382,15 +424,20 @@ export function Home() {
   return (
     <Layout hideHeader titulo="" largura="cheio">
       <Avisos />
-      {/* Computador: foto e "agora" lado a lado, ocupando a primeira tela */}
-      <div className="lg:grid lg:grid-cols-[1.4fr_1fr]">
-        <Poster />
+      <Topo />
+      {/* Computador: foto e atalhos lado a lado, ocupando a primeira tela */}
+      <div className="lg:mx-auto lg:grid lg:max-w-[1180px] lg:grid-cols-[1.5fr_1fr] lg:gap-10 lg:px-3 lg:pt-8">
+        <Hero />
         <Agora />
+      </div>
+      <div className="lg:mx-auto lg:max-w-[1180px] lg:px-3">
+        <Destaques />
+        <Explorar />
       </div>
       <div className="lg:mx-auto lg:max-w-[1180px] lg:px-3">
         <div className="lg:grid lg:grid-cols-2 lg:gap-x-16">
           <div><Momentos /><NaEpoca /></div>
-          <div><Ofertas /><Explorar /></div>
+          <div><Ofertas /></div>
         </div>
         <ConviteRoteiro />
         <div className="lg:grid lg:grid-cols-2 lg:gap-x-16">

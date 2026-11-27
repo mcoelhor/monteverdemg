@@ -108,7 +108,7 @@ function Rodape({ url, chamada, sub }) {
 function TelaPortal({ local, anfitriao }) {
   return (
     <>
-      <Foto src={FOTOS.marDeNuvens}>
+      <Foto src={FOTOS.marDeNuvens.g}>
         <Marca />
         <div>
           {anfitriao && <p className="text-[15px] font-semibold uppercase tracking-[0.12em] text-[var(--broto)]">Bem-vindo ao {anfitriao.name}</p>}
@@ -122,7 +122,7 @@ function TelaPortal({ local, anfitriao }) {
 }
 
 function TelaParceiro({ b, local }) {
-  const foto = b.images?.[0] || FOTO_CATEGORIA[b.category] || FOTOS.avenida
+  const foto = b.images?.[0] || (FOTO_CATEGORIA[b.category] || FOTOS.avenida).g
   return (
     <>
       <Foto src={foto}>
@@ -144,7 +144,7 @@ function TelaParceiro({ b, local }) {
 function TelaConcierge({ local }) {
   return (
     <>
-      <Foto src={FOTOS.porDoSol}>
+      <Foto src={FOTOS.porDoSol.g}>
         <Marca />
         <div>
           <p className="text-[15px] font-semibold uppercase tracking-[0.12em] text-[var(--broto)]">Concierge</p>
@@ -180,7 +180,7 @@ function TelaEmergencia({ local }) {
 function TelaAnuncie({ local }) {
   return (
     <>
-      <Foto src={FOTOS.avenida}>
+      <Foto src={FOTOS.avenida.g}>
         <Marca />
         <div>
           <p className="text-[15px] font-semibold uppercase tracking-[0.12em] text-[var(--broto)]">Para quem tem negócio na vila</p>

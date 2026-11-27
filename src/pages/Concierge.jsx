@@ -64,12 +64,12 @@ export function Concierge() {
 
   return (
     <Layout hideHeader titulo="Concierge" semRodape>
-      <section className="bg-[var(--araucaria)] px-5 pb-6 text-white" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 22px)' }}>
-        <p className="flex items-center gap-1.5 text-[14px] font-semibold uppercase tracking-[0.12em] text-[var(--madeira)]"><Sparkles size={15} />Concierge</p>
+      <section className="border-b border-[var(--borda)] px-5 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 22px)' }}>
+        <p className="flex items-center gap-1.5 text-[14px] font-semibold uppercase tracking-[0.12em] text-[var(--musgo)]"><Sparkles size={15} />Concierge</p>
         <h1 className="titulo mt-2">Monte Verde no seu ritmo</h1>
-        <p className="mt-2 text-[16px] leading-relaxed text-white/75">Conte quem vem, quantos dias e do que gosta. Eu monto o roteiro só com lugares do guia, respeitando o horário de cada um.</p>
+        <p className="mt-2 text-[16px] leading-relaxed text-[var(--leve)]">Conte quem vem, quantos dias e do que gosta. Eu monto o roteiro só com lugares do guia, respeitando o horário de cada um.</p>
         {msgs.length > 0 && (
-          <button onClick={() => { setMsgs([]); setErro('') }} className="botao mt-4 h-10 min-h-0 bg-white/10 px-4 text-[14px] text-white"><RotateCcw size={15} />Nova conversa</button>
+          <button onClick={() => { setMsgs([]); setErro('') }} className="botao botao-sec mt-4 h-10 min-h-0 px-4 text-[14px]"><RotateCcw size={15} />Nova conversa</button>
         )}
       </section>
 
@@ -107,7 +107,7 @@ export function Concierge() {
 function Resposta({ m, porSlug }) {
   return (
     <div className="max-w-[94%]">
-      <p className="whitespace-pre-line rounded-[20px] rounded-bl-md bg-[var(--papel)] px-4 py-3 text-[16px] leading-relaxed">{m.text}</p>
+      <p className="whitespace-pre-line rounded-[20px] rounded-bl-md border border-[var(--borda)] bg-[var(--papel)] px-4 py-3 text-[16px] leading-relaxed">{m.text}</p>
       {m.indisponivel && (
         <Link to="/roteiro" className="botao botao-pri mt-3 h-12 min-h-0 px-5 text-[15px]"><RouteIcon size={17} />Montar roteiro agora</Link>
       )}

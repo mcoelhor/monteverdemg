@@ -33,7 +33,7 @@ function Opcoes({ titulo, itens, valor, multi, onChange }) {
   const troca = id => onChange(multi ? (ligado(id) ? valor.filter(x => x !== id) : [...valor, id]) : id)
   return (
     <fieldset className="revela mt-8 min-w-0">
-      <legend className="text-[20px] font-extrabold tracking-[-0.02em]">{titulo}</legend>
+      <legend className="serifa text-[21px] font-semibold">{titulo}</legend>
       <div className="mt-3 flex flex-wrap gap-2">
         {itens.map(([id, rot]) => (
           <button key={id} type="button" onClick={() => troca(id)} aria-pressed={ligado(id)} className="chip h-12 px-5 text-[16px]">
@@ -51,16 +51,17 @@ function Perguntas({ perfil, setPerfil, onMontar }) {
   const set = k => v => setPerfil(p => ({ ...p, [k]: v }))
   return (
     <>
-      <section className="relative">
-        <img src={FOTOS.serra.g} srcSet={`${FOTOS.serra.p} 700w, ${FOTOS.serra.g} 1600w`} sizes="480px" alt={FOTOS.serra.legenda} className="deriva h-[44svh] min-h-[300px] w-full object-cover" />
-        <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(10,14,12,0) 40%, rgba(10,14,12,.7) 100%)' }} />
-        <h1 className="sobe titulo absolute bottom-6 left-5 right-5 text-white">Seu roteiro em Monte Verde</h1>
+      <section className="px-5" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 14px)' }}>
+        <div className="card-foto aspect-[16/10] lg:aspect-[21/8]">
+          <img src={FOTOS.porDoSol.g} srcSet={`${FOTOS.porDoSol.p} 700w, ${FOTOS.porDoSol.g} 1600w`} sizes="480px" alt={FOTOS.porDoSol.legenda} />
+        </div>
       </section>
-      <div className="px-5 pt-6">
-        <p className="text-[17px] leading-relaxed text-[var(--leve)]">Quatro respostas e montamos manhã, almoço, tarde e jantar com lugares abertos no dia da sua visita.</p>
+      <div className="px-5 pt-5">
+        <h1 className="titulo">Roteiro personalizado</h1>
+        <p className="mt-2 text-[17px] leading-relaxed text-[var(--leve)]">Monte Verde sob medida para o seu tempo, estilo e companhia. É uma sugestão com lugares do guia, não uma reserva.</p>
 
         <fieldset className="mt-8 min-w-0">
-          <legend className="text-[20px] font-extrabold tracking-[-0.02em]">Quantos dias?</legend>
+          <legend className="serifa text-[21px] font-semibold">Quantos dias?</legend>
           <div className="mt-3 grid grid-cols-4 gap-2">
             {[1, 2, 3, 4].map(n => (
               <button key={n} type="button" onClick={() => set('dias')(n)} aria-pressed={perfil.dias === n} className="chip h-14 justify-center text-[20px] font-extrabold">{n}</button>
@@ -69,7 +70,7 @@ function Perguntas({ perfil, setPerfil, onMontar }) {
         </fieldset>
 
         <fieldset className="mt-8 min-w-0">
-          <legend className="text-[20px] font-extrabold tracking-[-0.02em]">Começa quando?</legend>
+          <legend className="serifa text-[21px] font-semibold">Começa quando?</legend>
           <div className="-mx-5 mt-3 flex gap-2 overflow-x-auto px-5 scrollbar-hide">
             {inicios.map((d, k) => (
               <button key={d} type="button" onClick={() => set('inicio')(d)} aria-pressed={perfil.inicio === d} className="chip h-12 px-5 text-[16px]">
