@@ -24,7 +24,7 @@ export const TRILHAS = [
   {
     slug: 'chapeu-do-bispo',
     nome: 'Chapéu do Bispo',
-    resumo: 'Caminhada curta e gratuita até a pedra que lembra um chapéu de bispo, saindo do mesmo estacionamento.',
+    resumo: 'Caminhada curta até a pedra que lembra um chapéu de bispo, saindo do mesmo estacionamento.',
     nivel: 'Fácil', distancia: 'cerca de 700 m (ida)', tempo: '1h ida e volta', altitude: '1.950 m',
     paga: false,
     texto: [
