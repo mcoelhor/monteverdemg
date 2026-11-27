@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { MiniMapa } from '../components/MiniMapa'
 import { Phone, MessageCircle, Navigation, Share2, Heart, MapPin, Globe, Clock, ChevronLeft, ChevronDown, Mail, Flag, Store } from 'lucide-react'
 import { useBusinessBySlug, useBusinesses } from '../hooks/useBusinesses'
 import { useFavorites } from '../hooks/useFavorites'
@@ -175,6 +176,8 @@ export function BusinessDetail() {
             <a href={`mailto:${b.email}`} className="flex items-center gap-3 p-4"><Mail size={18} className="text-[var(--salvia)]" /><span className="truncate text-[15px]">{b.email}</span></a>
           )}
         </div>
+
+        <MiniMapa b={b} />
 
         <div className="lg:flex lg:gap-5"><Link to="/mais#corrigir" className="mt-2 flex min-h-11 items-center gap-2 px-1 text-[14px] text-[var(--leve)]"><Flag size={14} />Informação desatualizada? Avise a gente.</Link>
         <Link to="/meu-negocio" className="flex min-h-11 items-center gap-2 px-1 text-[14px] text-[var(--leve)]"><Store size={14} />É o dono? Coloque fotos e atualize sua página.</Link></div>

@@ -1,18 +1,44 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { X, MessageCircle } from 'lucide-react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { X, MessageCircle, LocateFixed, Navigation } from 'lucide-react'
 import { Layout } from '../components/Layout/Layout'
 import { useBusinesses } from '../hooks/useBusinesses'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { CATEGORIES, categoria, iconeDe, nomeSub } from '../data/categories'
 import { Icon } from '../components/UI/Icon'
 import { StatusPill } from '../components/UI/Badge'
-import { registrar, linkWhatsApp } from '../lib/track'
+import { registrar, linkWhatsApp, linkRota } from '../lib/track'
 import { MapaBase } from '../components/MapaBase'
 import { BotaoMapaOffline } from '../components/MapaOffline'
 
+/** Distância em texto curto. */
+const textoDist = km => (km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1).replace('.', ',')} km`)
+function distKm(a, b) {
+  const R = 6371, r = Math.PI / 180, dLat = (b.lat - a.lat) * r, dLng = (b.lng - a.lng) * r
+  const x = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLng / 2) ** 2
+  return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x))
+}
 
-function MapView({ businesses, onSelect }) {
+/** Dentro do mapa: centra no lugar escolhido, mostra você (GPS, funciona sem internet) e a linha até o lugar. */
+function Controles({ rl, L, selecionado, eu, centrarEm }) {
+  const map = rl.useMap()
+  useEffect(() => { if (selecionado?.latitude) map.flyTo([selecionado.latitude, selecionado.longitude], Math.max(map.getZoom(), 16), { duration: 0.6 }) }, [selecionado?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (centrarEm) map.flyTo([centrarEm.lat, centrarEm.lng], Math.max(map.getZoom(), 16), { duration: 0.6 }) }, [centrarEm]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!eu) return
+    const camadas = [
+      L.circle([eu.lat, eu.lng], { radius: Math.min(eu.precisao || 30, 300), color: '#2563eb', weight: 1, fillOpacity: 0.12, interactive: false }),
+      L.circleMarker([eu.lat, eu.lng], { radius: 8, color: '#fff', weight: 3, fillColor: '#2563eb', fillOpacity: 1, interactive: false }),
+    ]
+    if (selecionado?.latitude) camadas.push(L.polyline([[eu.lat, eu.lng], [selecionado.latitude, selecionado.longitude]], { color: '#2563eb', weight: 3, dashArray: '6 8', interactive: false }))
+    camadas.forEach(c => c.addTo(map))
+    return () => camadas.forEach(c => c.remove())
+  }, [eu, selecionado?.id, map, L]) // eslint-disable-line react-hooks/exhaustive-deps
+  return null
+}
+
+
+function MapView({ businesses, onSelect, selecionado, eu, centrarEm }) {
   const [MapContainer, setMapContainer] = useState(null)
   const [rl, setRl] = useState(null)
   const [Marker, setMarkerComp] = useState(null)
@@ -70,6 +96,7 @@ function MapView({ businesses, onSelect }) {
       zoomControl={false}
     >
       <MapaBase rl={rl} L={L} />
+      <Controles rl={rl} L={L} selecionado={selecionado} eu={eu} centrarEm={centrarEm} />
       {businesses.map(b => b.latitude && b.longitude ? (
         <Marker
           key={b.id}
@@ -82,7 +109,7 @@ function MapView({ businesses, onSelect }) {
   )
 }
 
-function BottomSheet({ business, onClose }) {
+function BottomSheet({ business, onClose, eu }) {
   const navigate = useNavigate()
   if (!business) return null
 
@@ -100,6 +127,7 @@ function BottomSheet({ business, onClose }) {
           <h3 className="font-bold text-gray-900 text-base leading-tight line-clamp-1">{business.name}</h3>
           <p className="text-sm text-gray-500 mt-0.5">{nomeSub(business)}</p>
           <StatusPill st={business.st} className="mt-1" />
+          {eu && business.latitude && <p className="mt-1 text-xs font-semibold text-[#2563eb]">{textoDist(distKm(eu, { lat: business.latitude, lng: business.longitude }))} de você (em linha reta)</p>}
           <div className="flex gap-2 mt-2">
             <button
               onClick={() => navigate(`/estabelecimento/${business.slug}`)}
@@ -108,6 +136,10 @@ function BottomSheet({ business, onClose }) {
             >
               Ver detalhes
             </button>
+            <a href={linkRota(business)} target="_blank" rel="noopener noreferrer" onClick={() => registrar('rota', { businessId: business.id })}
+              className="flex items-center gap-1 px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs font-semibold text-gray-700">
+              <Navigation size={13} /> Rota
+            </a>
             {business.whatsapp && (
               <a
                 href={linkWhatsApp(business.whatsapp)} target="_blank" rel="noopener noreferrer"
@@ -131,6 +163,32 @@ export function MapPage() {
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [selectedBusiness, setSelectedBusiness] = useState(null)
   const { businesses, loading } = useBusinesses({ category: selectedCategory || undefined })
+  const [params] = useSearchParams()
+  const lugar = params.get('lugar')
+  const [eu, setEu] = useState(null)
+  const [centrarEm, setCentrarEm] = useState(null)
+  const [erroGps, setErroGps] = useState('')
+  const [seguindo, setSeguindo] = useState(false)
+
+  // Chegou de "Ver no mapa" de um lugar: abre já nele
+  useEffect(() => {
+    if (!lugar || selectedBusiness) return
+    const b = businesses.find(x => x.slug === lugar)
+    if (b) setSelectedBusiness(b)
+  }, [lugar, businesses]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sua posição pelo GPS do celular (não precisa de internet). Só liga quando a pessoa toca no botão.
+  useEffect(() => {
+    if (!seguindo || !navigator.geolocation) return
+    const id = navigator.geolocation.watchPosition(
+      p => { setErroGps(''); setEu({ lat: p.coords.latitude, lng: p.coords.longitude, precisao: p.coords.accuracy }) },
+      () => setErroGps('Não consegui sua localização. Confira se o GPS está ligado e se o app pode usá-la.'),
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 },
+    )
+    return () => navigator.geolocation.clearWatch(id)
+  }, [seguindo])
+  const ondeEstou = () => { if (eu) setCentrarEm({ ...eu }); setSeguindo(true) }
+  useEffect(() => { if (seguindo && eu && !centrarEm) setCentrarEm({ ...eu }) }, [eu]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Layout title="Mapa" showBack={false} largura="largo">
@@ -160,7 +218,7 @@ export function MapPage() {
         </div>
 
         <div className="flex-1 pt-12">
-          <MapView businesses={businesses} onSelect={setSelectedBusiness} />
+          <MapView businesses={businesses} onSelect={setSelectedBusiness} selecionado={selectedBusiness} eu={eu} centrarEm={centrarEm} />
         </div>
 
         {!loading && (
@@ -169,7 +227,11 @@ export function MapPage() {
           </p>
         )}
         <BotaoMapaOffline className="absolute right-4 top-14 z-[999]" />
-        <BottomSheet business={selectedBusiness} onClose={() => setSelectedBusiness(null)} />
+        <button onClick={ondeEstou} aria-label="Onde estou" className="absolute right-4 top-28 z-[999] flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-md">
+          <LocateFixed size={20} className={eu ? 'text-[#2563eb]' : 'text-gray-700'} />
+        </button>
+        {erroGps && <p className="absolute left-4 right-20 top-28 z-[999] rounded-xl bg-white/95 px-3 py-2 text-xs shadow">{erroGps}</p>}
+        <BottomSheet business={selectedBusiness} eu={eu} onClose={() => setSelectedBusiness(null)} />
       </div>
     </Layout>
   )

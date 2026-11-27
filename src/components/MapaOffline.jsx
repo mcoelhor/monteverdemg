@@ -89,7 +89,7 @@ export function BotaoMapaOffline({ className = '' }) {
         {salvo ? 'Mapa offline' : online ? 'Baixar mapa offline' : 'Sem internet'}
       </button>
       {!online && !salvo && (
-        <p className="absolute left-4 right-4 top-28 z-[999] rounded-xl bg-white/95 px-3 py-2 text-xs shadow">
+        <p className="absolute left-4 right-16 top-28 z-[999] rounded-xl bg-white/95 px-3 py-2 text-xs shadow">
           Sem internet e sem mapa salvo: as ruas não aparecem. Da próxima vez, toque em "Baixar mapa offline" com conexão.
         </p>
       )}

@@ -1,12 +1,12 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Home, Compass, Route, LifeBuoy, Heart } from 'lucide-react'
+import { Home, Compass, Route, LifeBuoy, Map as MapIcon } from 'lucide-react'
 
 const TABS = [
   { path: '/', icon: Home, label: 'Início' },
-  { path: '/categorias', icon: Compass, label: 'Explorar', tambem: ['/categoria/', '/busca', '/mapa'] },
+  { path: '/categorias', icon: Compass, label: 'Explorar', tambem: ['/categoria/', '/busca'] },
   { path: '/roteiro', icon: Route, label: 'Roteiro', tambem: ['/concierge'] },
   { path: '/uteis', icon: LifeBuoy, label: 'Úteis', tambem: ['/sos'] },
-  { path: '/favoritos', icon: Heart, label: 'Salvos' },
+  { path: '/mapa', icon: MapIcon, label: 'Mapa' },
 ]
 
 /** Barra de baixo: clara, ícone e rótulo; o destino ativo fica em verde sálvia. */
