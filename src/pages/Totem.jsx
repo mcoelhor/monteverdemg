@@ -6,6 +6,9 @@ import QRCode from 'qrcode'
 import { useBusinesses } from '../hooks/useBusinesses'
 import { FOTOS, FOTO_CATEGORIA } from '../data/fotos'
 import { registrar } from '../lib/track'
+import { useOfertas } from '../hooks/useOfertas'
+import { TRILHAS } from '../data/trilhas'
+import { Utensils, Mountain, LifeBuoy, Sparkles, X as Fechar, ChevronLeft } from 'lucide-react'
 
 // Totem de mesa: um celular num suporte, em cima da mesa do restaurante, café ou pousada.
 // Endereço: /totem?local=<slug do estabelecimento onde está o totem>
@@ -40,6 +43,7 @@ export function Totem() {
   }
   const { businesses } = useBusinesses({})
   const [i, setI] = useState(0)
+  const [explorando, setExplorando] = useState(false)
 
   const anfitriao = businesses.find(b => b.slug === local)
   const parceiros = useMemo(() => businesses
@@ -50,37 +54,41 @@ export function Totem() {
 
   const telas = useMemo(() => {
     const t = [{ tipo: 'portal' }]
+    if (anfitriao) t.push({ tipo: 'casa' })
     parceiros.slice(0, 6).forEach((b, k) => { t.push({ tipo: 'parceiro', b }); if (k === 1) t.push({ tipo: 'concierge' }) })
     if (parceiros.length < 2) t.push({ tipo: 'concierge' })
     t.push({ tipo: 'emergencia' }, { tipo: 'anuncie' })
     return t
-  }, [parceiros])
+  }, [parceiros, anfitriao])
 
   // Gira as telas, mantém a tela acesa e recarrega a cada 6 horas (pega parceiros novos)
-  useEffect(() => { const id = setInterval(() => setI(x => x + 1), TEMPO); return () => clearInterval(id) }, [])
+  useEffect(() => { if (explorando) return; const id = setInterval(() => setI(x => x + 1), TEMPO); return () => clearInterval(id) }, [explorando])
   useEffect(() => {
     let trava
     const pedir = () => navigator.wakeLock?.request('screen').then(t => { trava = t }).catch(() => {})
     pedir(); document.addEventListener('visibilitychange', pedir)
     const recarga = setTimeout(() => location.reload(), 6 * 3600e3)
-    registrar('visita', { term: `totem:${local || 'sem-local'}` })
+    if (!params.get('demo')) registrar('visita', { term: `totem:${local || 'sem-local'}` })
     return () => { trava?.release?.(); document.removeEventListener('visibilitychange', pedir); clearTimeout(recarga) }
   }, [local])
   useEffect(() => { document.title = 'Monte Verde MG · Totem' }, [])
 
   const tela = telas[i % telas.length]
-  const telaCheia = () => document.documentElement.requestFullscreen?.().catch(() => {})
+  const tocar = () => { document.documentElement.requestFullscreen?.().catch(() => {}); setExplorando(true) }
 
   return (
-    <div onClick={telaCheia} className="fixed inset-0 z-[100] flex cursor-none select-none flex-col overflow-hidden bg-[var(--araucaria)] text-white">
+    <div onClick={explorando ? undefined : tocar} className="fixed inset-0 z-[100] flex cursor-none select-none flex-col overflow-hidden bg-[var(--araucaria)] text-white">
       <div key={i} className="totem-entra flex min-h-0 flex-1 flex-col">
         {tela.tipo === 'portal' && <TelaPortal local={local} anfitriao={anfitriao} />}
+        {tela.tipo === 'casa' && <TelaCasa b={anfitriao} local={local} />}
         {tela.tipo === 'parceiro' && <TelaParceiro b={tela.b} local={local} />}
         {tela.tipo === 'concierge' && <TelaConcierge local={local} />}
         {tela.tipo === 'emergencia' && <TelaEmergencia local={local} />}
         {tela.tipo === 'anuncie' && <TelaAnuncie local={local} />}
       </div>
       <Barra total={telas.length} atual={i % telas.length} />
+      {!explorando && <p className="pointer-events-none absolute bottom-[150px] left-1/2 -translate-x-1/2 animate-pulse rounded-full bg-black/45 px-4 py-2 text-[14px] font-semibold">Toque para explorar Monte Verde</p>}
+      {explorando && <Explorar businesses={businesses} anfitriao={anfitriao} local={local} onSair={() => setExplorando(false)} />}
       {APP_TOTEM && <button aria-hidden="true" tabIndex={-1} onClick={e => { e.stopPropagation(); cantoSecreto() }} className="absolute left-0 top-0 z-[110] h-20 w-20 opacity-0" />}
     </div>
   )
@@ -202,6 +210,95 @@ function TelaAnuncie({ local }) {
       </Foto>
       <Rodape url={link('/anuncie', local, 'anuncie')} chamada="Anuncie no portal" sub="Planos a partir de R$ 49 por mês, sem fidelidade." />
     </>
+  )
+}
+
+/** Tela da casa: o estabelecimento onde o totem está, com a oferta dele (se houver). */
+function TelaCasa({ b, local }) {
+  const { porLugar } = useOfertas()
+  const oferta = (porLugar.get(b.id) || [])[0]
+  const foto = b.images?.[0] || (FOTO_CATEGORIA[b.category] || FOTOS.avenida).g
+  return (
+    <>
+      <Foto src={foto}>
+        <Marca />
+        <div>
+          <p className="text-[15px] font-semibold uppercase tracking-[0.12em] text-[var(--broto)]">Você está no</p>
+          <p className="serifa mt-1 text-[44px] font-semibold leading-[1.02]">{b.name}</p>
+          {oferta ? (
+            <div className="mt-4 rounded-2xl bg-[var(--madeira)] p-4 text-[var(--araucaria)]">
+              <p className="text-[13px] font-bold uppercase tracking-[0.1em]">Oferta da casa</p>
+              <p className="serifa mt-1 text-[26px] font-semibold leading-tight">{oferta.titulo}</p>
+              {oferta.regras && <p className="mt-1 text-[15px]">{oferta.regras}</p>}
+            </div>
+          ) : b.description && <p className="mt-3 line-clamp-3 text-[17px] leading-snug text-white/85">{b.description}</p>}
+        </div>
+      </Foto>
+      <Rodape url={link(`/estabelecimento/${b.slug}`, local, 'casa')} chamada="Salve esta casa" sub="Fotos, horário e WhatsApp no seu celular, para voltar." />
+    </>
+  )
+}
+
+const SECOES = [
+  { id: 'fazer', nome: 'O que fazer', icone: Mountain, cat: 'turismo' },
+  { id: 'comer', nome: 'Comer e beber', icone: Utensils, cat: 'alimentacao' },
+  { id: 'trilhas', nome: 'Trilhas', icone: Mountain },
+  { id: 'uteis', nome: 'Farmácia e úteis', icone: LifeBuoy, grupos: ['saude', 'transporte', 'servicos'] },
+  { id: 'roteiro', nome: 'Roteiro pronto', icone: Sparkles },
+]
+
+/** Item com QR: o cliente aponta a câmera e leva para o celular. */
+function ItemQR({ titulo, sub, url }) {
+  const qr = useQR(url)
+  return (
+    <div className="flex items-center gap-3 rounded-2xl bg-white/[0.07] p-3">
+      {qr ? <img src={qr} alt="" className="h-[84px] w-[84px] shrink-0 rounded-lg" /> : <div className="h-[84px] w-[84px] shrink-0 rounded-lg bg-white/10" />}
+      <div className="min-w-0"><p className="text-[18px] font-semibold leading-tight">{titulo}</p>{sub && <p className="mt-1 line-clamp-2 text-[14px] text-white/70">{sub}</p>}</div>
+    </div>
+  )
+}
+
+/** Modo explorar: o cliente toca no totem e navega pelo guia ali mesmo. Volta ao carrossel sozinho depois de 45 s parado. */
+function Explorar({ businesses, anfitriao, local, onSair }) {
+  const [secao, setSecao] = useState(null)
+  const parado = useRef()
+  const mexeu = () => { clearTimeout(parado.current); parado.current = setTimeout(onSair, 45000) }
+  useEffect(() => { mexeu(); return () => clearTimeout(parado.current) }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  // na mesa de um restaurante, não sugerimos outro lugar para comer
+  const secoes = SECOES.filter(x => !(anfitriao && x.cat && x.cat === anfitriao.category))
+  const lista = !secao ? [] : secao.cat
+    ? businesses.filter(b => b.category === secao.cat && b.slug !== local).sort((a, z) => (z.plan !== 'free') - (a.plan !== 'free') || (z.isOpen === true) - (a.isOpen === true)).slice(0, 6)
+    : secao.grupos ? businesses.filter(b => secao.grupos.includes(b.category) && b.isOpen).slice(0, 6) : []
+  return (
+    <div onClick={mexeu} onTouchStart={mexeu} className="absolute inset-0 z-[105] flex flex-col bg-[var(--araucaria)] p-5 pt-8">
+      <div className="flex items-center justify-between">
+        {secao ? <button onClick={() => setSecao(null)} className="flex min-h-12 items-center gap-1 text-[17px] font-semibold"><ChevronLeft size={22} />Voltar</button> : <Marca />}
+        <button onClick={onSair} aria-label="Fechar" className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10"><Fechar size={22} /></button>
+      </div>
+      {!secao ? (
+        <>
+          <p className="serifa mt-6 text-[34px] font-semibold leading-tight">{anfitriao ? `Enquanto espera no ${anfitriao.name.split(' ')[0]}, conheça a vila` : 'Explore Monte Verde'}</p>
+          <div className="mt-6 grid flex-1 grid-cols-2 content-start gap-3">
+            {secoes.map(x => (
+              <button key={x.id} onClick={() => setSecao(x)} className="flex min-h-[120px] flex-col items-start justify-between rounded-[22px] bg-white/[0.08] p-4 text-left">
+                <x.icone size={28} className="text-[var(--broto)]" /><span className="text-[19px] font-semibold leading-tight">{x.nome}</span>
+              </button>
+            ))}
+          </div>
+          <ItemQR titulo="Leve o guia no celular" sub="Mapa que funciona sem internet, roteiro e quem está aberto agora." url={link('/', local, 'explorar')} />
+        </>
+      ) : (
+        <div className="mt-4 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pb-4">
+          <p className="serifa text-[30px] font-semibold">{secao.nome}</p>
+          {secao.id === 'trilhas' && TRILHAS.map(t => <ItemQR key={t.slug} titulo={t.nome} sub={`${t.nivel} · ${t.tempo}`} url={link(`/trilhas/${t.slug}`, local, 'trilha')} />)}
+          {secao.id === 'roteiro' && <ItemQR titulo="Seu roteiro em 1 minuto" sub="Diga quantos dias fica e do que gosta: o guia monta manhã, tarde e noite." url={link('/roteiro', local, 'roteiro')} />}
+          {secao.id === 'roteiro' && <ItemQR titulo="Pergunte ao concierge" sub="Ex.: um passeio tranquilo para amanhã cedo." url={link('/concierge', local, 'concierge')} />}
+          {lista.map(b => <ItemQR key={b.id} titulo={b.name} sub={`${b.isOpen === true ? 'Aberto agora · ' : ''}${b.address || ''}`} url={link(`/estabelecimento/${b.slug}`, local, 'explorar')} />)}
+          {secao.id === 'uteis' && <div className="grid grid-cols-3 gap-2 text-center">{[['192', 'SAMU'], ['193', 'Bombeiros'], ['190', 'Polícia']].map(([n, t]) => <div key={n} className="rounded-2xl bg-white/10 py-3"><p className="num text-[26px] font-bold">{n}</p><p className="text-[12px] text-white/70">{t}</p></div>)}</div>}
+          {(secao.cat || secao.grupos) && !lista.length && <p className="text-[16px] text-white/70">Nada aberto agora nesta seção.</p>}
+        </div>
+      )}
+    </div>
   )
 }
 

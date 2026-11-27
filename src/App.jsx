@@ -18,6 +18,7 @@ import { Epoca } from './pages/Epoca'
 import { Trilhas, TrilhaDetalhe } from './pages/Trilhas'
 import { BaixarApp } from './pages/BaixarApp'
 import { TotemConfigurar } from './pages/TotemConfigurar'
+import { Parceiro } from './pages/Parceiro'
 import { APP_TOTEM, localSalvo } from './lib/totemApp'
 import { Sobre } from './pages/Sobre'
 import { TermosUso, TermosAnunciante } from './pages/Termos'
@@ -133,6 +134,7 @@ export default function App() {
         <Route path="/trilhas" element={<Trilhas />} />
         <Route path="/app" element={<BaixarApp />} />
         <Route path="/totem/configurar" element={<TotemConfigurar />} />
+        <Route path="/parceiro/:slug" element={<Parceiro />} />
         <Route path="/sobre" element={<Sobre />} />
         <Route path="/termos" element={<TermosUso />} />
         <Route path="/termos-anunciante" element={<TermosAnunciante />} />
