@@ -1,11 +1,13 @@
 # Gera o APK de teste do app Android (Capacitor) a cada push que mexe no app.
-# O arquivo fica em Actions > (execução) > Artifacts > monte-verde-mg-apk.
+# Link fixo: github.com/mcoelhor/monteverdemg/releases/tag/apk-teste (arquivo monte-verde-mg-teste.apk).
 name: APK Android (teste)
 on:
   workflow_dispatch:
   push:
     branches: [lancamento]
     paths: ['src/**', 'public/**', 'android/**', 'capacitor.config.json', 'package.json', '.github/workflows/android-apk.yml']
+permissions:
+  contents: write
 jobs:
   apk:
     runs-on: ubuntu-latest
@@ -24,3 +26,9 @@ jobs:
           name: monte-verde-mg-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
+      - run: cp android/app/build/outputs/apk/debug/app-debug.apk monte-verde-mg-teste.apk
+      - name: Publica no link fixo de teste
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          gh release view apk-teste >/dev/null 2>&1 || gh release create apk-teste --prerelease --title "App Android - versão de teste" --notes "APK de teste (debug). No Android: baixe, abra e permita instalar de fonte desconhecida."
+          gh release upload apk-teste monte-verde-mg-teste.apk --clobber
