@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Download, Check, Trash2, WifiOff, X, RefreshCw } from 'lucide-react'
 import { manifesto, baixar, remover, suportado, mb, sincronizar } from '../lib/mapaOffline'
 import { usePacotes, useOnline } from './MapaBase'
@@ -92,16 +93,17 @@ export function BotaoMapaOffline({ className = '' }) {
           Sem internet e sem mapa salvo: as ruas não aparecem. Da próxima vez, toque em "Baixar mapa offline" com conexão.
         </p>
       )}
-      {aberto && (
+      {aberto && createPortal(
         <div className="fixed inset-0 z-[2000] flex items-end justify-center bg-black/40 sm:items-center" onClick={() => setAberto(false)}>
-          <div className="max-h-[85dvh] w-full max-w-md overflow-y-auto rounded-t-[22px] bg-[var(--nevoa)] p-5 sm:rounded-[22px]" onClick={e => e.stopPropagation()}>
+          <div className="max-h-[85dvh] w-full max-w-md overflow-y-auto rounded-t-[22px] bg-[var(--nevoa)] p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:rounded-[22px]" onClick={e => e.stopPropagation()}>
             <div className="mb-3 flex items-center justify-between">
               <h2 className="serifa text-[20px] font-semibold">Mapa sem internet</h2>
               <button onClick={() => setAberto(false)} aria-label="Fechar" className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-[var(--nevoa-2)]"><X size={18} /></button>
             </div>
             <PacotesMapa />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )
