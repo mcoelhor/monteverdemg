@@ -13,7 +13,7 @@ export const PARCEIROS = {
     wa: '5531995207200',
     site: 'https://tocaengenharia.com.br',
     cor: '#14532d',
-    banner: '/parceiros/toca.webp',
+    banner: import.meta.env.BASE_URL + 'parceiros/toca.webp',
     interesse: 'projeto',
   },
   construtora: {
@@ -23,7 +23,7 @@ export const PARCEIROS = {
     wa: '', // (35) 9973-6593 está com 8 dígitos: confirmar o número antes de ativar o botão
     site: '',
     cor: '#6b4f3a',
-    banner: '/parceiros/construtora.webp',
+    banner: import.meta.env.BASE_URL + 'parceiros/construtora.webp',
     interesse: 'chale',
   },
 }

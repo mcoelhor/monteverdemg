@@ -76,7 +76,7 @@ export function Totem() {
 function Marca({ claro = true }) {
   return (
     <div className="flex items-center gap-2.5">
-      <img src="/favicon.svg" alt="" className="h-9 w-9" />
+      <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="h-9 w-9" />
       <span className={`serifa text-[22px] font-semibold ${claro ? 'text-white' : 'text-[var(--araucaria)]'}`}>Monte Verde<span className="text-[var(--madeira)]"> MG</span></span>
     </div>
   )

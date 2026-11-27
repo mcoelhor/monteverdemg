@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation, useNavigationType } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Routes, Route, useLocation, useNavigationType } from 'react-router-dom'
 import { useEffect, useLayoutEffect, lazy, Suspense } from 'react'
 import { Home } from './pages/Home'
 import { Sos } from './pages/Sos'
@@ -29,6 +29,8 @@ const AdminPagamentos = lazy(() => import('./admin/AdminPagamentos').then(m => (
 const AdminReivindicacoes = lazy(() => import('./admin/AdminReivindicacoes').then(m => ({ default: m.AdminReivindicacoes })))
 const MeuNegocio = lazy(() => import('./pages/MeuNegocio').then(m => ({ default: m.MeuNegocio })))
 const AdminAvisos = lazy(() => import('./admin/AdminAvisos').then(m => ({ default: m.AdminAvisos })))
+// Prévia publicada como página única (sem servidor): rotas pelo # do endereço
+const Roteador = import.meta.env.VITE_PREVIA ? HashRouter : BrowserRouter
 const Concierge = lazy(() => import('./pages/Concierge').then(m => ({ default: m.Concierge })))
 const Totem = lazy(() => import('./pages/Totem').then(m => ({ default: m.Totem })))
 const AdminEvents = lazy(() => import('./admin/AdminEvents').then(m => ({ default: m.AdminEvents })))
@@ -72,7 +74,7 @@ function Rolagem() {
 export default function App() {
   useEffect(() => { registrarVisita() }, [])
   return (
-    <BrowserRouter>
+    <Roteador>
       <Rolagem />
       <Suspense fallback={<div className="p-6"><div className="esqueleto h-40 rounded-2xl" /></div>}>
       <Routes>
@@ -112,6 +114,6 @@ export default function App() {
       </Routes>
       </Suspense>
       <Cookies />
-    </BrowserRouter>
+    </Roteador>
   )
 }

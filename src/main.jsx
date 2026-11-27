@@ -19,3 +19,8 @@ createRoot(document.getElementById('root')).render(
     <App />
   </StrictMode>,
 )
+
+// Prévia sem internet: esconde as fotos que não carregam, em vez de mostrar o texto alternativo
+if (import.meta.env.VITE_PREVIA) {
+  document.addEventListener('error', e => { if (e.target?.tagName === 'IMG') e.target.style.visibility = 'hidden' }, true)
+}

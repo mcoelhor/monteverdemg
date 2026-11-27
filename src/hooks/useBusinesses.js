@@ -21,11 +21,14 @@ function publicar(novo) {
 
 export function carregarLugares(forcar = false) {
   if (pedido && !forcar) return pedido
-  pedido = supabase
-    .from('businesses')
-    .select(`${BUSINESS_COLS}, business_images(image_url, display_order)`)
-    .eq('status', 'active')
-    .order('name')
+  const consulta = import.meta.env.VITE_PREVIA
+    ? fetch('./dados.json').then(r => r.json()).then(data => ({ data, error: null })) // prévia: cópia do banco
+    : supabase
+      .from('businesses')
+      .select(`${BUSINESS_COLS}, business_images(image_url, display_order)`)
+      .eq('status', 'active')
+      .order('name')
+  pedido = consulta
     .then(({ data, error }) => {
       if (error) throw error
       const lista = (data || []).map(b => ({
