@@ -128,33 +128,33 @@ function BottomSheet({ business, onClose, eu }) {
           <p className="text-sm text-gray-500 mt-0.5">{nomeSub(business)}</p>
           <StatusPill st={business.st} className="mt-1" />
           {eu && business.latitude && <p className="mt-1 text-xs font-semibold text-[#2563eb]">{textoDist(distKm(eu, { lat: business.latitude, lng: business.longitude }))} de você (em linha reta)</p>}
-          <div className="mt-2 grid grid-cols-3 gap-1.5">
+        </div>
+        <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 shrink-0">
+          <X size={14} className="text-gray-500" />
+        </button>
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-2">
             <button
               onClick={() => navigate(`/estabelecimento/${business.slug}`)}
-              className="whitespace-nowrap py-2 rounded-xl text-xs font-semibold text-white"
+              className="whitespace-nowrap min-h-11 rounded-xl text-sm font-semibold text-white"
               style={{ background: '#14532d' }}
             >
               Detalhes
             </button>
             <a href={linkRota(business)} target="_blank" rel="noopener noreferrer" onClick={() => registrar('rota', { businessId: business.id })}
-              className="flex items-center justify-center gap-1 py-2 rounded-xl border border-gray-200 bg-white text-xs font-semibold text-gray-700">
+              className="flex items-center justify-center gap-1 min-h-11 rounded-xl border border-gray-200 bg-white text-sm font-semibold text-gray-700">
               <Navigation size={13} /> Rota
             </a>
             {business.whatsapp && (
               <a
                 href={linkWhatsApp(business.whatsapp)} target="_blank" rel="noopener noreferrer"
                 onClick={() => registrar('whatsapp', { businessId: business.id })}
-                className="flex items-center justify-center gap-1 py-2 rounded-xl bg-green-500 text-white text-xs font-semibold"
+                className="flex items-center justify-center gap-1 min-h-11 rounded-xl bg-green-500 text-white text-sm font-semibold"
               >
                 <MessageCircle size={13} /> WhatsApp
               </a>
             )}
           </div>
-        </div>
-        <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 shrink-0">
-          <X size={14} className="text-gray-500" />
-        </button>
-      </div>
     </div>
   )
 }
