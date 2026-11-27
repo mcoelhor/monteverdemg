@@ -103,22 +103,24 @@ function ConciergeBox() {
     )
   }
   return (
-    <form onSubmit={e => { e.preventDefault(); ir() }} className="superficie p-5 lg:flex lg:items-center lg:gap-5 lg:px-5 lg:py-3">
-      <div className="lg:shrink-0">
+    <form onSubmit={e => { e.preventDefault(); ir() }} className="superficie p-5 lg:px-5 lg:py-3.5">
+      <div className="lg:flex lg:items-baseline lg:gap-3">
         <p className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--musgo)] lg:text-[12px]"><Sparkles size={15} />Concierge</p>
-        <label htmlFor="conc-home" className="serifa mt-1 block text-[24px] font-semibold leading-tight lg:mt-0.5 lg:whitespace-nowrap lg:text-[19px]">Como você quer viver Monte Verde?</label>
+        <label htmlFor="conc-home" className="serifa mt-1 block text-[24px] font-semibold leading-tight lg:mt-0 lg:text-[19px]">Como você quer viver Monte Verde?</label>
       </div>
-      <div className="mt-3 flex items-center gap-2 rounded-full border border-[var(--borda)] bg-[var(--nevoa)] p-1.5 pl-4 lg:mt-0 lg:flex-1 lg:p-1 lg:pl-4">
-        <input id="conc-home" value={q} onChange={e => setQ(e.target.value)} maxLength={600} placeholder="Ex.: 2 dias a dois, gostamos de vinho e trilha"
-          className="min-w-0 flex-1 bg-transparent text-[16px] placeholder:text-[var(--leve)] lg:text-[15px]" />
-        <button type="submit" disabled={!q.trim()} aria-label="Perguntar ao concierge" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--musgo)] text-white disabled:opacity-40 lg:h-10 lg:w-10"><ArrowRight size={19} /></button>
+      <div className="lg:mt-2 lg:flex lg:items-center lg:gap-5">
+        <div className="mt-3 flex items-center gap-2 rounded-full border border-[var(--borda)] bg-[var(--nevoa)] p-1.5 pl-4 lg:mt-0 lg:flex-1 lg:p-1 lg:pl-4">
+          <input id="conc-home" value={q} onChange={e => setQ(e.target.value)} maxLength={600} placeholder="Ex.: 2 dias a dois, gostamos de vinho e trilha"
+            className="min-w-0 flex-1 bg-transparent text-[16px] placeholder:text-[var(--leve)] lg:text-[15px]" />
+          <button type="submit" disabled={!q.trim()} aria-label="Perguntar ao concierge" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--musgo)] text-white disabled:opacity-40 lg:h-10 lg:w-10"><ArrowRight size={19} /></button>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2 lg:hidden">
+          {['Fim de semana a dois', 'Com crianças', 'Dia de chuva'].map(t => <button key={t} type="button" onClick={() => ir(t)} className="chip h-10 text-[14px]">{t}</button>)}
+        </div>
+        <Link to="/roteiro" className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-[14px] font-semibold text-[var(--musgo)] lg:mt-0 lg:shrink-0 lg:whitespace-nowrap">
+          <span className="lg:hidden">Prefere responder perguntas? Monte o roteiro</span><span className="hidden lg:inline">Ou monte o roteiro</span> <ArrowRight size={14} />
+        </Link>
       </div>
-      <div className="mt-3 flex flex-wrap gap-2 lg:hidden">
-        {['Fim de semana a dois', 'Com crianças', 'Dia de chuva'].map(t => <button key={t} type="button" onClick={() => ir(t)} className="chip h-10 text-[14px]">{t}</button>)}
-      </div>
-      <Link to="/roteiro" className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-[14px] font-semibold text-[var(--musgo)] lg:mt-0 lg:shrink-0 lg:whitespace-nowrap">
-        <span className="lg:hidden">Prefere responder perguntas? Monte o roteiro</span><span className="hidden lg:inline">Ou monte o roteiro</span> <ArrowRight size={14} />
-      </Link>
     </form>
   )
 }
