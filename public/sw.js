@@ -1,7 +1,8 @@
 /* Service worker do Monte Verde MG: notificações push e uso sem sinal.
    - Navegação: rede primeiro; sem rede, a última versão do app.
    - /assets: cache primeiro (nomes com hash, imutáveis).
-   - Lista do guia, ofertas, avisos e fotos: cache enquanto atualiza por trás. */
+   - Lista do guia, ofertas, avisos e fotos: cache enquanto atualiza por trás.
+   - Mapa offline: o cache "mv-mapas" é do app (src/lib/mapaOffline.js) e nunca é apagado aqui. */
 const VERSAO = 'mv-sw-v3'
 const APP = `${VERSAO}-app`
 const DADOS = `${VERSAO}-dados`
@@ -11,7 +12,7 @@ self.addEventListener('install', e => {
   e.waitUntil(caches.open(APP).then(c => c.addAll(['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png']).catch(() => {})).then(() => self.skipWaiting()))
 })
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => !k.startsWith(VERSAO)).map(k => caches.delete(k)))).then(() => self.clients.claim()))
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => !k.startsWith(VERSAO) && k !== 'mv-mapas').map(k => caches.delete(k)))).then(() => self.clients.claim()))
 })
 
 self.addEventListener('fetch', e => {

@@ -8,11 +8,13 @@ import { CATEGORIES, categoria, iconeDe, nomeSub } from '../data/categories'
 import { Icon } from '../components/UI/Icon'
 import { StatusPill } from '../components/UI/Badge'
 import { registrar, linkWhatsApp } from '../lib/track'
+import { MapaBase } from '../components/MapaBase'
+import { BotaoMapaOffline } from '../components/MapaOffline'
 
 
 function MapView({ businesses, onSelect }) {
   const [MapContainer, setMapContainer] = useState(null)
-  const [TileLayer, setTileLayer] = useState(null)
+  const [rl, setRl] = useState(null)
   const [Marker, setMarkerComp] = useState(null)
   const [Popup, setPopup] = useState(null)
   const [L, setL] = useState(null)
@@ -31,13 +33,13 @@ function MapView({ businesses, onSelect }) {
     })
     import('react-leaflet').then(rl => {
       setMapContainer(() => rl.MapContainer)
-      setTileLayer(() => rl.TileLayer)
+      setRl(rl)
       setMarkerComp(() => rl.Marker)
       setPopup(() => rl.Popup)
     })
   }, [])
 
-  if (!MapContainer || !TileLayer || !Marker || !Popup || !L) {
+  if (!MapContainer || !rl || !Marker || !Popup || !L) {
     return (
       <div className="flex-1 flex items-center justify-center bg-gray-100">
         <div className="flex flex-col items-center gap-2">
@@ -67,10 +69,7 @@ function MapView({ businesses, onSelect }) {
       style={{ height: '100%', width: '100%' }}
       zoomControl={false}
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      <MapaBase rl={rl} L={L} />
       {businesses.map(b => b.latitude && b.longitude ? (
         <Marker
           key={b.id}
@@ -169,6 +168,7 @@ export function MapPage() {
             {businesses.filter(b => b.latitude).length} de {businesses.length} lugares já têm localização no mapa. Os outros estão sendo marcados.
           </p>
         )}
+        <BotaoMapaOffline className="absolute right-4 top-14 z-[999]" />
         <BottomSheet business={selectedBusiness} onClose={() => setSelectedBusiness(null)} />
       </div>
     </Layout>

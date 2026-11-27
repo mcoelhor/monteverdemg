@@ -5,6 +5,8 @@ import { Layout } from '../components/Layout/Layout'
 import { TRILHAS, trilha } from '../data/trilhas'
 import { FOTOS } from '../data/fotos'
 import { NaoEncontrada } from './NaoEncontrada'
+import { MapaBase } from '../components/MapaBase'
+import { BotaoMapaOffline } from '../components/MapaOffline'
 
 const AVISO = 'Condições de trilha mudam com o tempo e a chuva. Avise alguém do seu roteiro e não saia da trilha.'
 const MOVE_MAPA = 'https://www.google.com/maps/search/?api=1&query=MOVE+Visite+Monte+Verde+Av.+Monte+Verde+70'
@@ -120,17 +122,18 @@ export function TrilhaDetalhe() {
 function MapaTrilha({ t }) {
   const [m, setM] = useState(null)
   useEffect(() => {
-    Promise.all([import('leaflet'), import('react-leaflet'), import('leaflet/dist/leaflet.css')]).then(([l, rl]) => setM({ L: l.default, ...rl }))
+    Promise.all([import('leaflet'), import('react-leaflet'), import('leaflet/dist/leaflet.css')]).then(([l, rl]) => setM({ L: l.default, rl, ...rl }))
   }, [])
   const pontos = [t.inicio, t.cume].filter(Boolean)
   if (!m) return <div className="esqueleto h-[300px] rounded-[var(--raio)]" />
-  const { L, MapContainer, TileLayer, Marker, Tooltip } = m
+  const { L, rl, MapContainer, Marker, Tooltip } = m
   const pino = (txt, cor) => L.divIcon({ html: `<div style="display:inline-block;transform:translate(-50%,-100%);background:${cor};padding:5px 11px;border-radius:999px;font:600 12px Inter,sans-serif;color:#fff;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,.25);border:2px solid #fff">${txt}</div>`, className: '', iconSize: [0, 0], iconAnchor: [0, 0] })
   const bounds = pontos.length > 1 ? L.latLngBounds(pontos.map(p => [p.lat, p.lng])).pad(0.4) : null
   return (
-    <div className="h-[300px] overflow-hidden rounded-[var(--raio)] border border-[var(--borda)] lg:h-[380px]">
+    <div className="relative h-[300px] overflow-hidden rounded-[var(--raio)] border border-[var(--borda)] lg:h-[380px]">
+      <BotaoMapaOffline className="absolute right-3 top-3 z-[999]" />
       <MapContainer {...(bounds ? { bounds } : { center: [pontos[0].lat, pontos[0].lng], zoom: 15 })} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' />
+        <MapaBase rl={rl} L={L} />
         <Marker position={[t.inicio.lat, t.inicio.lng]} icon={pino('Início', '#587660')}><Tooltip>{t.inicio.nome}</Tooltip></Marker>
         {t.cume && <Marker position={[t.cume.lat, t.cume.lng]} icon={pino('Cume', '#B08D6B')}><Tooltip>{t.cume.nome}</Tooltip></Marker>}
       </MapContainer>
