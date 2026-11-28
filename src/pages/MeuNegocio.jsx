@@ -436,7 +436,10 @@ export function MeuNegocio() {
   }, [user])
   useEffect(() => { if (!user) { setMeus(null); setAtivo(null); setPedidos([]); return } carregar() }, [user, carregar])
 
-  const precisaSenha = user && (nova || !user.user_metadata?.senha_definida)
+  // Só quem entrou por e-mail precisa criar senha. Quem entrou com Google (ou Apple) já tem login.
+  const provedores = user ? (user.app_metadata?.providers || [user.app_metadata?.provider]).filter(Boolean) : []
+  const soEmail = provedores.length === 0 || provedores.every(p => p === 'email')
+  const precisaSenha = user && soEmail && (nova || !user.user_metadata?.senha_definida)
   const fimSenha = () => { setNova(false); const u = new URL(location.href); u.searchParams.delete('nova'); u.hash = ''; history.replaceState(null, '', u) }
   const sair = () => supabase.auth.signOut()
 

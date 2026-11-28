@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { UserRound, Store, LogOut, ChevronDown, Heart } from 'lucide-react'
+import { UserRound, Store, LogOut, ChevronDown, Heart, Shield } from 'lucide-react'
 import { useConta, nomeDe, fotoDe, sair } from '../lib/conta'
+import { supabase } from '../lib/supabase'
 
 /** "Entrar" do topo: escolhe entre conta de visitante e área do dono. Logado, mostra a foto e o menu da conta.
     variante "nav" = menu do computador; "topo" = ícone na barra do topo da home (celular). */
@@ -9,6 +10,18 @@ export function BotaoConta({ variante = 'nav' }) {
   const { carregando, user } = useConta()
   const [aberto, setAberto] = useState(false)
   const caixa = useRef(null)
+  const [papel, setPapel] = useState({ dono: false, admin: false })
+
+  // Ao abrir o menu logado: mostra "Meu negócio" só para quem é dono e o painel só para admin.
+  useEffect(() => {
+    if (!aberto || !user) return
+    let vivo = true
+    Promise.all([
+      supabase.from('business_owners').select('business_id', { count: 'exact', head: true }).eq('user_id', user.id),
+      supabase.rpc('sou_admin'),
+    ]).then(([o, a]) => vivo && setPapel({ dono: !!o.count, admin: a.data === true }))
+    return () => { vivo = false }
+  }, [aberto, user])
 
   useEffect(() => {
     if (!aberto) return
@@ -50,7 +63,9 @@ export function BotaoConta({ variante = 'nav' }) {
               <p className="truncate border-b border-[var(--borda)] px-4 py-3 text-[14px]"><b>{nomeDe(user)}</b><span className="block truncate text-[13px] text-[var(--leve)]">{user.email}</span></p>
               <Item to="/conta" icon={UserRound} titulo="Minha conta" sub="Roteiros salvos e dados da conta" onClick={fechar} />
               <Item to="/favoritos" icon={Heart} titulo="Lugares salvos" sub="Os lugares que você marcou" onClick={fechar} />
-              <Item to="/meu-negocio" icon={Store} titulo="Meu negócio" sub="Editar a página do seu lugar" onClick={fechar} />
+              {papel.dono && <Item to="/meu-negocio" icon={Store} titulo="Meu negócio" sub="Editar a página do seu lugar" onClick={fechar} />}
+              {papel.admin && <Item to="/bastidores-mv" icon={Shield} titulo="Painel de administração" sub="Lugares, pedidos e métricas" onClick={fechar} />}
+              {!papel.dono && <Link role="menuitem" to="/meu-negocio" onClick={fechar} className="flex min-h-11 items-center gap-3 border-t border-[var(--borda)] px-4 text-[14px] text-[var(--leve)] hover:bg-[var(--nevoa)]"><Store size={16} />Tenho um negócio em Monte Verde</Link>}
               <button role="menuitem" onClick={() => { fechar(); sair() }} className="flex min-h-12 w-full items-center gap-3 border-t border-[var(--borda)] px-4 text-left text-[15px] hover:bg-[var(--nevoa)]"><LogOut size={18} className="text-[var(--leve)]" />Sair</button>
             </>
           ) : (
