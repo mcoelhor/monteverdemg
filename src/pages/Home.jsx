@@ -236,7 +236,9 @@ function Painel() {
   const a = agoraMV()
   const clima = useClima()
   const { businesses } = useBusinesses({})
-  const abertos = businesses.filter(b => b.st.estado === 'aberto' || b.st.estado === 'plantao')
+  // Só restaurantes/cafés abertos de verdade: o link leva para "Comer" com o filtro Aberto agora,
+  // então o número tem que bater com o que aparece lá (sem emergência, caixa eletrônico ou plantão).
+  const abertos = businesses.filter(b => b.category === 'alimentacao' && b.st.estado === 'aberto')
   const chegou = useChegou()
   const ACOES = [
     ['Comer agora', '/categoria/alimentacao?aberto=1', 'Utensils'],
@@ -249,7 +251,7 @@ function Painel() {
       {abertos.length > 0 && (
         <Link to="/categoria/alimentacao?aberto=1" className="sobe serifa mb-3 inline-flex items-center gap-2 text-[22px] font-semibold leading-tight text-[var(--araucaria)] lg:text-[24px]" style={{ '--i': 2 }}>
           <span className="relative flex h-2.5 w-2.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--salvia)] opacity-60 motion-reduce:animate-none" /><span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[var(--salvia)]" /></span>
-          <span><span className="num">{abertos.length}</span> lugares abertos agora</span> <ArrowRight size={18} className="text-[var(--musgo)]" />
+          <span><span className="num">{abertos.length}</span> {abertos.length === 1 ? 'lugar para comer aberto agora' : 'lugares para comer abertos agora'}</span> <ArrowRight size={18} className="text-[var(--musgo)]" />
         </Link>
       )}
       <nav className="sobe grid grid-cols-4 gap-2.5 lg:gap-4" style={{ '--i': 2 }} aria-label="Atalhos principais">
