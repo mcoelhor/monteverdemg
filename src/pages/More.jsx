@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { Heart, Calendar, Store, Settings, ArrowRight, Download, Route, Siren, Image, Car, Leaf, Ticket, Shield, Mountain, Mail, MessageCircle } from 'lucide-react'
+import { Heart, Calendar, Store, Settings, ArrowRight, Download, Route, Siren, Image, Car, Leaf, Ticket, Shield, Mountain, Mail, MessageCircle, UserRound } from 'lucide-react'
 import { Layout } from '../components/Layout/Layout'
 import { LeadForm } from '../components/LeadForm'
 import { linkWhatsApp } from '../lib/track'
@@ -32,6 +32,7 @@ export function More() {
     <Layout title="Mais">
       <div className="space-y-2 px-5 pt-2">
         {!nativo && <Linha icon={Download} destaque label="Baixar o app (Android e iPhone)" onClick={() => navigate('/app')} />}
+        <Linha icon={UserRound} label="Minha conta (salvar lugares e roteiros)" onClick={() => navigate('/conta')} />
         <Linha icon={Route} label="Meu roteiro" onClick={() => navigate('/roteiro')} />
         <Linha icon={Mountain} label="Sobre Monte Verde (história)" onClick={() => navigate('/sobre')} />
         <Linha icon={Car} label="Como chegar a Monte Verde" onClick={() => navigate('/como-chegar')} />

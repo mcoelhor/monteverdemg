@@ -9,11 +9,13 @@ export function Privacidade() {
   return (
     <Layout title="Privacidade" showBack>
       <div className="px-5 text-[16px] leading-relaxed">
-        <p>O Monte Verde MG é um guia local. Não pedimos cadastro para usar e não vendemos dados.</p>
+        <p>O Monte Verde MG é um guia local. O cadastro é opcional (o guia funciona sem conta) e não vendemos dados.</p>
         <h2 className="mt-6 text-[20px] font-extrabold tracking-[-0.02em]">O que fica no seu aparelho</h2>
         <p className="mt-2">Favoritos, roteiro, escolhas de cookies e um código aleatório que muda todo dia, usado só para contar visitantes únicos. Nada disso identifica você.</p>
         <h2 className="mt-6 text-[20px] font-extrabold tracking-[-0.02em]">O que vai para o nosso servidor</h2>
         <p className="mt-2">Cliques em telefone, WhatsApp e rota (sem seu nome), buscas feitas, de onde veio o acesso (Instagram, Google, QR code), e os dados que você mesmo envia em formulários (cadastro de negócio, correções, pedido de plano) ou ao ligar avisos no celular (a assinatura de notificação).</p>
+        <h2 className="mt-6 text-[20px] font-extrabold tracking-[-0.02em]">Se você criar uma conta</h2>
+        <p className="mt-2">Ao entrar com Google, guardamos seu nome, e-mail e foto do perfil (enviados pelo Google), e o que você salvar: lugares favoritos e roteiros. Servem só para você encontrar tudo em qualquer aparelho. Você pode apagar a conta a qualquer momento em <a href="/conta" className="underline">Minha conta</a>; os dados da conta são apagados na hora.</p>
         <h2 className="mt-6 text-[20px] font-extrabold tracking-[-0.02em]">Localização</h2>
         <p className="mt-2">Só é usada quando você pede ("perto de mim" ou boas-vindas na vila) e não é guardada.</p>
         <h2 className="mt-6 text-[20px] font-extrabold tracking-[-0.02em]">Cookies de marketing</h2>

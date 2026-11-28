@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Link, useSearchParams } from 'react-router-dom'
-import { ArrowRight, Shuffle, Trash2, Navigation, Share2, Plus, RefreshCcw, X, Check, ChevronUp, ChevronDown, Pencil, Sparkles } from 'lucide-react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { ArrowRight, Shuffle, Trash2, Navigation, Share2, Plus, RefreshCcw, X, Check, ChevronUp, ChevronDown, Pencil, Sparkles, Bookmark } from 'lucide-react'
 import { Layout } from '../components/Layout/Layout'
 import { Selo } from '../components/UI/BusinessCard'
 import { Icon } from '../components/UI/Icon'
@@ -13,6 +13,8 @@ import { COM_QUEM, GOSTOS, RITMOS, SLOTS, candidatos, montarRoteiro, alternativa
 import { AvisarChegada } from '../components/Avisar'
 import { evento } from '../lib/marketing'
 import { imgMini } from '../lib/miniatura'
+import { useConta } from '../lib/conta'
+import { supabase } from '../lib/supabase'
 
 const CHAVE = 'mv_roteiro_v1'
 const ler = () => { try { return JSON.parse(localStorage.getItem(CHAVE)) } catch { return null } }
@@ -211,6 +213,10 @@ export function Roteiro() {
   const [diaAtivo, setDiaAtivo] = useState(0)
   const [folha, setFolha] = useState(false)
   const [copiado, setCopiado] = useState(false)
+  const [salvoConta, setSalvoConta] = useState('') // '' · 'salvando' · 'ok' · 'erro'
+  const { user } = useConta()
+  const navigate = useNavigate()
+  useEffect(() => { setSalvoConta('') }, [compacto])
 
   const cands = useMemo(() => candidatos(businesses), [businesses])
   const porId = useMemo(() => new Map(cands.map(c => [c.id, c])), [cands])
@@ -270,6 +276,15 @@ export function Roteiro() {
     } catch { /* cancelado */ }
   }
 
+  const salvarNaConta = async () => {
+    if (!user) { navigate('/conta?volta=/roteiro'); return }
+    setSalvoConta('salvando')
+    const quem = COM_QUEM.find(x => x[0] === perfil.comQuem)?.[1].toLowerCase() || ''
+    const titulo = `${perfil.dias} ${perfil.dias > 1 ? 'dias' : 'dia'}${quem ? ` · ${quem}` : ''} · ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}`
+    const { error } = await supabase.from('roteiros_salvos').insert({ titulo, dados: { perfil, roteiro: compacto } })
+    setSalvoConta(error ? 'erro' : 'ok')
+  }
+
   return (
     <Layout hideHeader>
       <section className="bg-[var(--araucaria)] px-5 pb-6 text-white" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 22px)' }}>
@@ -284,6 +299,9 @@ export function Roteiro() {
           <button onClick={() => montar(Math.floor(Math.random() * 1e6))} className="botao botao-broto h-12 min-h-0 flex-1 text-[15px]"><RefreshCcw size={17} />Outra sugestão</button>
           <button onClick={compartilhar} className="botao h-12 min-h-0 flex-1 bg-white/10 text-[15px] text-white"><Share2 size={17} />{copiado ? 'Copiado' : 'Enviar'}</button>
         </div>
+        <button onClick={salvarNaConta} disabled={salvoConta === 'salvando' || salvoConta === 'ok'} className="botao mt-2 h-12 min-h-0 w-full bg-white/10 text-[15px] text-white">
+          {salvoConta === 'ok' ? <><Check size={17} />Salvo na sua conta</> : <><Bookmark size={17} />{salvoConta === 'erro' ? 'Não salvou. Tentar de novo' : user ? 'Salvar na minha conta' : 'Entrar e salvar este roteiro'}</>}
+        </button>
       </section>
 
       <AvisarChegada perfil={perfil} />

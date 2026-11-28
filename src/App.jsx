@@ -34,6 +34,7 @@ const AdminBuscas = lazy(() => import('./admin/AdminBuscas').then(m => ({ defaul
 const AdminBusinesses = lazy(() => import('./admin/AdminBusinesses').then(m => ({ default: m.AdminBusinesses })))
 const AdminPagamentos = lazy(() => import('./admin/AdminPagamentos').then(m => ({ default: m.AdminPagamentos })))
 const AdminReivindicacoes = lazy(() => import('./admin/AdminReivindicacoes').then(m => ({ default: m.AdminReivindicacoes })))
+const Conta = lazy(() => import('./pages/Conta').then(m => ({ default: m.Conta })))
 const MeuNegocio = lazy(() => import('./pages/MeuNegocio').then(m => ({ default: m.MeuNegocio })))
 const AdminAvisos = lazy(() => import('./admin/AdminAvisos').then(m => ({ default: m.AdminAvisos })))
 // Prévia publicada como página única (sem servidor): rotas pelo # do endereço
@@ -120,6 +121,7 @@ export default function App() {
         <Route path="/eventos" element={<Events />} />
         <Route path="/evento/:id" element={<EventDetail />} />
         <Route path="/favoritos" element={<Favorites />} />
+        <Route path="/conta" element={<Conta />} />
         <Route path="/mais" element={<More />} />
         <Route path="/anuncie" element={<Anuncie />} />
         <Route path="/anuncie/obrigado" element={<AnuncieObrigado />} />
