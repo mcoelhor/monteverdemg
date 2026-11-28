@@ -10,6 +10,7 @@ const LINKS = [
   ['Ofertas', '/ofertas'],
   ['Eventos', '/eventos'],
   ['Todas as categorias', '/categorias'],
+  ['Contato', '/mais#contato'],
   ['Corrigir uma informação', '/mais#corrigir'],
   ['Baixar o app', '/app'],
   ['Créditos das fotos', '/creditos'],

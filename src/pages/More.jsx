@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { Heart, Calendar, Store, Settings, ArrowRight, Download, Route, Siren, Image, Car, Leaf, Ticket, Shield, Mountain } from 'lucide-react'
+import { Heart, Calendar, Store, Settings, ArrowRight, Download, Route, Siren, Image, Car, Leaf, Ticket, Shield, Mountain, Mail } from 'lucide-react'
 import { Layout } from '../components/Layout/Layout'
 import { LeadForm } from '../components/LeadForm'
 import { useInstalar } from '../hooks/useInstalar'
@@ -40,6 +40,7 @@ export function More() {
         <Linha icon={Siren} label="Emergência e contatos úteis" onClick={() => navigate('/sos')} />
         <Linha icon={Store} label="Anuncie seu negócio" onClick={() => navigate('/anuncie')} />
         <Linha icon={Store} label="Meu negócio (área do responsável)" onClick={() => navigate('/meu-negocio')} />
+        <Linha icon={Mail} label="Contato · falar com o guia" onClick={() => navigate('/mais#contato')} />
         <Linha icon={Image} label="Créditos das fotos" onClick={() => navigate('/creditos')} />
         <Linha icon={Shield} label="Privacidade" onClick={() => navigate('/privacidade')} />
         <Linha icon={Shield} label="Termos de uso" onClick={() => navigate('/termos')} />
@@ -55,6 +56,15 @@ export function More() {
         <h2 className="titulo">Achou algo errado?</h2>
         <p className="mb-4 mt-2 text-[16px] leading-relaxed text-[var(--leve)]">Telefone que não atende, horário diferente, lugar que fechou: avise que a gente corrige.</p>
         <LeadForm key={inicial} empresa="portal" interesse="correcao" botao="Enviar correção" inicial={inicial} />
+      </section>
+
+      <section id="contato" className="px-5 pb-6 pt-12" style={{ scrollMarginTop: 90 }}>
+        <h2 className="titulo">Falar com o guia</h2>
+        <p className="mb-4 mt-2 text-[16px] leading-relaxed text-[var(--leve)]">Dúvida, sugestão, parceria ou outro assunto: escreva pra gente.</p>
+        <a href="mailto:monteverdeapp@gmail.com" className="botao botao-sec w-full"><Mail size={18} />monteverdeapp@gmail.com</a>
+        <div className="mt-4">
+          <LeadForm empresa="portal" interesse="outro" botao="Enviar mensagem" />
+        </div>
       </section>
     </Layout>
   )
