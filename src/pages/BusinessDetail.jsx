@@ -25,6 +25,7 @@ import { nomeSub } from '../data/categories'
 import { semanaLinhas } from '../lib/horario'
 import { registrar, linkTel, linkWhatsApp, linkRota, linkInstagram } from '../lib/track'
 import { imgMini } from '../lib/miniatura'
+import { AvaliacoesGoogle } from '../components/AvaliacoesGoogle'
 
 function Fotos({ b }) {
   const [i, setI] = useState(0)
@@ -187,6 +188,8 @@ export function BusinessDetail() {
             <a href={`mailto:${b.email}`} className="flex items-center gap-3 p-4"><Mail size={18} className="text-[var(--salvia)]" /><span className="truncate text-[15px]">{b.email}</span></a>
           )}
         </div>
+
+        <AvaliacoesGoogle b={b} />
 
         <MiniMapa b={b} />
 
