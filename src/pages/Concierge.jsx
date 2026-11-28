@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import { ArrowUp, Loader2, MapPin, RotateCcw, Sparkles, Route as RouteIcon } from 'lucide-react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { ArrowUp, Loader2, MapPin, RotateCcw, Sparkles, Route as RouteIcon, Bookmark, Check } from 'lucide-react'
 import { Layout } from '../components/Layout/Layout'
 import { useBusinesses } from '../hooks/useBusinesses'
 import { registrar } from '../lib/track'
 import { SLOTS } from '../lib/roteiro'
+import { useConta } from '../lib/conta'
+import { supabase } from '../lib/supabase'
 
 const FUNCAO = 'https://isotmggdbtqlyvddxmpe.supabase.co/functions/v1/concierge'
 const CHAVE = 'mv_concierge_v1'
@@ -93,7 +95,7 @@ export function Concierge() {
       <div className="space-y-4 px-5 pb-64 pt-5" aria-live="polite">
         {msgs.map((m, i) => m.role === 'user'
           ? <p key={i} className="ml-auto w-fit max-w-[85%] rounded-[20px] rounded-br-md bg-[var(--musgo)] px-4 py-3 text-[16px] leading-relaxed text-white">{m.text}</p>
-          : <Resposta key={i} m={m} porSlug={porSlug} />
+          : <Resposta key={i} m={m} porSlug={porSlug} pedido={msgs.slice(0, i).reverse().find(x => x.role === 'user')?.text || ''} />
         )}
         {enviando && <p className="flex items-center gap-2 text-[15px] text-[var(--leve)]"><Loader2 size={16} className="animate-spin" />Montando a sugestão…</p>}
         {erro && (
@@ -126,7 +128,28 @@ export function Concierge() {
   )
 }
 
-function Resposta({ m, porSlug }) {
+/** Salva o roteiro do concierge na conta (do jeito que veio: dias, períodos e lugares). */
+function SalvarRoteiroConcierge({ dias: diasBrutos, pedido, porSlug }) {
+  const dias = diasBrutos.map(d => ({ ...d, paradas: (d.paradas || []).map(p => ({ ...p, nome: porSlug.get(p.slug)?.name || p.nome || '' })) }))
+  const { user } = useConta()
+  const navigate = useNavigate()
+  const [estado, setEstado] = useState('') // '' · 'salvando' · 'ok' · 'erro'
+  const salvar = async () => {
+    if (!user) { navigate('/conta?volta=/concierge'); return }
+    setEstado('salvando')
+    const quando = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+    const base = pedido ? pedido.replace(/\s+/g, ' ').slice(0, 70) : `${dias.length} ${dias.length > 1 ? 'dias' : 'dia'}`
+    const { error } = await supabase.from('roteiros_salvos').insert({ titulo: `Concierge · ${base} · ${quando}`.slice(0, 120), dados: { tipo: 'concierge', pedido: pedido.slice(0, 600), dias } })
+    setEstado(error ? 'erro' : 'ok')
+  }
+  return (
+    <button onClick={salvar} disabled={estado === 'salvando' || estado === 'ok'} className="botao botao-sec mt-3 h-11 min-h-0 w-full text-[15px]">
+      {estado === 'ok' ? <><Check size={17} className="text-[var(--musgo)]" />Salvo no seu perfil</> : estado === 'salvando' ? <Loader2 size={17} className="animate-spin" /> : <><Bookmark size={17} />{estado === 'erro' ? 'Não salvou. Tentar de novo' : user ? 'Salvar no meu perfil' : 'Entrar e salvar este roteiro'}</>}
+    </button>
+  )
+}
+
+function Resposta({ m, porSlug, pedido }) {
   return (
     <div className="max-w-[94%]">
       <p className="whitespace-pre-line rounded-[20px] rounded-bl-md border border-[var(--borda)] bg-[var(--papel)] px-4 py-3 text-[16px] leading-relaxed">{m.text}</p>
@@ -177,6 +200,7 @@ function Resposta({ m, porSlug }) {
           </ol>
         </div>
       ))}
+      {m.dias?.length > 0 && <SalvarRoteiroConcierge dias={m.dias} pedido={pedido} porSlug={porSlug} />}
     </div>
   )
 }

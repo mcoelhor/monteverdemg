@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { Heart, Route, LogOut, Trash2, Store, ArrowRight, Loader2 } from 'lucide-react'
+import { Heart, Route, LogOut, Trash2, Store, ArrowRight, Loader2, Sparkles, ChevronDown, MapPin } from 'lucide-react'
 import { Layout } from '../components/Layout/Layout'
 import { BotaoGoogle } from '../components/BotaoGoogle'
 import { useConta, nomeDe, fotoDe, sair, apagarConta } from '../lib/conta'
 import { useFavorites } from '../hooks/useFavorites'
 import { supabase } from '../lib/supabase'
+import { SLOTS } from '../lib/roteiro'
 
 // Mesmo formato do link "Enviar" do roteiro: abre o roteiro salvo direto na tela de roteiro.
 const linkRoteiro = dados => `/roteiro?r=${btoa(unescape(encodeURIComponent(JSON.stringify(dados)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`
-const VOLTAS = ['/roteiro', '/favoritos', '/conta']
+const VOLTAS = ['/roteiro', '/favoritos', '/conta', '/concierge']
 
 export function Conta() {
   const { carregando, user } = useConta()
@@ -76,7 +77,9 @@ function Logado({ user }) {
           <p className="mt-2 text-[15px] text-[var(--leve)]">Nenhum ainda. Monte um em <Link to="/roteiro" className="font-semibold text-[var(--musgo)] underline">Roteiro</Link> e toque em "Salvar".</p>
         ) : (
           <ul className="mt-3 space-y-2">
-            {roteiros.map(r => (
+            {roteiros.map(r => r.dados?.tipo === 'concierge'
+              ? <RoteiroConcierge key={r.id} r={r} onApagar={() => apagarRoteiro(r.id)} />
+              : (
               <li key={r.id} className="flex items-center gap-2 rounded-[var(--raio)] bg-[var(--papel)] pl-4">
                 <Link to={linkRoteiro(r.dados)} className="flex min-h-14 min-w-0 flex-1 items-center gap-3">
                   <Route size={18} className="shrink-0 text-[var(--musgo)]" />
@@ -103,6 +106,55 @@ function Logado({ user }) {
       <button onClick={() => sair()} className="botao botao-sec mt-8 w-full"><LogOut size={18} />Sair</button>
       <ApagarConta />
     </>
+  )
+}
+
+/** Roteiro do concierge salvo: abre ali mesmo, com os dias e os lugares (cada lugar leva à página dele). */
+function RoteiroConcierge({ r, onApagar }) {
+  const [aberto, setAberto] = useState(false)
+  const dias = Array.isArray(r.dados?.dias) ? r.dados.dias : []
+  return (
+    <li className="rounded-[var(--raio)] bg-[var(--papel)]">
+      <div className="flex items-center gap-2 pl-4">
+        <button onClick={() => setAberto(v => !v)} aria-expanded={aberto} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 text-left">
+          <Sparkles size={18} className="shrink-0 text-[var(--musgo)]" />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-[16px] font-semibold">{r.titulo}</span>
+            <span className="block text-[13px] text-[var(--leve)]">{dias.length} {dias.length === 1 ? 'dia' : 'dias'} · salvo em {new Date(r.atualizado_em).toLocaleDateString('pt-BR')}</span>
+          </span>
+          <ChevronDown size={18} className={`shrink-0 text-[var(--leve)] transition-transform ${aberto ? 'rotate-180' : ''}`} />
+        </button>
+        <button onClick={onApagar} className="flex h-14 w-12 items-center justify-center text-[var(--leve)]" aria-label={`Apagar roteiro ${r.titulo}`}><Trash2 size={18} /></button>
+      </div>
+      {aberto && (
+        <div className="space-y-4 border-t border-[var(--borda)] px-4 pb-4 pt-3">
+          {r.dados?.pedido && <p className="text-[14px] italic text-[var(--leve)]">"{r.dados.pedido}"</p>}
+          {dias.map((d, k) => (
+            <div key={k}>
+              {d.titulo && <h3 className="serifa text-[18px] font-semibold">{d.titulo}</h3>}
+              <ol className="mt-1 space-y-2">
+                {(d.paradas || []).map((p, i) => {
+                  const corpo = (
+                    <span className="min-w-0">
+                      <span className="block text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--madeira)]">{SLOTS[p.periodo]?.rotulo || ''}</span>
+                      <span className="block text-[16px] font-semibold leading-snug">{p.nome}</span>
+                      {p.porque && <span className="block text-[13px] leading-snug text-[var(--leve)]">{p.porque}</span>}
+                    </span>
+                  )
+                  return (
+                    <li key={i}>
+                      {p.slug
+                        ? <Link to={`/estabelecimento/${p.slug}`} className="flex items-start gap-2"><MapPin size={16} className="mt-4 shrink-0 text-[var(--musgo)]" />{corpo}</Link>
+                        : <div className="flex items-start gap-2 pl-6">{corpo}</div>}
+                    </li>
+                  )
+                })}
+              </ol>
+            </div>
+          ))}
+        </div>
+      )}
+    </li>
   )
 }
 
