@@ -1,3 +1,4 @@
+import { BotaoConta } from '../components/BotaoConta'
 import { Logo } from '../components/UI/Logo'
 import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
@@ -36,12 +37,15 @@ const MOMENTOS = [
 /** Topo do celular: menu à esquerda, marca no centro, busca à direita (como na referência aprovada). */
 function Topo() {
   return (
-    <header className="grid grid-cols-[44px_1fr_44px] items-center bg-[var(--papel)] px-3 pb-2 lg:hidden" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 8px)' }}>
+    <header className="relative z-40 grid grid-cols-[88px_1fr_88px] items-center bg-[var(--papel)] px-3 pb-2 lg:hidden" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 8px)' }}>
       <Link to="/mais" aria-label="Menu" className="pressiona flex h-11 w-11 items-center justify-center rounded-full"><Menu size={22} /></Link>
       <Link to="/" className="flex flex-col items-center leading-none" aria-label="Monte Verde MG, início">
         <Logo tamanho={17} />
       </Link>
-      <Link to="/busca" aria-label="Buscar" className="pressiona flex h-11 w-11 items-center justify-center rounded-full"><Search size={21} /></Link>
+      <div className="flex items-center justify-end">
+        <Link to="/busca" aria-label="Buscar" className="pressiona flex h-11 w-11 items-center justify-center rounded-full"><Search size={21} /></Link>
+        <BotaoConta variante="topo" />
+      </div>
     </header>
   )
 }

@@ -1,6 +1,7 @@
 import { Simbolo } from '../UI/Logo'
 import { Link, useLocation } from 'react-router-dom'
 import { Search } from 'lucide-react'
+import { BotaoConta } from '../BotaoConta'
 
 const LINKS = [
   ['Início', '/'],
@@ -38,6 +39,7 @@ export function TopNav() {
           ))}
         </div>
         <Link to="/busca" aria-label="Buscar" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors duration-150 hover:bg-[var(--nevoa)]"><Search size={19} /></Link>
+        <BotaoConta />
         <Link to="/anuncie" className="botao botao-pri h-10 min-h-0 shrink-0 px-4 text-[14px]">Anuncie</Link>
       </div>
     </nav>
