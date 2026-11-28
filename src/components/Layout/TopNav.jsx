@@ -21,20 +21,20 @@ export function TopNav() {
   const ativo = p => (p === '/' ? pathname === '/' : pathname.startsWith(p) || (p === '/categorias' && pathname.startsWith('/categoria/')))
   return (
     <nav className="sticky top-0 z-50 hidden h-[76px] border-b border-[var(--borda)] bg-[var(--papel)]/95 text-[var(--araucaria)] backdrop-blur lg:block" aria-label="Menu">
-      <div className="mx-auto flex h-full max-w-[1180px] items-center gap-6 px-8">
+      <div className="mx-auto flex h-full max-w-[1180px] items-center gap-3 px-6 xl:gap-6 xl:px-8">
         <Link to="/" className="flex shrink-0 items-center gap-3" aria-label="Monte Verde MG, início">
-          <Simbolo size={50} />
+          <Simbolo size={44} />
           <span className="leading-none">
             <span className="logo-nome block text-[22px]">Monte Verde MG</span>
             <span className="mt-1.5 block h-[2px] w-12 rounded-full bg-current opacity-70" />
           </span>
         </Link>
-        <div className="flex min-w-0 flex-1 items-center justify-center gap-1">
+        <div className="flex min-w-0 flex-1 items-center justify-center gap-0 xl:gap-1">
           {LINKS.map(([t, to]) => (
             <Link key={to} to={to} aria-current={ativo(to) ? 'page' : undefined}
-              className={`relative px-2.5 py-2 text-[12.5px] font-semibold uppercase tracking-[0.14em] transition-colors duration-150 ${ativo(to) ? 'text-[var(--musgo)]' : 'text-[var(--leve)] hover:text-[var(--araucaria)]'}`}>
+              className={`relative px-2 py-2 text-[12px] font-semibold uppercase tracking-[0.1em] xl:px-2.5 xl:text-[12.5px] xl:tracking-[0.14em] transition-colors duration-150 ${ativo(to) ? 'text-[var(--musgo)]' : 'text-[var(--leve)] hover:text-[var(--araucaria)]'}`}>
               {t}
-              {ativo(to) && <span className="absolute inset-x-2.5 -bottom-0.5 h-[2px] rounded-full bg-[var(--madeira)]" />}
+              {ativo(to) && <span className="absolute inset-x-2 -bottom-0.5 h-[2px] rounded-full bg-[var(--madeira)]" />}
             </Link>
           ))}
         </div>
