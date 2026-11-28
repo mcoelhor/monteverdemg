@@ -3,7 +3,10 @@ import { Bell, BellRing, Check, Loader2 } from 'lucide-react'
 import { assinar, avisarQuandoAbrir, jaPediuAviso, assinaturaLocal, suportaPush, precisaInstalar, dataDoDia } from '../lib/push'
 import { registrar } from '../lib/track'
 
-const dataPt = iso => { const [a, m, d] = iso.split('-'); return `${d}/${m}` }
+const dataPt = iso => { const [, m, d] = iso.split('-'); return `${d}/${m}` }
+// Datas no fuso de Monte Verde (o servidor manda a véspera às 18h do dia anterior à chegada)
+const hojeMV = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date())
+const somaDias = (iso, n) => { const d = new Date(`${iso}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10) }
 
 /** Cartão do roteiro: "me avise quando chegar", com véspera e manhã de cada dia. */
 export function AvisarChegada({ perfil }) {
@@ -21,7 +24,9 @@ export function AvisarChegada({ perfil }) {
     return (
       <div className="mx-5 mt-4 flex items-start gap-3 rounded-[var(--raio)] bg-[var(--papel)] p-4">
         <BellRing size={20} className="mt-0.5 shrink-0 text-[var(--musgo)]" />
-        <p className="text-[15px] leading-snug"><b>Avisos ligados.</b> Na véspera ({dataPt(chegada)} às 18h) mando a previsão; na manhã de cada dia, o tempo e o que está aberto.</p>
+        <p className="text-[15px] leading-snug"><b>Avisos ligados.</b> {hojeMV() < chegada
+          ? <>Em {dataPt(somaDias(chegada, -1))}, às 18h, chega a previsão do tempo para a viagem. Depois, em cada manhã até {dataPt(somaDias(chegada, perfil.dias - 1))}, o tempo e o que está aberto.</>
+          : <>Em cada manhã até {dataPt(somaDias(chegada, perfil.dias - 1))}, chega o tempo e o que está aberto na vila.</>}</p>
       </div>
     )
   }
@@ -31,7 +36,7 @@ export function AvisarChegada({ perfil }) {
         <Bell size={20} className="mt-0.5 shrink-0 text-[var(--musgo)]" />
         <div className="min-w-0 flex-1">
           <p className="text-[16px] font-bold leading-tight">Me avise quando eu chegar</p>
-          <p className="mt-1 text-[14px] leading-snug text-[var(--leve)]">Na véspera, a previsão do tempo. Na manhã do dia {dataPt(chegada)} e dos seguintes, o que está aberto. Sem cadastro.</p>
+          <p className="mt-1 text-[14px] leading-snug text-[var(--leve)]">Na véspera, a previsão do tempo. A partir da manhã de {dataPt(chegada)}, o tempo e o que está aberto. Sem cadastro.</p>
         </div>
       </div>
       {!pode && precisaInstalar() && <p className="mt-3 text-[14px] leading-snug text-[var(--leve)]">No iPhone: toque em Compartilhar → <b>Adicionar à Tela de Início</b> e abra o app por lá para ligar os avisos.</p>}

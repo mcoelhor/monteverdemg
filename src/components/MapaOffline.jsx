@@ -108,3 +108,44 @@ export function BotaoMapaOffline({ className = '' }) {
     </>
   )
 }
+
+/** Cartão do roteiro: recomenda baixar o mapa antes de subir a serra (o sinal falha). */
+export function CartaoMapaOffline() {
+  const [aberto, setAberto] = useState(false)
+  const pacotes = usePacotes()
+  if (!suportado()) return null
+  const salvo = Object.keys(pacotes).length > 0
+  return (
+    <>
+      {salvo ? (
+        <button onClick={() => setAberto(true)} className="mx-5 mt-3 flex w-[calc(100%-2.5rem)] items-center gap-3 rounded-[var(--raio)] bg-[var(--papel)] p-4 text-left">
+          <Check size={20} className="shrink-0 text-[var(--musgo)]" />
+          <span className="text-[15px] leading-snug"><b>Mapa de Monte Verde salvo.</b> Ruas e lugares aparecem mesmo sem sinal.</span>
+        </button>
+      ) : (
+        <div className="mx-5 mt-3 rounded-[var(--raio)] bg-[var(--papel)] p-4">
+          <div className="flex items-start gap-3">
+            <WifiOff size={20} className="mt-0.5 shrink-0 text-[var(--musgo)]" />
+            <div className="min-w-0 flex-1">
+              <p className="text-[16px] font-bold leading-tight">Baixe o mapa de Monte Verde</p>
+              <p className="mt-1 text-[14px] leading-snug text-[var(--leve)]">Recomendado: na serra o sinal costuma falhar. Com o mapa salvo, ruas e lugares do guia aparecem mesmo sem internet.</p>
+            </div>
+          </div>
+          <button onClick={() => setAberto(true)} className="botao botao-pri mt-3 h-11 min-h-0 w-full text-[15px]"><Download size={16} />Baixar mapa</button>
+        </div>
+      )}
+      {aberto && createPortal(
+        <div className="fixed inset-0 z-[2000] flex items-end justify-center bg-black/40 sm:items-center" onClick={() => setAberto(false)}>
+          <div className="max-h-[85dvh] w-full max-w-md overflow-y-auto rounded-t-[22px] bg-[var(--nevoa)] p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:rounded-[22px]" onClick={e => e.stopPropagation()}>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="serifa text-[20px] font-semibold">Mapa sem internet</h2>
+              <button onClick={() => setAberto(false)} aria-label="Fechar" className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-[var(--nevoa-2)]"><X size={18} /></button>
+            </div>
+            <PacotesMapa />
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
+  )
+}

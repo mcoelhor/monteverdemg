@@ -11,6 +11,7 @@ import { agoraMV, DIAS, DIAS_NOME } from '../lib/horario'
 import { linkRota, registrar } from '../lib/track'
 import { COM_QUEM, GOSTOS, RITMOS, SLOTS, candidatos, montarRoteiro, alternativas, motivo, textoCompartilhar, inicioPadrao } from '../lib/roteiro'
 import { AvisarChegada } from '../components/Avisar'
+import { CartaoMapaOffline } from '../components/MapaOffline'
 import { evento } from '../lib/marketing'
 import { imgMini } from '../lib/miniatura'
 import { useConta } from '../lib/conta'
@@ -305,6 +306,7 @@ export function Roteiro() {
       </section>
 
       <AvisarChegada perfil={perfil} />
+      <CartaoMapaOffline />
 
       <nav className="sticky top-0 z-30 flex gap-2 overflow-x-auto bg-[var(--nevoa)] px-5 py-3 scrollbar-hide" aria-label="Dias">
         {roteiro.map((x, k) => (
