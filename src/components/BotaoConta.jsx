@@ -29,7 +29,7 @@ export function BotaoConta({ variante = 'nav' }) {
     <div ref={caixa} className="relative shrink-0">
       <button type="button" onClick={() => setAberto(v => !v)} aria-expanded={aberto} aria-haspopup="menu"
         aria-label={variante === 'topo' ? (user ? 'Minha conta' : 'Entrar') : undefined}
-        className={`flex items-center gap-2 ${variante === 'nav' ? (user ? 'pl-1 pr-2.5' : 'px-4') : ''} ${estilo}`}>
+        className={`flex items-center gap-2 ${variante === 'nav' ? (user ? 'pl-1 pr-2.5' : 'px-3 xl:px-4') : ''} ${estilo}`}>
         {variante === 'topo' ? (user
           ? (foto ? <img src={foto} alt="" width="30" height="30" referrerPolicy="no-referrer" className="h-[30px] w-[30px] rounded-full object-cover" />
             : <span className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[var(--broto)] text-[13px] font-bold text-[var(--musgo)]">{(nomeDe(user)[0] || '?').toUpperCase()}</span>)
@@ -40,7 +40,7 @@ export function BotaoConta({ variante = 'nav' }) {
               : <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--broto)] text-[14px] font-bold text-[var(--musgo)]">{(nomeDe(user)[0] || '?').toUpperCase()}</span>}
             <span className="sr-only">Minha conta</span><ChevronDown size={15} aria-hidden="true" />
           </>
-        ) : <><UserRound size={17} aria-hidden="true" />Entrar</>}
+        ) : <><UserRound size={17} aria-hidden="true" /><span className="sr-only xl:not-sr-only">Entrar</span></>}
       </button>
 
       {aberto && (
