@@ -36,7 +36,7 @@ export function AvisarChegada({ perfil }) {
         <Bell size={20} className="mt-0.5 shrink-0 text-[var(--musgo)]" />
         <div className="min-w-0 flex-1">
           <p className="text-[16px] font-bold leading-tight">Me avise quando eu chegar</p>
-          <p className="mt-1 text-[14px] leading-snug text-[var(--leve)]">Na véspera, a previsão do tempo. A partir da manhã de {dataPt(chegada)}, o tempo e o que está aberto. Sem cadastro.</p>
+          <p className="mt-1 text-[14px] leading-snug text-[var(--leve)]">{hojeMV() < chegada ? <>Na véspera, a previsão do tempo. A partir da manhã de {dataPt(chegada)}, o tempo e o que está aberto.</> : <>Em cada manhã da viagem, o tempo e o que está aberto na vila.</>} Sem cadastro.</p>
         </div>
       </div>
       {!pode && precisaInstalar() && <p className="mt-3 text-[14px] leading-snug text-[var(--leve)]">No iPhone: toque em Compartilhar → <b>Adicionar à Tela de Início</b> e abra o app por lá para ligar os avisos.</p>}
