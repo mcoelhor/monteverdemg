@@ -4,14 +4,14 @@ import { Search } from 'lucide-react'
 import { BotaoConta } from '../BotaoConta'
 
 const LINKS = [
-  ['Início', '/'],
+  ['Início', '/', 'xl'],
   ['Explorar', '/categorias'],
   ['Roteiros', '/roteiro'],
   ['Ofertas', '/ofertas'],
   ['Eventos', '/eventos'],
   ['Úteis', '/uteis'],
   ['Mapa', '/mapa'],
-  ['Salvos', '/favoritos'],
+  ['Salvos', '/favoritos', 'xl'], // em telas médias o logo leva ao início e os salvos ficam no menu do Entrar
 ]
 
 /** Menu do computador, no espírito da referência aprovada: marca em versal com "Portal de turismo"
@@ -30,9 +30,9 @@ export function TopNav() {
           </span>
         </Link>
         <div className="flex min-w-0 flex-1 items-center justify-center gap-0 xl:gap-1">
-          {LINKS.map(([t, to]) => (
+          {LINKS.map(([t, to, so]) => (
             <Link key={to} to={to} aria-current={ativo(to) ? 'page' : undefined}
-              className={`relative px-2 py-2 text-[12px] font-semibold uppercase tracking-[0.1em] xl:px-2.5 xl:text-[12.5px] xl:tracking-[0.14em] transition-colors duration-150 ${ativo(to) ? 'text-[var(--musgo)]' : 'text-[var(--leve)] hover:text-[var(--araucaria)]'}`}>
+              className={`relative ${so === 'xl' ? 'hidden xl:block' : ''} px-2 py-2 text-[12px] font-semibold uppercase tracking-[0.1em] xl:px-2.5 xl:text-[12.5px] xl:tracking-[0.14em] transition-colors duration-150 ${ativo(to) ? 'text-[var(--musgo)]' : 'text-[var(--leve)] hover:text-[var(--araucaria)]'}`}>
               {t}
               {ativo(to) && <span className="absolute inset-x-2 -bottom-0.5 h-[2px] rounded-full bg-[var(--madeira)]" />}
             </Link>

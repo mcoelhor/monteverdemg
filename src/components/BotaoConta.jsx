@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { UserRound, Store, LogOut, ChevronDown } from 'lucide-react'
+import { UserRound, Store, LogOut, ChevronDown, Heart } from 'lucide-react'
 import { useConta, nomeDe, fotoDe, sair } from '../lib/conta'
 
 /** "Entrar" do topo: escolhe entre conta de visitante e área do dono. Logado, mostra a foto e o menu da conta.
@@ -48,7 +48,8 @@ export function BotaoConta({ variante = 'nav' }) {
           {user ? (
             <>
               <p className="truncate border-b border-[var(--borda)] px-4 py-3 text-[14px]"><b>{nomeDe(user)}</b><span className="block truncate text-[13px] text-[var(--leve)]">{user.email}</span></p>
-              <Item to="/conta" icon={UserRound} titulo="Minha conta" sub="Lugares e roteiros salvos" onClick={fechar} />
+              <Item to="/conta" icon={UserRound} titulo="Minha conta" sub="Roteiros salvos e dados da conta" onClick={fechar} />
+              <Item to="/favoritos" icon={Heart} titulo="Lugares salvos" sub="Os lugares que você marcou" onClick={fechar} />
               <Item to="/meu-negocio" icon={Store} titulo="Meu negócio" sub="Editar a página do seu lugar" onClick={fechar} />
               <button role="menuitem" onClick={() => { fechar(); sair() }} className="flex min-h-12 w-full items-center gap-3 border-t border-[var(--borda)] px-4 text-left text-[15px] hover:bg-[var(--nevoa)]"><LogOut size={18} className="text-[var(--leve)]" />Sair</button>
             </>
@@ -57,6 +58,7 @@ export function BotaoConta({ variante = 'nav' }) {
               <p className="px-4 pb-1 pt-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--leve)]">Entrar como</p>
               <Item to="/conta" icon={UserRound} titulo="Visitante" sub="Salvar lugares e montar seus roteiros" onClick={fechar} />
               <Item to="/meu-negocio" icon={Store} titulo="Dono de negócio" sub="Restaurante, pousada ou loja: edite sua página" onClick={fechar} />
+              <Link role="menuitem" to="/favoritos" onClick={fechar} className="flex min-h-11 items-center gap-3 border-t border-[var(--borda)] px-4 text-[14px] text-[var(--leve)] hover:bg-[var(--nevoa)]"><Heart size={16} />Ver lugares salvos neste aparelho</Link>
             </>
           )}
         </div>
