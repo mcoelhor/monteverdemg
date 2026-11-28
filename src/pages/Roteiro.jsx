@@ -8,8 +8,8 @@ import { Icon } from '../components/UI/Icon'
 import { useBusinesses } from '../hooks/useBusinesses'
 import { FOTOS } from '../data/fotos'
 import { agoraMV, DIAS, DIAS_NOME } from '../lib/horario'
-import { linkRota, registrar } from '../lib/track'
-import { COM_QUEM, GOSTOS, RITMOS, SLOTS, candidatos, montarRoteiro, alternativas, motivo, textoCompartilhar, inicioPadrao } from '../lib/roteiro'
+import { linkRota, linkRotaDia, registrar } from '../lib/track'
+import { COM_QUEM, GOSTOS, RITMOS, SLOTS, candidatos, montarRoteiro, alternativas, motivo, textoCompartilhar, inicioPadrao, horaSugerida, fmtHora } from '../lib/roteiro'
 import { AvisarChegada } from '../components/Avisar'
 import { CartaoMapaOffline } from '../components/MapaOffline'
 import { evento } from '../lib/marketing'
@@ -121,7 +121,7 @@ function Parada({ p, dia, perfil, primeira, ultima, onTrocar, onRemover, onSubir
   return (
     <li className="entra relative pl-9" style={{ '--i': i }}>
       <span className="absolute left-0 top-1 flex h-7 w-7 items-center justify-center rounded-full bg-[var(--araucaria)] text-[var(--broto)]"><Icon name={slot.icone} size={15} /></span>
-      <p className="text-[14px] font-bold text-[var(--musgo)]">{slot.rotulo}</p>
+      <p className="text-[14px] font-bold text-[var(--musgo)]">{slot.rotulo} <span className="num font-semibold text-[var(--leve)]">· por volta das {fmtHora(horaSugerida(item, p.slot, dia))}</span></p>
       <div className="mt-1.5 overflow-hidden rounded-[var(--raio)] bg-[var(--papel)]">
         {item.foto && <img src={item.foto.p} alt={item.foto.legenda} loading="lazy" className="aspect-[16/8] w-full object-cover" />}
         <div className="flex gap-3.5 p-4">
@@ -317,6 +317,16 @@ export function Roteiro() {
       {d.paradas.length === 0 && (
         <p className="mx-5 mt-4 rounded-[var(--raio)] bg-[var(--papel)] p-5 text-[16px] leading-relaxed text-[var(--leve)]">Por hoje já passou da hora das sugestões. Veja o dia seguinte ou adicione um jantar abaixo.</p>
       )}
+      {(() => {
+        const lugares = d.paradas.filter(p => p.item.tipo === 'lugar').map(p => p.item.b)
+        const url = linkRotaDia(lugares)
+        return url && (
+          <a href={url} target="_blank" rel="noopener noreferrer" onClick={() => registrar('rota', { term: `roteiro-dia:${lugares.length}` })}
+            className="botao botao-pri mx-5 mt-1 h-12 min-h-0 w-[calc(100%-2.5rem)] text-[15px]">
+            <Navigation size={17} />Abrir {nomes[diaAtivo].toLowerCase() === 'hoje' ? 'o dia de hoje' : nomes[diaAtivo].toLowerCase() === 'amanhã' ? 'o dia de amanhã' : nomes[diaAtivo]} no Google Maps · {lugares.length} {lugares.length === 1 ? 'parada' : 'paradas'}
+          </a>
+        )
+      })()}
       <ol key={diaAtivo} className="space-y-7 px-5 pt-4">
         {d.paradas.map((p, i) => (
           <Parada key={`${p.item.id}-${i}`} p={p} dia={d.dia} perfil={perfil} i={i}

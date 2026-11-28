@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { ArrowUp, Loader2, MapPin, RotateCcw, Sparkles, Route as RouteIcon, Bookmark, Check } from 'lucide-react'
+import { ArrowUp, Loader2, MapPin, RotateCcw, Sparkles, Route as RouteIcon, Bookmark, Check, Navigation } from 'lucide-react'
 import { Layout } from '../components/Layout/Layout'
 import { useBusinesses } from '../hooks/useBusinesses'
 import { registrar } from '../lib/track'
-import { SLOTS } from '../lib/roteiro'
+import { SLOTS, horaSugerida, fmtHora } from '../lib/roteiro'
+import { linkRotaDia } from '../lib/track'
 import { useConta } from '../lib/conta'
 import { supabase } from '../lib/supabase'
 
@@ -149,6 +150,9 @@ function SalvarRoteiroConcierge({ dias: diasBrutos, pedido, porSlug }) {
   )
 }
 
+const DIA_IDX = { segunda: 0, terca: 1, quarta: 2, quinta: 3, sexta: 4, sabado: 5, domingo: 6 }
+const diaDoTitulo = t => { const n = (t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); const k = Object.keys(DIA_IDX).find(x => n.includes(x)); return k == null ? null : DIA_IDX[k] }
+
 function Resposta({ m, porSlug, pedido }) {
   return (
     <div className="max-w-[94%]">
@@ -181,7 +185,8 @@ function Resposta({ m, porSlug, pedido }) {
           <ol className="mt-2 space-y-3">
             {d.paradas.map((p, i) => {
               const b = p.slug ? porSlug.get(p.slug) : null
-              const rotulo = SLOTS[p.periodo]?.rotulo || ''
+              const hora = SLOTS[p.periodo] ? fmtHora(horaSugerida(b ? { tipo: 'lugar', b } : null, p.periodo, diaDoTitulo(d.titulo))) : ''
+              const rotulo = `${SLOTS[p.periodo]?.rotulo || ''}${hora ? ` · ${hora}` : ''}`
               const corpo = (
                 <>
                   <span className="block text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--madeira)]">{rotulo}</span>
@@ -198,6 +203,10 @@ function Resposta({ m, porSlug, pedido }) {
               )
             })}
           </ol>
+          {(() => {
+            const url = linkRotaDia(d.paradas.map(p => porSlug.get(p.slug)).filter(Boolean))
+            return url && <a href={url} target="_blank" rel="noopener noreferrer" onClick={() => registrar('rota', { term: 'concierge-dia' })} className="botao botao-pri mt-4 h-11 min-h-0 w-full text-[15px]"><Navigation size={16} />Abrir {d.titulo || 'o dia'} no Google Maps</a>
+          })()}
         </div>
       ))}
       {m.dias?.length > 0 && <SalvarRoteiroConcierge dias={m.dias} pedido={pedido} porSlug={porSlug} />}

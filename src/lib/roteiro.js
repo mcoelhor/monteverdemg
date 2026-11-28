@@ -207,3 +207,17 @@ export function textoCompartilhar(roteiro, nomesDia) {
   linhas.push('Montado em monteverdemg.com.br/roteiro')
   return linhas.join('\n')
 }
+
+/** Horário sugerido da parada: o de referência do período, ajustado para quando o lugar abre naquele dia. */
+export function horaSugerida(item, slot, dia) {
+  const s = SLOTS[slot]
+  if (!s) return null
+  if (item?.cedo) return 420 // mar de nuvens: sair cedo
+  const b = item?.tipo === 'lugar' ? item.b : item?.b || (item?.hours ? item : null)
+  if (!b?.hours || dia == null) return s.hora
+  const ints = parseDia(b.hours[DIAS[dia]]) || []
+  if (ints.some(([a, f]) => s.hora >= a && s.hora < f)) return s.hora
+  const abre = ints.map(([a]) => a).filter(a => a > s.hora && a < s.fim).sort((x, y) => x - y)[0]
+  return abre ?? s.hora
+}
+export const fmtHora = min => (min == null ? '' : `${Math.floor(min / 60)}h${min % 60 ? String(min % 60).padStart(2, '0') : ''}`)

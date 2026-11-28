@@ -96,3 +96,13 @@ export function linkInstagram(ig) {
   if (!ig) return ''
   return /^https?:\/\//.test(ig) ? ig : `https://instagram.com/${ig.replace(/^@/, '')}`
 }
+
+/** Rota do dia inteiro no Google Maps: paradas em ordem, saindo de onde a pessoa estiver.
+    Usa o link público do Maps (sem chave e sem guardar nada do Google). Até 9 paradas intermediárias. */
+export function linkRotaDia(lugares) {
+  const pts = lugares.filter(b => b?.latitude && b?.longitude).map(b => `${b.latitude},${b.longitude}`)
+  if (!pts.length) return null
+  const destino = pts[pts.length - 1]
+  const meio = pts.slice(0, -1).slice(0, 9)
+  return `https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=${encodeURIComponent(destino)}${meio.length ? `&waypoints=${encodeURIComponent(meio.join('|'))}` : ''}`
+}
