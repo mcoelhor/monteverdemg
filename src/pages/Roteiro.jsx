@@ -318,7 +318,7 @@ export function Roteiro() {
         <p className="mx-5 mt-4 rounded-[var(--raio)] bg-[var(--papel)] p-5 text-[16px] leading-relaxed text-[var(--leve)]">Por hoje já passou da hora das sugestões. Veja o dia seguinte ou adicione um jantar abaixo.</p>
       )}
       {(() => {
-        const lugares = d.paradas.filter(p => p.item.tipo === 'lugar').map(p => p.item.b)
+        const lugares = d.paradas.filter(p => p.item.tipo === 'lugar' && p.item.b.latitude && p.item.b.longitude).map(p => p.item.b)
         const url = linkRotaDia(lugares)
         return url && (
           <a href={url} target="_blank" rel="noopener noreferrer" onClick={() => registrar('rota', { term: `roteiro-dia:${lugares.length}` })}
