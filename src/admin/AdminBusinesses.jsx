@@ -1,3 +1,4 @@
+import { EditorHorario } from '../components/EditorHorario'
 import { ArtesTotemEditor } from '../components/ArtesTotem'
 import { CardapioEditor } from '../components/CardapioEditor'
 import { useEffect, useMemo, useState } from 'react'
@@ -67,9 +68,8 @@ function Editor({ inicial, onClose, onSalvo }) {
         </div>
 
         <p className="mt-4 text-sm font-bold">Horário</p>
-        <p className="text-xs text-[#626a63]">Ex.: 08:00-18:00 · dois turnos 12:00-15:00,19:00-23:00 · fechado · 24h. Vazio = não informado.</p>
+        <div className="mt-2"><EditorHorario hours={b.hours} onChange={h => setB(v => ({ ...v, hours: h }))} /></div>
         <div className="mt-2 grid grid-cols-2 gap-2">
-          {DIAS.map(d => <Rot key={d} t={DIAS_NOME[d]}><input className={campo} value={b.hours[d] || ''} onChange={setH(d)} placeholder="08:00-18:00" /></Rot>)}
           <Rot t="Atende 24h"><select className={campo} value={b.open_24h} onChange={set('open_24h')}><option value="">Não</option><option value="sim">Sim, aberto 24h</option><option value="plantão">Plantão por telefone</option></select></Rot>
         </div>
         <p className="mt-2 text-xs text-[#626a63]">Agora apareceria como: <b>{st.rotulo}</b></p>

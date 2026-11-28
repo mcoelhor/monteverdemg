@@ -1,3 +1,4 @@
+import { EditorHorario } from './EditorHorario'
 import { useState } from 'react'
 import { Check, Loader2 } from 'lucide-react'
 import { CATEGORIES } from '../data/categories'
@@ -50,10 +51,8 @@ export function Autocadastro({ onPronto }) {
         </div>
         <div><label className="block text-[15px] font-bold" htmlFor="ad">O que vocês oferecem <span className="font-medium text-[var(--leve)]">(2 frases)</span></label><textarea id="ad" rows={3} maxLength={600} value={f.description} onChange={set('description')} className={campo} /></div>
         <div>
-          <p className="text-[15px] font-bold">Horário <span className="font-medium text-[var(--leve)]">(ex.: 08:00-18:00, fechado, 24h)</span></p>
-          <div className="mt-1.5 grid grid-cols-1 gap-1.5">
-            {DIAS.map(d => <label key={d} className="flex items-center gap-2"><span className="w-16 text-[14px] font-semibold">{DIAS_NOME[d].slice(0, 3)}</span><input value={f.hours[d] || ''} onChange={setH(d)} placeholder="08:00-18:00" className="min-w-0 flex-1 rounded-2xl bg-[var(--nevoa)] px-4 py-2.5 text-[15px]" /></label>)}
-          </div>
+          <p className="text-[15px] font-bold">Horário de funcionamento</p>
+          <div className="mt-2"><EditorHorario hours={f.hours} onChange={h => setF(v => ({ ...v, hours: h }))} /></div>
         </div>
         <div><label className="block text-[15px] font-bold" htmlFor="ar">Seu nome</label><input id="ar" required value={f.contato} onChange={set('contato')} autoComplete="name" className={campo} /></div>
         <input tabIndex={-1} aria-hidden="true" value={f.site_url} onChange={set('site_url')} className="absolute -left-[9999px] h-0 w-0" />

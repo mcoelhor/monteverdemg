@@ -9,6 +9,7 @@ import { CardapioEditor } from '../components/CardapioEditor'
 import { carregarOfertas } from '../hooks/useOfertas'
 import { Layout } from '../components/Layout/Layout'
 import { BotaoGoogle } from '../components/BotaoGoogle'
+import { EditorHorario } from '../components/EditorHorario'
 import { StatusPill } from '../components/UI/Badge'
 import { supabase } from '../lib/supabase'
 import { carregarLugares } from '../hooks/useBusinesses'
@@ -339,12 +340,8 @@ function Editor({ negocio, onSalvo }) {
 
       <section className="mt-6">
         <h3 className="text-[18px] font-extrabold tracking-[-0.02em]">Horário de funcionamento</h3>
-        <p className="mt-1 text-[14px] text-[var(--leve)]">Escreva como 08:00-18:00, 12:00-15:00,19:00-23:00, fechado ou 24h. Em branco = não informado. Agora: <StatusPill st={st} longo /></p>
-        <div className="mt-3 grid grid-cols-1 gap-2">
-          {DIAS.map(d => (
-            <label key={d} className="flex items-center gap-3"><span className="w-20 text-[15px] font-bold">{DIAS_NOME[d]}</span><input value={b.hours[d] || ''} onChange={setH(d)} placeholder="08:00-18:00" className="min-w-0 flex-1 rounded-2xl bg-[var(--nevoa)] px-4 py-3 text-[16px]" /></label>
-          ))}
-        </div>
+        <p className="mt-1 text-[14px] text-[var(--leve)]">Agora: <StatusPill st={st} longo /></p>
+        <div className="mt-3"><EditorHorario hours={b.hours} onChange={h => setB(v => ({ ...v, hours: h }))} /></div>
         <label className="mt-3 flex items-center gap-3 text-[15px]"><span className="w-20 font-bold">24 horas</span>
           <select value={b.open_24h || ''} onChange={set('open_24h')} className="min-w-0 flex-1 rounded-2xl bg-[var(--nevoa)] px-4 py-3 text-[16px]"><option value="">Não</option><option value="sim">Sim, sempre aberto</option><option value="plantão">Plantão por telefone</option></select>
         </label>
