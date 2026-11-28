@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { Heart, Calendar, Store, Settings, ArrowRight, Download, Route, Siren, Image, Car, Leaf, Ticket, Shield, Mountain, Mail } from 'lucide-react'
+import { Heart, Calendar, Store, Settings, ArrowRight, Download, Route, Siren, Image, Car, Leaf, Ticket, Shield, Mountain, Mail, MessageCircle } from 'lucide-react'
 import { Layout } from '../components/Layout/Layout'
 import { LeadForm } from '../components/LeadForm'
 import { linkWhatsApp } from '../lib/track'
@@ -64,7 +64,7 @@ export function More() {
       <section id="contato" className="px-5 pb-6 pt-12" style={{ scrollMarginTop: 90 }}>
         <h2 className="titulo">Falar com o guia</h2>
         <p className="mb-4 mt-2 text-[16px] leading-relaxed text-[var(--leve)]">Dúvida, sugestão, parceria ou outro assunto: escreva pra gente.</p>
-        <a href={linkWhatsApp(WHATSAPP_GUIA, 'Olá! Vim pelo site Monte Verde MG.')} target="_blank" rel="noopener noreferrer" className="botao w-full">WhatsApp · (35) 99848-0456</a>
+        <a href={linkWhatsApp(WHATSAPP_GUIA, 'Olá! Vim pelo site Monte Verde MG.')} target="_blank" rel="noopener noreferrer" className="botao botao-wa w-full"><MessageCircle size={18} />WhatsApp · (35) 99848-0456</a>
         <a href="mailto:monteverdeapp@gmail.com" className="botao botao-sec mt-2 w-full"><Mail size={18} />monteverdeapp@gmail.com</a>
         <div className="mt-4">
           <LeadForm empresa="portal" interesse="outro" botao="Enviar mensagem" />
