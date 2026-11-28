@@ -75,15 +75,8 @@ function Entrar() {
     return (
       <div className="mx-5 rounded-[var(--raio)] bg-[var(--papel)] p-5">
         <p className="flex items-center gap-2 text-[20px] font-extrabold tracking-[-0.02em]"><Mail size={22} className="text-[var(--musgo)]" />Confira seu e-mail</p>
-        <p className="mt-2 text-[16px] leading-relaxed text-[var(--leve)]">Mandamos um link para <b className="text-[var(--araucaria)]">{mail}</b>. Abra o e-mail <b className="text-[var(--araucaria)]">neste celular</b> e toque no link: você volta para cá e cria sua senha.</p>
-        <p className="mt-2 text-[14px] leading-relaxed text-[var(--leve)]">Não chegou? Olhe no spam ou em Promoções.</p>
-        <form onSubmit={confirmarCodigo} className="mt-5 border-t border-[var(--nevoa-2)] pt-4">
-          <label className="block text-[15px] font-bold" htmlFor="oc">O e-mail trouxe um código? <span className="font-medium text-[var(--leve)]">(opcional)</span></label>
-          <div className="mt-1.5 flex gap-2">
-            <input id="oc" inputMode="numeric" autoComplete="one-time-code" maxLength={8} value={codigo} onChange={e => setCodigo(e.target.value)} placeholder="000000" className="num min-w-0 flex-1 rounded-2xl bg-[var(--nevoa)] px-4 py-3 text-[18px] tracking-[0.2em]" />
-            <button disabled={enviando || codigo.replace(/\D/g, '').length < 6} className="botao botao-pri px-5">Confirmar</button>
-          </div>
-        </form>
+        <p className="mt-2 text-[16px] leading-relaxed text-[var(--leve)]">Mandamos um link para <b className="text-[var(--araucaria)]">{mail}</b>. Abra o e-mail <b className="text-[var(--araucaria)]">neste aparelho</b> e toque em <b className="text-[var(--araucaria)]">Sign in</b>: você volta para cá e cria sua senha.</p>
+        <p className="mt-2 text-[14px] leading-relaxed text-[var(--leve)]">Ele chega com o título <b>"Your sign-in link"</b>. Não chegou? Olhe no spam ou em Promoções.</p>
         {msg && <p className="mt-3 text-[15px] font-semibold text-[var(--sos)]" role="alert">{msg}</p>}
         <div className="mt-4 flex flex-wrap gap-x-5">
           <button onClick={() => mandarLink()} disabled={espera > 0 || enviando} className="min-h-11 text-[15px] font-bold text-[var(--musgo)] disabled:text-[var(--leve)]">{espera > 0 ? `Reenviar em ${espera}s` : 'Reenviar link'}</button>
